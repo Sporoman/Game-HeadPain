@@ -18,21 +18,21 @@ private:
 	static int _countObjects;
 
 	int _id;
-	Coord _coord                {0,0};					// Координаты
-	unsigned char _mapSymbol    = '?';					// Символ на карте (до рендеринга)
-	unsigned char _renderSymbol = '?';					// Символ отображения (рендеринг)
-	ccolor::Color _colorSymbol  = ccolor::Color::red;	// Цвет символа
+	Coord _coord                {0,0};					// Coords
+	unsigned char _mapSymbol    = '?';					// Symbol on the physical map (before render)
+	unsigned char _renderSymbol = '?';					// Symbol on the visual map (after render)
+	ccolor::Color _colorSymbol  = ccolor::Color::red;	// Symbol color
 
 public:
 	Object(unsigned char mapSym, unsigned char renSym, ccolor::Color colSym, Coord coord);
 	~Object();
 
-	virtual void MoveOn(DirMove dir);		// Движение
+	virtual void MoveOn(DirMove dir);
 
-	virtual void SetCoord(int x, int y);	// Задать координаты
-	virtual void SetCoord(Coord coord);		// Задать координаты
+	virtual void SetCoord(int x, int y);
+	virtual void SetCoord(Coord coord);
 
-	static int GetObjectsCount();	// Получить количество объектов
+	static int GetObjectsCount();
 
 private:
 	void MoveOnUp();

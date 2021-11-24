@@ -37,13 +37,13 @@ void Object::SetCoord(int x, int y)
 
 void Object::SetCoord(Coord coord)
 {
-	// Для x
+	// For "x"
 	if (coord.x < 0)
 		_coord.x = 0;
 	else
 		_coord.x = coord.x;
 
-	// Для y
+	// For "y"
 	if (coord.y < 0)
 		_coord.y = 0;
 	else
