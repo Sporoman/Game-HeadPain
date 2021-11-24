@@ -17,18 +17,37 @@ Object::~Object()
 {}
 
 void Object::MoveOn(DirMove dir)
-{}
+{
+	switch (dir)
+	{
+		case DirMove::up:       MoveOnUp();       break;
+		case DirMove::left:     MoveOnLeft();     break;
+		case DirMove::down:     MoveOnDown();     break;
+		case DirMove::right:    MoveOnRight();    break;
+
+		default: break;
+	}
+}
 
 void Object::SetCoord(int x, int y)
 {
-	_coord.x = x;
-	_coord.y = y;
+	Coord coord{ x,y };
+	SetCoord(coord);
 }
 
 void Object::SetCoord(Coord coord)
 {
-	_coord.x = coord.x;
-	_coord.y = coord.y;
+	// Äëÿ x
+	if (coord.x < 0)
+		_coord.x = 0;
+	else
+		_coord.x = coord.x;
+
+	// Äëÿ y
+	if (coord.y < 0)
+		_coord.y = 0;
+	else
+		_coord.y = coord.y;
 }
 
 int Object::GetObjectsCount()
@@ -38,20 +57,26 @@ int Object::GetObjectsCount()
 
 void Object::MoveOnUp()
 {
-
+	if (_coord.y <= 0)
+		_coord.y = 0;
+	else
+		--_coord.y;
 }
 
 void Object::MoveOnLeft()
 {
-
+	if (_coord.x <= 0)
+		_coord.x = 0;
+	else
+		--_coord.x;
 }
 
 void Object::MoveOnRight()
 {
-
+	++_coord.x;
 }
 
 void Object::MoveOnDown()
 {
-
+	++_coord.y;
 }
