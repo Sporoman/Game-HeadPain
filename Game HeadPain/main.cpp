@@ -11,7 +11,7 @@
 // Logic
 bool isGameActive = true;
 unsigned char levelData[rowsCount][columnsCount];
-int heroRow = 0;
+int heroRow	   = 0;
 int heroColumn = 0;
 bool fogOfWarB[rowsCount][columnsCount];
 
@@ -309,7 +309,6 @@ void MoveHeroTo(int row, int column)
 
 		// Reveal Fog of war
 		RevealFogOfWar(heroRow, heroColumn);
-
 	}
 }
 
