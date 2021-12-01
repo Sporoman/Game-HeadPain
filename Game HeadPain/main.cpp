@@ -7,13 +7,12 @@
 #include "Levels.h"
 #include "consoleColor//text_work.h"
 
+// This file is a temporary solution
 
 // Logic
 bool isGameActive = true;
-unsigned char levelData[rowsCount][columnsCount];
-int heroRow = 0;
-int heroColumn = 0;
-bool fogOfWarB[rowsCount][columnsCount];
+unsigned char levelData[game_info::y_size_lvl][game_info::x_size_lvl];
+bool fogOfWarB[game_info::y_size_lvl][game_info::x_size_lvl];
 
 bool hard = false;
 
@@ -37,12 +36,12 @@ void SetupSystem()
 {
 }
 
-void RevealFogOfWar(int row, int column)
+void RevealFogOfWar(int y, int x)
 {
 	if (hard == true)
 	{
-		for (int r = row - 3; r <= row + 3; r++)
-			for (int c = column - 3; c <= column + 3; c++)
+		for (int r = y - 3; r <= y + 3; r++)
+			for (int c = x - 3; c <= x + 3; c++)
 				fogOfWarB[r][c] = false;
 	}
 }
@@ -50,22 +49,22 @@ void RevealFogOfWar(int row, int column)
 void Initialise()
 {
 	// Load Level
-	for (int r = 0; r < rowsCount; r++)
+	for (int y = 0; y < game_info::y_size_lvl; y++)
 	{
-		for (int c = 0; c < columnsCount; c++)
+		for (int x = 0; x < game_info::x_size_lvl; x++)
 		{
 			if (hard == true)
-				fogOfWarB[r][c] = true;
+				fogOfWarB[y][x] = true;
 			else
-				fogOfWarB[r][c] = false;
+				fogOfWarB[y][x] = false;
 
-			unsigned char symbol = levelsData[level][r][c];
-			levelData[r][c] = symbol;
+			unsigned char symbol = game_info::levelsData[game_info::level][y][x];
+			levelData[y][x] = symbol;
 
-			if (levelData[r][c] == Hero)
+			if (levelData[y][x] == Hero)
 			{
-				heroRow = r;
-				heroColumn = c;
+				heroRow = y;
+				heroColumn = x;
 			}
 
 			switch (symbol)
@@ -85,9 +84,9 @@ void Render()
 	ccolor::HideCursor();
 
 	printf("\n\t");
-	for (int r = 0; r < rowsCount; r++)
+	for (int r = 0; r < game_info::y_size_lvl; r++)
 	{
-		for (int c = 0; c < columnsCount; c++)
+		for (int c = 0; c < game_info::x_size_lvl; c++)
 		{
 			if (fogOfWarB[r][c] == false)
 			{
@@ -102,14 +101,14 @@ void Render()
 			else
 			{
 				ccolor::SetColor(ccolor::Color::gray);
-				printf("%c", fogOfWar);
+				printf("%c", game_info::mapSymbol_fogOfWar);
 			}
 		}
 
 		if (r == 2)
 		{
 			ccolor::SetColor(ccolor::Color::gray);
-			printf("   Level %i  ", level + 1);
+			printf("   Level %i  ", game_info::level + 1);
 		}
 
 		if (r == 3)
@@ -172,8 +171,8 @@ void Render()
 
 void RestartLevel()
 {
-	CrystalScore -= CrystalScoreLVL;
-	CrystalScoreLVL = 0;
+	CrystalScore -= CrystalScoreCollected;
+	CrystalScoreCollected = 0;
 	CrystalScoreONLVL = 0;
 	KeyScore -= KeyScoreLVL;
 	KeyScoreLVL = 0;
@@ -198,7 +197,7 @@ void MoveHeroTo(int row, int column)
 		case Crystal:
 		{
 			CrystalScore++;
-			CrystalScoreLVL++;
+			CrystalScoreCollected++;
 			CrystalScoreONLVL--;
 			canMove = true;
 			break;
@@ -230,7 +229,7 @@ void MoveHeroTo(int row, int column)
 		case Exit:
 		{
 			CrystalScoreONLVL = 0;
-			CrystalScoreLVL = 0;
+			CrystalScoreCollected = 0;
 			KeyScoreLVL = 0;
 			LevelKeyScore = 0;
 			isGameActive = false;
@@ -309,7 +308,6 @@ void MoveHeroTo(int row, int column)
 
 		// Reveal Fog of war
 		RevealFogOfWar(heroRow, heroColumn);
-
 	}
 }
 
@@ -358,7 +356,7 @@ void Move()
 		case '2':
 		{
 			CrystalScoreONLVL = 0;
-			CrystalScoreLVL = 0;
+			CrystalScoreCollected = 0;
 			KeyScoreLVL = 0;
 			level++;
 			Initialise();
@@ -368,7 +366,7 @@ void Move()
 		case '1':
 		{
 			CrystalScoreONLVL = 0;
-			CrystalScoreLVL = 0;
+			CrystalScoreCollected = 0;
 			KeyScoreLVL = 0;
 			level--;
 			Initialise();

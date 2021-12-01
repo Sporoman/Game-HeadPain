@@ -140,12 +140,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="consoleColor\text_work.cpp" />
+    <ClCompile Include="Hero.cpp" />
     <ClCompile Include="levels.h" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="consoleColor\ConsoleColor.h" />
     <ClInclude Include="consoleColor\text_work.h" />
+    <ClInclude Include="Coord.h" />
+    <ClInclude Include="Hero.h" />
+    <ClInclude Include="Inventory.h" />
+    <ClInclude Include="Object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

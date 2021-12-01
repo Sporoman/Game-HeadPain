@@ -102,7 +102,7 @@ void ccolor::TestColor()
 	for (int i = 0; i < 16; i++)				//		ТЕСТ!
 	{											//		 для
 		Color color = static_cast<Color>(i);	//	 определения
-		ccolor::SetColor(color);			//		цвета
+		ccolor::SetColor(color);				//		цвета
 		std::cout << "z ";						//
 	}
 	std::cout << "\t";
