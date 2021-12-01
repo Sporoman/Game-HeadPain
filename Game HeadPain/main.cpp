@@ -58,7 +58,7 @@ void Initialise()
 			else
 				fogOfWarB[y][x] = false;
 
-			unsigned char symbol = game_info::levelsData[game_info::level][y][x];
+			unsigned char symbol = game_info::levelsData[game_info::level][y][x];//s
 			levelData[y][x] = symbol;
 
 			if (levelData[y][x] == Hero)
