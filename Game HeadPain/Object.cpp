@@ -49,6 +49,11 @@ void Object::SetCoord(Coord coord)
 		_coord.y = coord.y;
 }
 
+unsigned char Object::GetMapSymbol()
+{
+	return _mapSymbol;
+}
+
 int Object::GetObjectsCount()
 {
 	return __countObjects;

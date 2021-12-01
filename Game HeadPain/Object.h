@@ -28,12 +28,14 @@ public:
 	Object(unsigned char mapSym, unsigned char renSym, ccolor::Color colSym);
 	~Object();
 
-	virtual void MoveOn(DirMove dir);
+	static int GetObjectsCount();
 
+	virtual void MoveOn(DirMove dir);
 	virtual void SetCoord(int x, int y);
 	virtual void SetCoord(Coord coord);
 
-	static int GetObjectsCount();
+	virtual unsigned char GetMapSymbol();
+	
 
 private:
 	void MoveOnUp();
