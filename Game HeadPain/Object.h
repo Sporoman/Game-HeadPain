@@ -15,7 +15,7 @@ enum class DirMove
 class Object
 {
 private:
-	static int _countObjects;
+	static int __countObjects;
 
 	int _id;
 	Coord _coord                {0,0};					// Coords
@@ -25,6 +25,7 @@ private:
 
 public:
 	Object(unsigned char mapSym, unsigned char renSym, ccolor::Color colSym, Coord coord);
+	Object(unsigned char mapSym, unsigned char renSym, ccolor::Color colSym);
 	~Object();
 
 	virtual void MoveOn(DirMove dir);
