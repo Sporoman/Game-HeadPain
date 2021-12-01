@@ -1,17 +1,16 @@
 #include "Object.h"
 
-int Object::_countObjects = 0;
+int Object::__countObjects = 0;
 
 Object::Object(unsigned char mapSym, unsigned char renSym, ccolor::Color colSym, Coord coord)
+	: _mapSymbol(mapSym), _renderSymbol(renSym), _colorSymbol(colSym), _coord(coord)
 {
-	this->_coord        = coord;
-	this->_mapSymbol    = mapSym;
-	this->_renderSymbol = renSym;
-	this->_colorSymbol  = colSym;
-
-	_id = _countObjects;
-	++_countObjects;
+	_id = __countObjects;
+	++__countObjects;
 }
+
+Object::Object(unsigned char mapSym, unsigned char renSym, ccolor::Color colSym) : Object(mapSym, renSym, colSym, Coord{ 0,0 })
+{}
 
 Object::~Object()
 {}
@@ -52,7 +51,7 @@ void Object::SetCoord(Coord coord)
 
 int Object::GetObjectsCount()
 {
-	return _countObjects;
+	return __countObjects;
 }
 
 void Object::MoveOnUp()
