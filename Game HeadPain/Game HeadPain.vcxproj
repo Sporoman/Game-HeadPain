@@ -150,6 +150,7 @@
     <ClInclude Include="consoleColor\text_work.h" />
     <ClInclude Include="Coord.h" />
     <ClInclude Include="Hero.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="Object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
