@@ -1,5 +1,5 @@
-#ifndef COOORD_H
-#define COORD_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
 #include "Coord.h"
 #include "consoleColor//ConsoleColor.h"
@@ -18,7 +18,7 @@ private:
 	static int __countObjects;
 
 	int _id;
-	Coord _coord                {0,0};					// Coords
+	Coord _coord;	                      				// Coords
 	unsigned char _mapSymbol    = '?';					// Symbol on the physical map (before render)
 	unsigned char _renderSymbol = '?';					// Symbol on the visual map (after render)
 	ccolor::Color _colorSymbol  = ccolor::Color::red;	// Symbol color
@@ -44,4 +44,4 @@ private:
 	void MoveOnDown();
 };
 
-#endif // COORD_H
+#endif // OBJECT_H

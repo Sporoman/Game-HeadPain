@@ -1,4 +1,4 @@
-#ifndef COOORD_H
+#ifndef COORD_H
 #define COORD_H
 
 struct Coord
