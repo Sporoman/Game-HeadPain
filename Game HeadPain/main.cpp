@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <time.h>
 #include <ctype.h>
-#include "Levels.h"
+#include "levels.h"
 #include "consoleColor//text_work.h"
 
 // This file is a temporary solution
@@ -36,19 +36,19 @@ void SetupSystem()
 {
 }
 
-void RevealFogOfWar(int y, int x)
+void RevealFogOfWar(int y_pos, int x_pos)
 {
 	if (hard == true)
 	{
-		for (int r = y - 3; r <= y + 3; r++)
-			for (int c = x - 3; c <= x + 3; c++)
-				fogOfWarB[r][c] = false;
+		for (int y = y_pos - 3; y <= y_pos + 3; y++)
+			for (int x = x_pos - 3; x <= x_pos + 3; x++)
+				fogOfWarB[y][x] = false;
 	}
 }
 
 void Initialise()
 {
-	// Load Level
+	// Load level and objects
 	for (int y = 0; y < game_info::y_size_lvl; y++)
 	{
 		for (int x = 0; x < game_info::x_size_lvl; x++)
@@ -58,23 +58,28 @@ void Initialise()
 			else
 				fogOfWarB[y][x] = false;
 
-			unsigned char symbol = game_info::levelsData[game_info::level][y][x];//s
+			unsigned char symbol = game_info::levelsData[game_info::level][y][x];
 			levelData[y][x] = symbol;
 
-			if (levelData[y][x] == Hero)
+			// Create an object if the object is not a hero
+			if (levelData[y][x] == game_info::mapSymbol_hero)
+				game_info::hero.SetCoord(x, y);
+			else
 			{
-				heroRow = y;
-				heroColumn = x;
+				Object object(game_info::CreateObject(symbol));
+				object.SetCoord(x, y);
+				game_info::objects.push_back(object);
 			}
 
 			switch (symbol)
 			{
-				case Crystal: CrystalScoreONLVL++; break;
+				case game_info::mapSymbol_crystal: game_info::CrystalScoreONLVL++; break;
 			}
 		}
 	}
 
-	RevealFogOfWar(heroRow, heroColumn);
+	Coord hero_coord = game_info::hero.GetCoord();
+	RevealFogOfWar(hero_coord.y, hero_coord.x);
 }
 
 void Render()
