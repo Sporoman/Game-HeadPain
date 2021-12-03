@@ -54,6 +54,11 @@ unsigned char Object::GetMapSymbol()
 	return _mapSymbol;
 }
 
+Coord Object::GetCoord()
+{
+	return _coord;
+}
+
 int Object::GetObjectsCount()
 {
 	return __countObjects;

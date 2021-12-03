@@ -34,6 +34,7 @@ public:
 	virtual void SetCoord(int x, int y);
 	virtual void SetCoord(Coord coord);
 
+	virtual Coord GetCoord();
 	virtual unsigned char GetMapSymbol();
 	
 
