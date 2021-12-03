@@ -6,6 +6,7 @@
 #include "Object.h"
 #include "Hero.h"
 #include <vector>
+#include <memory>
 namespace game_info
 {
 	std::vector<Object> objects;
@@ -20,7 +21,7 @@ namespace game_info
 	static unsigned int LevelKeyScore = 0;
 
 	const unsigned char mapSymbol_fogOfWar = 176;
-	const unsigned char mapSymbol_void = ' ';
+	const unsigned char mapSymbol_empty = ' ';
 	const unsigned char mapSymbol_hero = 'H';
 	const unsigned char mapSymbol_wall = '#';
 	const unsigned char mapSymbol_door = 'D';
@@ -177,12 +178,34 @@ namespace game_info
 																	} ,
 	};
 
+	enum class Entity
+	{
+		empty,
+		wall,
+		door,
+		levelDoor,
+		key,
+		levelKey,
+		box,
+		exitDoor,
+		crystal,
+		mine
+	};
+
+	Object CreateObject(unsigned char symbol)
+	{
+		unsigned char mapSym   = symbol;
+		unsigned char renSym   = GetRenderCellSymbol(symbol);
+		ccolor::Color colorSym = GetRenderCellSymbolColor(symbol);
+
+		return Object(mapSym, renSym, colorSym);
+	}
 
 	static unsigned char GetRenderCellSymbol(unsigned char symbol)
 	{
 		switch (symbol)
 		{
-			case mapSymbol_void:		return ' ';
+			case mapSymbol_empty:		return ' ';
 			case mapSymbol_hero:		return 2;
 			case mapSymbol_wall:		return 177;
 			case mapSymbol_door:        return 219;
@@ -202,7 +225,7 @@ namespace game_info
 	{
 		switch (symbol)
 		{
-			case mapSymbol_void:		return ccolor::Color::black;
+			case mapSymbol_empty:		return ccolor::Color::black;
 			case mapSymbol_hero:		return ccolor::Color::green;
 			case mapSymbol_wall:		return ccolor::Color::white;
 			case mapSymbol_door:		return ccolor::Color::yellow;
@@ -217,5 +240,4 @@ namespace game_info
 
 		return ccolor::Color::gray;
 	}
-
 }
