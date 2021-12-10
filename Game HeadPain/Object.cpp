@@ -54,6 +54,16 @@ unsigned char Object::GetMapSymbol()
 	return _mapSymbol;
 }
 
+unsigned char Object::GetRenderSymbol()
+{
+	return _renderSymbol;
+}
+
+ccolor::Color Object::GetColor()
+{
+	return _colorSymbol;
+}
+
 Coord Object::GetCoord()
 {
 	return _coord;

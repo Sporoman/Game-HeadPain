@@ -36,6 +36,8 @@ public:
 
 	virtual Coord GetCoord();
 	virtual unsigned char GetMapSymbol();
+	virtual unsigned char GetRenderSymbol();
+	virtual ccolor::Color GetColor();
 	
 
 private:
