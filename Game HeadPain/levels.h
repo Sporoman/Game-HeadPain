@@ -9,11 +9,10 @@
 #include <memory>
 namespace game_info
 {
-	std::vector<Object> objects;
-	Hero hero(2, ccolor::Color::green, Coord{ 0,0 });
+	std::vector<std::unique_ptr<Object>> objects;
+	Hero* hero = new Hero(GetRenderCellSymbol(mapSymbol_hero), GetRenderCellSymbolColor(mapSymbol_hero));
 
 	static unsigned int level = 0;
-	static unsigned int CrystalScore = 0;
 	static unsigned int CrystalScoreCollected = 0;
 	static unsigned int CrystalScoreONLVL = 0;
 	static unsigned int KeyScore = 0;
@@ -181,6 +180,7 @@ namespace game_info
 	enum class Entity
 	{
 		empty,
+		hero,
 		wall,
 		door,
 		levelDoor,
@@ -192,13 +192,15 @@ namespace game_info
 		mine
 	};
 
-	Object CreateObject(unsigned char symbol)
+	Object* CreateObjectInVector(unsigned char symbol)
 	{
 		unsigned char mapSym   = symbol;
 		unsigned char renSym   = GetRenderCellSymbol(symbol);
 		ccolor::Color colorSym = GetRenderCellSymbolColor(symbol);
 
-		return Object(mapSym, renSym, colorSym);
+		objects.push_back(std::make_unique<Object>(mapSym, renSym, colorSym));
+		
+	 	return objects.back().get();
 	}
 
 	static unsigned char GetRenderCellSymbol(unsigned char symbol)
