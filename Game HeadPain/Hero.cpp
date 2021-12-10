@@ -67,6 +67,11 @@ void Hero::SetKey(int count)
 	_inventory.key_count = count;
 }
 
+Inventory Hero::GetInventory()
+{
+	return _inventory;
+}
+
 bool Hero::CheckLvlkey()
 {
 	return _inventory.lvl_key == true ? true : false;

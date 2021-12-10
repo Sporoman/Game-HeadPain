@@ -30,6 +30,8 @@ public:
 	void AddKey(int count);
 	void SetKey(int count);
 
+	Inventory GetInventory();
+
 	//void AddItem(Item item);
 	//void AddItem(Item item, int count);
 	//void SetItem(Item item, int count);
