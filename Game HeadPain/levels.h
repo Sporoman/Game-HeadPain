@@ -177,69 +177,14 @@ namespace game_info
 																	} ,
 	};
 
-	enum class Entity
-	{
-		empty,
-		hero,
-		wall,
-		door,
-		levelDoor,
-		key,
-		levelKey,
-		box,
-		exitDoor,
-		crystal,
-		mine
-	};
-
 	Object* CreateObjectInVector(unsigned char symbol)
 	{
-		unsigned char mapSym   = symbol;
-		unsigned char renSym   = GetRenderCellSymbol(symbol);
+		unsigned char mapSym = symbol;
+		unsigned char renSym = GetRenderCellSymbol(symbol);
 		ccolor::Color colorSym = GetRenderCellSymbolColor(symbol);
 
 		objects.push_back(std::make_unique<Object>(mapSym, renSym, colorSym));
-		
-	 	return objects.back().get();
-	}
 
-	static unsigned char GetRenderCellSymbol(unsigned char symbol)
-	{
-		switch (symbol)
-		{
-			case mapSymbol_empty:		return ' ';
-			case mapSymbol_hero:		return 2;
-			case mapSymbol_wall:		return 177;
-			case mapSymbol_door:        return 219;
-			case mapSymbol_levelDoor:   return 219;
-			case mapSymbol_key:			return 21;
-			case mapSymbol_levelKey:	return 21;
-			case mapSymbol_box:			return 254;
-			case mapSymbol_exit:		return 176;
-			case mapSymbol_crystal:		return 4;
-			case mapSymbol_mine:		return 15;
-		}
-
-		return '?';
-	}
-
-	static ccolor::Color GetRenderCellSymbolColor(unsigned char symbol)
-	{
-		switch (symbol)
-		{
-			case mapSymbol_empty:		return ccolor::Color::black;
-			case mapSymbol_hero:		return ccolor::Color::green;
-			case mapSymbol_wall:		return ccolor::Color::white;
-			case mapSymbol_door:		return ccolor::Color::yellow;
-			case mapSymbol_levelDoor:	return ccolor::Color::blue;
-			case mapSymbol_key:			return ccolor::Color::cyan;
-			case mapSymbol_levelKey:	return ccolor::Color::blue;
-			case mapSymbol_box:			return ccolor::Color::brown;
-			case mapSymbol_exit:		return ccolor::Color::magenta;
-			case mapSymbol_crystal:		return ccolor::Color::magenta;
-			case mapSymbol_mine:		return ccolor::Color::red;
-		}
-
-		return ccolor::Color::gray;
+		return objects.back().get();
 	}
 }
