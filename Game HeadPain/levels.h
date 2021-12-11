@@ -16,8 +16,7 @@ namespace game_info
 	static unsigned int CrystalScoreCollected = 0;
 	static unsigned int CrystalScoreONLVL = 0;
 	static unsigned int KeyScore = 0;
-	static unsigned int KeyScoreLVL = 0;
-	static unsigned int LevelKeyScore = 0;
+	static unsigned int KeyScoreONLVL = 0;
 
 	const unsigned char mapSymbol_fogOfWar = 176;
 	const unsigned char mapSymbol_empty = ' ';
