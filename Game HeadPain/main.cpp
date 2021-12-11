@@ -181,7 +181,9 @@ void Render()
 	ccolor::SetColor(ccolor::Color::red);
 	printf("R");
 	ccolor::SetColor(ccolor::Color::gray);
-	printf(" to restart.");
+	printf(" to restart.\n");
+
+	printf("Objects count: %i", game_info::objects.size());
 }
 
 void RestartLevel()
@@ -191,8 +193,8 @@ void RestartLevel()
 	heroInventory.crystal_count -= game_info::CrystalScoreCollected;
 	game_info::CrystalScoreCollected = 0;
 	game_info::CrystalScoreONLVL = 0;
-	heroInventory.key_count -= game_info::KeyScoreLVL;
-	game_info::KeyScoreLVL = 0;
+	heroInventory.key_count -= game_info::KeyScoreONLVL;
+	game_info::KeyScoreONLVL = 0;
 
 	Initialise();
 }
@@ -202,85 +204,88 @@ void MoveHeroTo(int y, int x)
 	Object* collidingObject = objectsMap[y][x];
 	bool canMove = false;
 
-	switch (destinationCell)
+	switch (collidingObject->GetEntity())
 	{
-		// Void
-		case Void:
+		case Entity::empty:
 		{
+			canMove = true;
+			break;
+		}
+		case Entity::crystal:
+		{
+			game_info::hero->AddCrystal();
+			++game_info::CrystalScoreCollected;
+			--game_info::CrystalScoreONLVL;
+
 			canMove = true;
 			break;
 		}
 
-		// Crystal
-		case Crystal:
+		case Entity::key:
 		{
-			CrystalScore++;
-			CrystalScoreCollected++;
-			CrystalScoreONLVL--;
-			canMove = true;
-			break;
-		}
+			game_info::hero->AddKey();
+			game_info::KeyScoreONLVL;
 
-		// Key
-		case Key:
-		{
-			KeyScore++;
-			KeyScoreLVL++;
 			canMove = true;
 			break;
 		}
-		case LevelKey:
+		case Entity::levelKey:
 		{
-			LevelKeyScore++;
+			game_info::hero->GiveLvlKey();
+
 			canMove = true;
 			break;
 		}
 
 		// Mine
-		case Mine:
+		case Entity::mine:
 		{
 			RestartLevel();
 			break;
 		}
 
 		// Exit
-		case Exit:
+		case Entity::exitDoor:
 		{
-			CrystalScoreONLVL = 0;
-			CrystalScoreCollected = 0;
-			KeyScoreLVL = 0;
-			LevelKeyScore = 0;
+			game_info::CrystalScoreONLVL = 0;
+			game_info::CrystalScoreCollected = 0;
+			game_info::KeyScoreONLVL = 0;
+
 			isGameActive = false;
 			break;
 		}
 
 		// Box
-		case Box:
+		case Entity::box:
 		{
 			// Hero move direction
-			int heroDirectoinR = y - heroRow;
-			int heroDirectionC = x - heroColumn;
+			Coord heroCoord = game_info::hero->GetCoord();
+			int heroDirectoinY = y - heroCoord.y;
+			int heroDirectionX = x - heroCoord.x;
 
 
 			// Check space behind the box
-			if ((levelMap[y + heroDirectoinR][x + heroDirectionC] == ' ') or
-				(levelMap[y + heroDirectoinR][x + heroDirectionC] == Crystal) or
-				(levelMap[y + heroDirectoinR][x + heroDirectionC] == Key))
+			Entity entityBehindBox = objectsMap[y + heroDirectoinY][x + heroDirectionX]->GetEntity();
+			if ((entityBehindBox == Entity::empty) 
+				|| (entityBehindBox == Entity::crystal)
+				|| (entityBehindBox == Entity::key))
 			{
-				canMove = true;
+				// Bye bye, Crystal
+				if (entityBehindBox == Entity::crystal)
+					--game_info::CrystalScoreONLVL;
 
-				if (levelMap[y + heroDirectoinR][x + heroDirectionC] == Crystal)
-					CrystalScoreONLVL--;
-
-				// Remove box
-				levelMap[y][x] = ' ';
+				// Remove box (Пока что так)
+				Object* boxObject = objectsMap[y][x];
+				Object* boxObject = objectsMap[y + heroDirectoinY][x + heroDirectionX];
 
 				// 	Set box
-				levelMap[y + heroDirectoinR][x + heroDirectionC] = Box;
+				levelMap[y + heroDirectoinY][x + heroDirectionX] = Box;
+
+				canMove = true;
 			}
 
 			// Logic box for Mines
-			if (levelMap[y + heroDirectoinR][x + heroDirectionC] == Mine)
+			if (levelMap[y + heroDirectoinY][x + heroDirectionX] == Mine)
 			{
 				RestartLevel();
 			}
@@ -288,24 +293,26 @@ void MoveHeroTo(int y, int x)
 		}
 
 		// Door
-		case Door:
+		case Entity::door:
 		{
-			if (KeyScore > 0)
+			if (game_info::hero->CheckKey())
 			{
+				game_info::hero->TakeKey();
+				game_info::KeyScoreONLVL--;
+
 				canMove = true;
-				KeyScore--;
-				KeyScoreLVL--;
 				break;
 			}
 		}
 
 		// Level Door
-		case LevelDoor:
+		case Entity::levelDoor:
 		{
-			if (LevelKeyScore > 0)
+			if (game_info::hero->CheckLvlkey())
 			{
+				game_info::hero->TakeLvlKey();
+
 				canMove = true;
-				LevelKeyScore--;
 				break;
 			}
 		}
@@ -314,7 +321,7 @@ void MoveHeroTo(int y, int x)
 
 	if (canMove)
 	{
-		// Remove Hero
+		// Remove Hero and set Empty
 		levelMap[heroRow][heroColumn] = ' ';
 
 		// Set Hero position
