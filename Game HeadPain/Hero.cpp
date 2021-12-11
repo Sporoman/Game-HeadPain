@@ -72,6 +72,16 @@ Inventory Hero::GetInventory()
 	return _inventory;
 }
 
+bool Hero::CheckKey()
+{
+	return _inventory.key_count > 0 ? true : false;
+}
+
+void Hero::TakeKey()
+{
+	--_inventory.key_count;
+}
+
 bool Hero::CheckLvlkey()
 {
 	return _inventory.lvl_key == true ? true : false;

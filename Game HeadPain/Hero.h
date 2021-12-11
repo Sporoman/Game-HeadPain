@@ -36,6 +36,9 @@ public:
 	//void AddItem(Item item, int count);
 	//void SetItem(Item item, int count);
 
+	bool CheckKey();
+	void TakeKey();
+
 	bool CheckLvlkey();
 	void GiveLvlKey();
 	void TakeLvlKey();
