@@ -104,7 +104,6 @@ void Render()
 			if (fogOfWarB[y][x] == false)
 			{
 				// Нужно не забыть о координатах объекта, мапы объектов и рендера (ну пока так :) )
-				
 				unsigned char renderSymbol = objectsMap[y][x]->GetRenderSymbol();
 				ccolor::Color cellColor    = objectsMap[y][x]->GetColor();
 
@@ -198,9 +197,9 @@ void RestartLevel()
 	Initialise();
 }
 
-void MoveHeroTo(int row, int column)
+void MoveHeroTo(int y, int x)
 {
-	unsigned char destinationCell = levelMap[row][column];
+	Object* collidingObject = objectsMap[y][x];
 	bool canMove = false;
 
 	switch (destinationCell)
@@ -259,29 +258,29 @@ void MoveHeroTo(int row, int column)
 		case Box:
 		{
 			// Hero move direction
-			int heroDirectoinR = row - heroRow;
-			int heroDirectionC = column - heroColumn;
+			int heroDirectoinR = y - heroRow;
+			int heroDirectionC = x - heroColumn;
 
 
 			// Check space behind the box
-			if ((levelMap[row + heroDirectoinR][column + heroDirectionC] == ' ') or
-				(levelMap[row + heroDirectoinR][column + heroDirectionC] == Crystal) or
-				(levelMap[row + heroDirectoinR][column + heroDirectionC] == Key))
+			if ((levelMap[y + heroDirectoinR][x + heroDirectionC] == ' ') or
+				(levelMap[y + heroDirectoinR][x + heroDirectionC] == Crystal) or
+				(levelMap[y + heroDirectoinR][x + heroDirectionC] == Key))
 			{
 				canMove = true;
 
-				if (levelMap[row + heroDirectoinR][column + heroDirectionC] == Crystal)
+				if (levelMap[y + heroDirectoinR][x + heroDirectionC] == Crystal)
 					CrystalScoreONLVL--;
 
 				// Remove box
-				levelMap[row][column] = ' ';
+				levelMap[y][x] = ' ';
 
 				// 	Set box
-				levelMap[row + heroDirectoinR][column + heroDirectionC] = Box;
+				levelMap[y + heroDirectoinR][x + heroDirectionC] = Box;
 			}
 
 			// Logic box for Mines
-			if (levelMap[row + heroDirectoinR][column + heroDirectionC] == Mine)
+			if (levelMap[y + heroDirectoinR][x + heroDirectionC] == Mine)
 			{
 				RestartLevel();
 			}
@@ -319,8 +318,8 @@ void MoveHeroTo(int row, int column)
 		levelMap[heroRow][heroColumn] = ' ';
 
 		// Set Hero position
-		heroRow = row;
-		heroColumn = column;
+		heroRow = y;
+		heroColumn = x;
 
 		// Set Hero
 		levelMap[heroRow][heroColumn] = Hero;
