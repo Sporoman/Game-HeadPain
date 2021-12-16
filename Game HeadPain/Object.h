@@ -10,11 +10,12 @@ enum class DirMove;
 class Object
 {
 private:
-	static int __countObjects;
+	static int __idObjects;			// To issue id to objects
+	static int __countObjects;		// Total number of objects
 
-	int _id;
+	int    _id;
 	Entity _entity;
-	Coord _coord;
+	Coord  _coord;
 	unsigned char _mapSymbol;		// Symbol on the physical map (before render)
 	unsigned char _renderSymbol;	// Symbol on the visual map (after render)
 	ccolor::Color _colorSymbol;		// Symbol color

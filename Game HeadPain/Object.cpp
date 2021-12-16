@@ -1,12 +1,16 @@
 #include "Object.h"
 
+int Object::__idObjects    = 0;
 int Object::__countObjects = 0;
 
 Object::Object(unsigned char mapSymbol, Coord coord)
 	: _mapSymbol(mapSymbol), _coord(coord)
 {
-	// Object count
-	_id = __countObjects;
+	// Object id
+	_id = __idObjects;
+	++__idObjects;
+
+	// Plus the count of objects
 	++__countObjects;
 
 	// Initializing the object
@@ -20,7 +24,10 @@ Object::Object(unsigned char mapSymbol) : Object(mapSymbol, Coord{ 0,0 })
 {}
 
 Object::~Object()
-{}
+{
+	// Minus the count of objects
+	--__countObjects;
+}
 
 void Object::MoveOn(DirMove dir)
 {
