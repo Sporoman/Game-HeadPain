@@ -157,6 +157,7 @@ unsigned char Object::GetInitializeRenderSymbol(Entity entity)
 		case Entity::mine:			return 15;
 		case Entity::fogOfWar:		return 176;
 
+		case Entity::error:
 		default: return '?';
 	}
 }
@@ -178,6 +179,7 @@ ccolor::Color Object::GetInitializeColorSymbol(Entity entity)
 		case Entity::mine:			return ccolor::Color::red;
 		case Entity::fogOfWar:		return ccolor::Color::gray;
 
-		default: ccolor::Color::red;
+		case Entity::error:
+		default: return ccolor::Color::red;
 	}
 }
