@@ -2,7 +2,7 @@
 #define OBJECT_H
 
 #include "Coord.h"
-#include "consoleColor//ConsoleColor.h"
+#include "consoleColor//Colors.h"
 
 enum class Entity;
 enum class DirMove;
@@ -18,7 +18,7 @@ private:
 	Coord  _coord;
 	unsigned char _mapSymbol;		// Symbol on the physical map (before render)
 	unsigned char _renderSymbol;	// Symbol on the visual map (after render)
-	ccolor::Color _colorSymbol;		// Symbol color
+	ccolors::Color _colorSymbol;		// Symbol color
 
 public:
 	Object(unsigned char mapSymbol, Coord coord);
@@ -35,7 +35,7 @@ public:
 	virtual Coord GetCoord();
 	virtual unsigned char GetMapSymbol();
 	virtual unsigned char GetRenderSymbol();
-	virtual ccolor::Color GetColor();
+	virtual ccolors::Color GetColor();
 	
 
 private:
@@ -47,7 +47,7 @@ private:
 	//void GetInitializeMapSymbol(Entity entity);
 	Entity GetInitializeEntity(unsigned char mapSymbol);
 	unsigned char GetInitializeRenderSymbol(Entity entity);
-	ccolor::Color GetInitializeColorSymbol(Entity entity);
+	ccolors::Color GetInitializeColorSymbol(Entity entity);
 
 };
 

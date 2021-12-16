@@ -47,7 +47,7 @@ void Start()
 
 void SetupSystem()
 {
-	ccolor::HideCursor();
+	ccolors::HideCursor();
 }
 
 void RevealFogOfWar(int y_pos, int x_pos)
@@ -106,7 +106,7 @@ void Initialise()
 void Render()
 {
 	// Cursor to (0,0)
-	ccolor::SetCursor(0, 0);
+	ccolors::SetCursor(0, 0);
 
 	printf("\n\t");
 	for (int y = 0; y < game_info::y_size_lvl; y++)
@@ -117,14 +117,14 @@ void Render()
 			{
 				// Нужно не забыть о координатах объекта, мапы объектов и рендера (ну пока так :) )
 				unsigned char renderSymbol = objectsMap[y][x]->GetRenderSymbol();
-				ccolor::Color cellColor    = objectsMap[y][x]->GetColor();
+				ccolors::Color cellColor    = objectsMap[y][x]->GetColor();
 
-				ccolor::SetColor(cellColor);
+				ccolors::SetColor(cellColor);
 				printf("%c", renderSymbol);
 			}
 			else
 			{
-				ccolor::SetColor(ccolor::Color::gray);
+				ccolors::SetColor(ccolors::Color::gray);
 				printf("%c", game_info::mapSymbol_fogOfWar);
 			}
 		}
@@ -133,15 +133,15 @@ void Render()
 
 		if (y == 2)
 		{
-			ccolor::SetColor(ccolor::Color::gray);
+			ccolors::SetColor(ccolors::Color::gray);
 			printf("   Level %i  ", game_info::level + 1);
 		}
 
 		if (y == 3)
 		{
-			ccolor::SetColor(ccolor::Color::blue);
+			ccolors::SetColor(ccolors::Color::blue);
 			printf("   Level Key ");
-			ccolor::SetColor(ccolor::Color::gray);
+			ccolors::SetColor(ccolors::Color::gray);
 			if (heroInventory.lvl_key == true)
 				printf(": yeap  ");
 			else
@@ -150,57 +150,57 @@ void Render()
 
 		if (y == 4)
 		{
-			ccolor::SetColor(ccolor::Color::cyan);
+			ccolors::SetColor(ccolors::Color::cyan);
 			printf("   Key ");
-			ccolor::SetColor(ccolor::Color::gray);
+			ccolors::SetColor(ccolors::Color::gray);
 			printf(": %i  ", heroInventory.key_count);
 		}
 
 		if (y == 5)
 		{
-			ccolor::SetColor(ccolor::Color::darkMagenta);
+			ccolors::SetColor(ccolors::Color::darkMagenta);
 			printf("   Crystal");
-			ccolor::SetColor(ccolor::Color::gray);
+			ccolors::SetColor(ccolors::Color::gray);
 			printf(": %i  \t", heroInventory.crystal_count);
 		}
 
 		if (y == 6)
 		{
-			ccolor::SetColor(ccolor::Color::darkMagenta);
+			ccolors::SetColor(ccolors::Color::darkMagenta);
 			printf("   Crystal");
-			ccolor::SetColor(ccolor::Color::gray);
+			ccolors::SetColor(ccolors::Color::gray);
 			printf(" on level: %i   ", game_info::CrystalScoreONLVL);
 		}
 
 		if (y == 7)
 		{
-			ccolor::SetColor(ccolor::Color::darkMagenta);
+			ccolors::SetColor(ccolors::Color::darkMagenta);
 			printf("   Key");
-			ccolor::SetColor(ccolor::Color::gray);
+			ccolors::SetColor(ccolors::Color::gray);
 			printf(" on level: %i   ", game_info::KeyScoreONLVL);
 		}
 
 		Coord heroCoord = game_info::hero->GetCoord();
 		if (y == 9) // X coord hero for test
 		{
-			ccolor::SetColor(ccolor::Color::gray);
+			ccolors::SetColor(ccolors::Color::gray);
 			printf("   X coord hero: %i   ", heroCoord.x);
 		}
 		if (y == 10) // Y coord hero for test
 		{
-			ccolor::SetColor(ccolor::Color::gray);
+			ccolors::SetColor(ccolors::Color::gray);
 			printf("   Y coord hero: %i   ", heroCoord.y);
 		}
 		printf("\n\t");
 	}
 	printf("\n\tUse WASD to move ");
-	ccolor::SetColor(ccolor::Color::green);
+	ccolors::SetColor(ccolors::Color::green);
 	printf("Hero");
-	ccolor::SetColor(ccolor::Color::gray);
+	ccolors::SetColor(ccolors::Color::gray);
 	printf(". Press ");
-	ccolor::SetColor(ccolor::Color::red);
+	ccolors::SetColor(ccolors::Color::red);
 	printf("R");
-	ccolor::SetColor(ccolor::Color::gray);
+	ccolors::SetColor(ccolors::Color::gray);
 	printf(" to restart.\n");
 
 	printf("Objects count: %i", Object::GetObjectsCount());
