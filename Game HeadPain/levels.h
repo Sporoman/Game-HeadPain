@@ -5,17 +5,15 @@
 #include "consoleColor//ConsoleColor.h"
 #include "Object.h"
 #include "Hero.h"
-#include <vector>
-#include <memory>
+
 namespace game_info
 {
-	std::vector<std::unique_ptr<Object>> objects;
-	Hero* hero = new Hero(GetRenderCellSymbol(mapSymbol_hero), GetRenderCellSymbolColor(mapSymbol_hero));
+	static Hero* hero = new Hero();
 
 	static unsigned int level = 0;
 	static unsigned int CrystalScoreCollected = 0;
 	static unsigned int CrystalScoreONLVL = 0;
-	static unsigned int KeyScore = 0;
+	static unsigned int KeyScoreCollected = 0;
 	static unsigned int KeyScoreONLVL = 0;
 
 	const unsigned char mapSymbol_fogOfWar = 176;
@@ -175,15 +173,4 @@ namespace game_info
 																		"########################################",
 																	} ,
 	};
-
-	Object* CreateObjectInVector(unsigned char symbol)
-	{
-		unsigned char mapSym = symbol;
-		unsigned char renSym = GetRenderCellSymbol(symbol);
-		ccolor::Color colorSym = GetRenderCellSymbolColor(symbol);
-
-		objects.push_back(std::make_unique<Object>(mapSym, renSym, colorSym));
-
-		return objects.back().get();
-	}
 }
