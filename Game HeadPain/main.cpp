@@ -12,10 +12,22 @@
 // Logic
 bool isGameActive = true;
 unsigned char levelMap[game_info::y_size_lvl][game_info::x_size_lvl];
-Object* objectsMap[game_info::y_size_lvl][game_info::x_size_lvl];
 bool fogOfWarB[game_info::y_size_lvl][game_info::x_size_lvl];
 
+// Objects Map.
+// Initially, the idea was to store the addresses of objects, this would allow us to address them directly.
+// But this solution does not allow us to effectively remove objects from the vector (most likely, i just don't know how).
+// ??? It may be worth making the Objects Map store the ID of objects in a vector.
+// ??? This will allow us to access these elements and work with them at the vector level.
+// (It seems to me that the solution is temporary).
+// -----------------------------------------------------------------
+// As a result, i decided to leave the map of objects, but at the same time remove the vector in principle.
+Object* objectsMap[game_info::y_size_lvl][game_info::x_size_lvl];
+
 bool hard = false;
+
+Object* CreateObject(unsigned char symbol, Coord coord);
+void DeleteObject(Object* object);
 
 // Functions
 void Start()
@@ -72,8 +84,7 @@ void Initialise()
 			}
 			else
 			{
-				Object* object = game_info::CreateObjectInVector(symbol);
-				object->SetCoord(x, y);
+				Object* object = CreateObject(symbol, Coord{x,y});
 
 				// Set the object on objects map
 				objectsMap[y][x] = object;
@@ -82,6 +93,7 @@ void Initialise()
 			switch (symbol)
 			{
 				case game_info::mapSymbol_crystal: game_info::CrystalScoreONLVL++; break;
+				case game_info::mapSymbol_key:     game_info::KeyScoreONLVL++;     break;
 			}
 		}
 	}
@@ -160,6 +172,14 @@ void Render()
 			printf(" on level: %i   ", game_info::CrystalScoreONLVL);
 		}
 
+		if (y == 7)
+		{
+			ccolor::SetColor(ccolor::Color::darkMagenta);
+			printf("   Key");
+			ccolor::SetColor(ccolor::Color::gray);
+			printf(" on level: %i   ", game_info::KeyScoreONLVL);
+		}
+
 		Coord heroCoord = game_info::hero->GetCoord();
 		if (y == 9) // X coord hero for test
 		{
@@ -183,17 +203,22 @@ void Render()
 	ccolor::SetColor(ccolor::Color::gray);
 	printf(" to restart.\n");
 
-	printf("Objects count: %i", game_info::objects.size());
+	printf("Objects count: %i", Object::GetObjectsCount());
 }
 
 void RestartLevel()
 {
-	Inventory heroInventory = game_info::hero->GetInventory();
+	// Getting inventory !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//Inventory heroInventory = game_info::hero->GetInventory();
 
-	heroInventory.crystal_count -= game_info::CrystalScoreCollected;
+	// Subtract the collected at this level
+	//heroInventory.crystal_count -= game_info::CrystalScoreCollected;
+	//heroInventory.key_count     -= game_info::KeyScoreCollected;
+
+	// Resetting the counters of items of this level
 	game_info::CrystalScoreCollected = 0;
 	game_info::CrystalScoreONLVL = 0;
-	heroInventory.key_count -= game_info::KeyScoreONLVL;
+	game_info::KeyScoreCollected = 0;
 	game_info::KeyScoreONLVL = 0;
 
 	Initialise();
@@ -224,7 +249,8 @@ void MoveHeroTo(int y, int x)
 		case Entity::key:
 		{
 			game_info::hero->AddKey();
-			game_info::KeyScoreONLVL;
+			++game_info::KeyScoreCollected;
+			--game_info::KeyScoreONLVL;
 
 			canMove = true;
 			break;
@@ -263,29 +289,30 @@ void MoveHeroTo(int y, int x)
 			int heroDirectoinY = y - heroCoord.y;
 			int heroDirectionX = x - heroCoord.x;
 
-
 			// Check space behind the box
 			Entity entityBehindBox = objectsMap[y + heroDirectoinY][x + heroDirectionX]->GetEntity();
 			if ((entityBehindBox == Entity::empty) 
 				|| (entityBehindBox == Entity::crystal)
 				|| (entityBehindBox == Entity::key))
 			{
-				// Bye bye, Crystal
+				// Bye bye, Crystal !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				if (entityBehindBox == Entity::crystal)
 					--game_info::CrystalScoreONLVL;
 
-				// Remove box (Пока что так)
+				// Save box adress 
 				Object* boxObject = objectsMap[y][x];
-				Object* boxObject = objectsMap[y + heroDirectoinY][x + heroDirectionX];
 
-				// 	Set box
-				levelMap[y + heroDirectoinY][x + heroDirectionX] = Box;
+				// Replace box .........(Пока что так)
+				objectsMap[y][x] = objectsMap[y + heroDirectoinY][x + heroDirectionX];
+
+				// Set box
+				objectsMap[y + heroDirectoinY][x + heroDirectionX] = boxObject;
 
 				canMove = true;
 			}
 
 			// Logic box for Mines
-			if (levelMap[y + heroDirectoinY][x + heroDirectionX] == Mine)
+			if (entityBehindBox == Entity::mine)
 			{
 				RestartLevel();
 			}
@@ -321,18 +348,20 @@ void MoveHeroTo(int y, int x)
 
 	if (canMove)
 	{
+		Coord heroCoord = game_info::hero->GetCoord();
+
 		// Remove Hero and set Empty
-		levelMap[heroRow][heroColumn] = ' ';
+		objectsMap[heroCoord.y][heroCoord.x] = objectsMap[y][x];
 
 		// Set Hero position
-		heroRow = y;
-		heroColumn = x;
+		game_info::hero->SetCoord(x, y);
 
 		// Set Hero
-		levelMap[heroRow][heroColumn] = Hero;
+		objectsMap[y][x] = game_info::hero;
 
 		// Reveal Fog of war
-		RevealFogOfWar(heroRow, heroColumn);
+		if (hard == true)
+			RevealFogOfWar(y, x);
 	}
 }
 
@@ -379,24 +408,25 @@ void Move()
 			RestartLevel();
 			break;
 		}
-		Inventory heroInventory = game_info::hero->GetInventory();
-		// Next LVL
+		//Inventory heroInventory = game_info::hero->GetInventory();
+		// Next LVL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		case '2':
 		{
 			game_info::CrystalScoreONLVL     = 0;
 			game_info::CrystalScoreCollected = 0;
-			heroInventory.key_count = 0;
+			//heroInventory.key_count = 0;
 			game_info::level++;
 
 			Initialise();
 			break;
 		}
-		// Back LVL
+
+		// Back LVL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		case '1':
 		{
 			game_info::CrystalScoreONLVL = 0;
 			game_info::CrystalScoreCollected = 0;
-			heroInventory.key_count = 0;
+			//heroInventory.key_count = 0;
 			game_info::level--;
 
 			Initialise();
@@ -434,4 +464,16 @@ int main()
 	while (game_info::level != 6);
 
 	Shutdown();
+}
+
+Object* CreateObject(unsigned char symbol, Coord coord)
+{
+	Object* object = new Object(symbol, coord);
+
+	return object;
+}
+
+void DeleteObject(Object* object)
+{
+	delete object;
 }
