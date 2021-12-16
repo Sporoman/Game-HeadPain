@@ -2,14 +2,13 @@
 
 unsigned char Hero::__mapSym = 'H';
 
-Hero::Hero(unsigned char renSym, ccolor::Color colSym, Coord coord)
-	: Object(__mapSym, renSym, colSym, coord),
-	_inventory{ 0, 0, false }
+Hero::Hero(Coord coord)
+	: Object(__mapSym, coord), _inventory{ 0, 0, false }
 {
 }
 
-Hero::Hero(unsigned char renSym, ccolor::Color colSym)
-	: Hero(renSym, colSym, Coord{0,0})
+Hero::Hero()
+	: Hero(Coord{0,0})
 {
 }
 

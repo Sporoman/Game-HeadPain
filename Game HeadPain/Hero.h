@@ -18,8 +18,8 @@ private:
 	Inventory _inventory;
 
 public:
-	Hero(unsigned char renSym, ccolor::Color colSym, Coord coord);
-	Hero(unsigned char renSym, ccolor::Color colSym);
+	Hero(Coord coord);
+	Hero();
 	~Hero();
 
 	void AddCrystal();
