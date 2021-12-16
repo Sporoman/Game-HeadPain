@@ -1,7 +1,7 @@
-#ifndef CONSOLECOLOR_H
-#define CONSOLECOLOR_H
+#ifndef COLORS_H
+#define COLORS_H
 
-namespace ccolor
+namespace ccolors
 {
 	enum class Color
 	{
@@ -24,4 +24,4 @@ namespace ccolor
 	};
 }
 
-#endif // !CONSOLECOLOR_H
+#endif // !COLORS_H

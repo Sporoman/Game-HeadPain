@@ -1,28 +1,28 @@
 #include <Windows.h>
 #include <iostream>
 
-#include "text_work.h"
+#include "console_colors.h"
 
 
 // Получаем дискриптор консоли	
 HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 // Установка серого текста и чёрного фона
-void ccolor::SetDefault()
+void ccolors::SetDefault()
 {
 	int consoleColor = static_cast<int>(Color::gray) | static_cast<int>(Color::black) << 4;
 	SetConsoleTextAttribute(consoleHandle, consoleColor);
 }
 
 // Полная очистка консоли и сброс её настроек
-void ccolor::FullClear()
+void ccolors::FullClear()
 {
-	ccolor::SetDefault();
+	ccolors::SetDefault();
 	system("cls");
 }
 
 // Установка курсора консоли
-void ccolor::SetCursor(int Y, int X)
+void ccolors::SetCursor(int Y, int X)
 {
 	COORD cursorCoord;
 	cursorCoord.X = X;
@@ -31,7 +31,7 @@ void ccolor::SetCursor(int Y, int X)
 }
 
 // Скрыть курсор
-void ccolor::HideCursor()
+void ccolors::HideCursor()
 {
 	CONSOLE_CURSOR_INFO cursorInfo;
 	cursorInfo.bVisible = false;
@@ -40,7 +40,7 @@ void ccolor::HideCursor()
 }
 
 // Отобразить курсор
-void ccolor::ShowCursor()
+void ccolors::ShowCursor()
 {
 	CONSOLE_CURSOR_INFO cursorInfo;
 	cursorInfo.bVisible = true;
@@ -49,60 +49,60 @@ void ccolor::ShowCursor()
 }
 
 // Изменение цвета вывода
-void ccolor::SetColor(Color symbolColor, Color backgroundColor)
+void ccolors::SetColor(Color symbolColor, Color backgroundColor)
 {
 	int consoleColor = static_cast<int>(symbolColor) | static_cast<int>(backgroundColor) << 4;
 	SetConsoleTextAttribute(consoleHandle, consoleColor);
 }
 
 // Изменение цвета вывода
-void ccolor::SetColor(Color symbolColor)
+void ccolors::SetColor(Color symbolColor)
 {
 	int consoleColor = static_cast<int>(symbolColor);
 	SetConsoleTextAttribute(consoleHandle, consoleColor);
 }
 
 // Вывод текста
-void ccolor::ShowText(const char* str, Color symbolColor, Color backgroundColor)
+void ccolors::ShowText(const char* str, Color symbolColor, Color backgroundColor)
 {
-	ccolor::SetColor(symbolColor, backgroundColor);
+	ccolors::SetColor(symbolColor, backgroundColor);
 	std::cout << str;
-	ccolor::SetDefault();
+	ccolors::SetDefault();
 }
 
 // Вывод текста
-void ccolor::ShowText(const char* str, Color symbolColor)
+void ccolors::ShowText(const char* str, Color symbolColor)
 {
-	ccolor::SetColor(symbolColor);
+	ccolors::SetColor(symbolColor);
 	std::cout << str;
-	ccolor::SetDefault();
+	ccolors::SetDefault();
 }
 
 
 
-void ccolor::SayOk()
+void ccolors::SayOk()
 {
-	ccolor::SetColor(Color::green);
+	ccolors::SetColor(Color::green);
 	std::cout << "ok" << std::endl;
-	ccolor::SetDefault();
+	ccolors::SetDefault();
 }
 
-void ccolor::SayErr()
+void ccolors::SayErr()
 {
-	ccolor::SetColor(Color::red);
+	ccolors::SetColor(Color::red);
 	std::cout << "error" << std::endl;
-	ccolor::SetDefault();
+	ccolors::SetDefault();
 }
 
 
 // Тест цветов
-void ccolor::TestColor()
+void ccolors::TestColor()
 {
 	std::cout << "\t";							//
 	for (int i = 0; i < 16; i++)				//		ТЕСТ!
 	{											//		 для
 		Color color = static_cast<Color>(i);	//	 определения
-		ccolor::SetColor(color);				//		цвета
+		ccolors::SetColor(color);				//		цвета
 		std::cout << "z ";						//
 	}
 	std::cout << "\t";

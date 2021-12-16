@@ -1,9 +1,9 @@
-#ifndef TEXT_WORK_H
-#define TEXT_WORK_H
+#ifndef CONSOLE_COLOR_H
+#define CONSOLE_COLOR_H
 
-#include "consoleColor.h"
+#include "colors.h"
 
-namespace ccolor
+namespace ccolors
 {
 	// Функции для консоли
 	void SetDefault();			// Установка серого текста и чёрного фона
@@ -26,4 +26,4 @@ namespace ccolor
 	void TestColor();			// Тест цветов
 }
 
-#endif // !TEXT_WORK_H
+#endif // !CONSOLE_COLOR_H
