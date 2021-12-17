@@ -5,7 +5,7 @@
 #include <time.h>
 #include <ctype.h>
 #include "levels.h"
-#include "consoleColor//console_colors.h"
+#include "colors.h"
 #include <string>
 
 // This file is a temporary solution
@@ -107,8 +107,8 @@ void Initialise()
 void Render()
 {
 	Inventory heroInventory = hero->GetInventory();
-	ccolors::Color background = ccolors::Color::black;
-	ccolors::Color foreground = ccolors::Color::black;
+	Color background = Color::black;
+	Color foreground = Color::black;
 	std::string str;
 
 	for (int y = 0; y < y_size_lvl; y++)
@@ -120,105 +120,106 @@ void Render()
 			if (fogOfWarB[y][x] == false)
 			{
 				unsigned char renderSymbol = objectsMap[y][x]->GetRenderSymbol();
-				ccolors::Color cellColor   = objectsMap[y][x]->GetColor();
+				Color cellColor   = objectsMap[y][x]->GetColor();
 
-				renderSys.DrawChar(y, x, renderSymbol, cellColor, ccolors::Color::black);
+				renderSys.DrawChar(y, x, renderSymbol, cellColor, Color::black);
 			}
 			else
-				renderSys.DrawChar(y, x, mapSymbol_fogOfWar, ccolors::Color::gray, ccolors::Color::black);
+				renderSys.DrawChar(y, x, mapSymbol_fogOfWar, Color::gray, Color::black);
 		}
 
 		// temp!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		int def_otst = 45;
+		char textBuffer[25];
 
 		if (y == 2)
 		{
-			str = "Level " + (level + 1);
-			foreground = ccolors::Color::gray;
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, "Level %i", level + 1);
+			foreground = Color::gray;
+			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
 		}
 		if (y == 3)
 		{
-			str = "Level Key ";
-			foreground = ccolors::Color::blue;
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, "Level Key ");
+			foreground = Color::blue;
+			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
 
-			foreground = ccolors::Color::gray;
+			foreground = Color::gray;
 			if (heroInventory.lvl_key)
-				str = ": yeap";
+				sprintf_s(textBuffer, ": yeap");
 			else
-				str = ": nope";
+				sprintf_s(textBuffer, ": nope");
 
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			renderSys.SendText(y, def_otst + 10, textBuffer, foreground, background);
 		}
 		if (y == 4)
 		{
-			str = "Keys";
-			foreground = ccolors::Color::cyan;
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, "Keys");
+			foreground = Color::cyan;
+			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
 
-			str = ": " + heroInventory.key_count;
-			foreground = ccolors::Color::gray;
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, ": %i", heroInventory.key_count);
+			foreground = Color::gray;
+			renderSys.SendText(y, def_otst + 4, textBuffer, foreground, background);
 		}
 		if (y == 5)
 		{
-			str = "Crystal";
-			foreground = ccolors::Color::darkMagenta;
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, "Crystal");
+			foreground = Color::darkMagenta;
+			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
 
-			str = ": " + heroInventory.crystal_count;
-			foreground = ccolors::Color::gray;
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, ": %i", heroInventory.crystal_count);
+			foreground = Color::gray;
+			renderSys.SendText(y, def_otst + 7, textBuffer, foreground, background);
 		}
 		if (y == 6)
 		{
-			str = "Crystal";
-			foreground = ccolors::Color::darkMagenta;
-			renderSys.DrawTextW(y, def_otst, "Crystal", foreground, background);
+			sprintf_s(textBuffer, "Crystal");
+			foreground = Color::darkMagenta;
+			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
 
-			str = " on level: " + CrystalScoreONLVL;
-			foreground = ccolors::Color::gray;
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, " on level: %i", CrystalScoreONLVL);
+			foreground = Color::gray;
+			renderSys.SendText(y, def_otst + 7, textBuffer, foreground, background);
 		}
 		if (y == 7)
 		{
-			str = "Key";
-			foreground = ccolors::Color::cyan;
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, "Key");
+			foreground = Color::cyan;
+			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
 
-			str = " on level: " + KeyScoreONLVL;
-			foreground = ccolors::Color::gray;
-			renderSys.DrawTextW(y, def_otst + 3, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, " on level: %i", KeyScoreONLVL);
+			foreground = Color::gray;
+			renderSys.SendText(y, def_otst + 3, textBuffer, foreground, background);
 		}
 
 		Coord heroCoord = hero->GetCoord();
 		if (y == 9) // X coord hero for test
 		{
-			str = "X coord hero: " + std::to_string(heroCoord.x);
-			foreground = ccolors::Color::gray;
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, "X coord hero: %i", heroCoord.x);
+			foreground = Color::gray;
+			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
 		}
 		if (y == 10) // Y coord hero for test
 		{
-			str = "Y coord hero: " + std::to_string(heroCoord.y);
-			foreground = ccolors::Color::gray;
-			renderSys.DrawTextW(y, def_otst, str.c_str(), foreground, background);
+			sprintf_s(textBuffer, "Y coord hero: %i", heroCoord.y);
+			foreground = Color::gray;
+			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
 		}
 
 		//if (y == 2)
 		//{
 		//	str = "\t Level " + (level + 1);
 
-		//	ccolors::SetColor(ccolors::Color::gray);
+		//	SetColor(Color::gray);
 		//	sprintf(str, "   Level %i  ", level + 1);
 		//}
 
 		//if (y == 3)
 		//{
-		//	ccolors::SetColor(ccolors::Color::blue);
+		//	SetColor(Color::blue);
 		//	printf("   Level Key ");
-		//	ccolors::SetColor(ccolors::Color::gray);
+		//	SetColor(Color::gray);
 		//	if (heroInventory.lvl_key == true)
 		//		printf(": yeap  ");
 		//	else
@@ -227,67 +228,67 @@ void Render()
 
 		//if (y == 4)
 		//{
-		//	ccolors::SetColor(ccolors::Color::cyan);
+		//	SetColor(Color::cyan);
 		//	printf("   Key ");
-		//	ccolors::SetColor(ccolors::Color::gray);
+		//	SetColor(Color::gray);
 		//	printf(": %i  ", heroInventory.key_count);
 		//}
 
 		//if (y == 5)
 		//{
-		//	ccolors::SetColor(ccolors::Color::darkMagenta);
+		//	SetColor(Color::darkMagenta);
 		//	printf("   Crystal");
-		//	ccolors::SetColor(ccolors::Color::gray);
+		//	SetColor(Color::gray);
 		//	printf(": %i  \t", heroInventory.crystal_count);
 		//}
 
 		//if (y == 6)
 		//{
-		//	ccolors::SetColor(ccolors::Color::darkMagenta);
+		//	SetColor(Color::darkMagenta);
 		//	printf("   Crystal");
-		//	ccolors::SetColor(ccolors::Color::gray);
+		//	SetColor(Color::gray);
 		//	printf(" on level: %i   ", CrystalScoreONLVL);
 		//}
 
 		//if (y == 7)
 		//{
-		//	ccolors::SetColor(ccolors::Color::darkMagenta);
+		//	SetColor(Color::darkMagenta);
 		//	printf("   Key");
-		//	ccolors::SetColor(ccolors::Color::gray);
+		//	SetColor(Color::gray);
 		//	printf(" on level: %i   ", KeyScoreONLVL);
 		//}
 
 		//Coord heroCoord = hero->GetCoord();
 		//if (y == 9) // X coord hero for test
 		//{
-		//	ccolors::SetColor(ccolors::Color::gray);
+		//	SetColor(Color::gray);
 		//	printf("   X coord hero: %i   ", heroCoord.x);
 		//}
 		//if (y == 10) // Y coord hero for test
 		//{
-		//	ccolors::SetColor(ccolors::Color::gray);
+		//	SetColor(Color::gray);
 		//	printf("   Y coord hero: %i   ", heroCoord.y);
 		//}
 	}
 
 	//printf("\n\tUse WASD to move ");
-	//ccolors::SetColor(ccolors::Color::green);
+	//SetColor(Color::green);
 	//printf("Hero");
-	//ccolors::SetColor(ccolors::Color::gray);
+	//SetColor(Color::gray);
 	//printf(". Press ");
-	//ccolors::SetColor(ccolors::Color::red);
+	//SetColor(Color::red);
 	//printf("R");
-	//ccolors::SetColor(ccolors::Color::gray);
+	//SetColor(Color::gray);
 	//printf(" to restart.\n");
 
 	//printf("Objects count: %i", Object::GetObjectsCount());
 
-	renderSys.DrawTextW(y_size_lvl + 1, 4, "Use WASD to move ", ccolors::Color::gray, background);
-	renderSys.DrawTextW(y_size_lvl + 1, 4+22, "Hero", ccolors::Color::green, background);
-	renderSys.DrawTextW(y_size_lvl + 2, 4, "Press ", ccolors::Color::gray, background);
-	renderSys.DrawTextW(y_size_lvl + 2, 4+6, "R ", ccolors::Color::red, background);
-	renderSys.DrawTextW(y_size_lvl + 2, 4+6+2, "to restart", ccolors::Color::gray, background);
-	renderSys.DrawTextW(y_size_lvl + 3, 4, "Objects count: " + Object::GetObjectsCount(), ccolors::Color::gray, background);
+	renderSys.SendText(y_size_lvl + 1, 4, "Use WASD to move ", Color::gray, background);
+	renderSys.SendText(y_size_lvl + 1, 4+22, "Hero", Color::green, background);
+	renderSys.SendText(y_size_lvl + 2, 4, "Press ", Color::gray, background);
+	renderSys.SendText(y_size_lvl + 2, 4+6, "R ", Color::red, background);
+	renderSys.SendText(y_size_lvl + 2, 4+6+2, "to restart", Color::gray, background);
+	renderSys.SendText(y_size_lvl + 3, 4, "Objects count: " + Object::GetObjectsCount(), Color::gray, background);
 
 	// End frame
 	renderSys.Render();
