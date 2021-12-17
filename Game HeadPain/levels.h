@@ -7,7 +7,7 @@
 #include "renderSystem/renderSystem.h"
 
 static Hero* hero = new Hero();
-RenderSystem renderSys;
+static RenderSystem renderSys;
 
 static unsigned int level = 0;
 static unsigned int CrystalScoreCollected = 0;
