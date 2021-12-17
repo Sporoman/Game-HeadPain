@@ -73,7 +73,7 @@ unsigned char Object::GetRenderSymbol()
 	return _renderSymbol;
 }
 
-ccolors::Color Object::GetColor()
+Color Object::GetColor()
 {
 	return _colorSymbol;
 }
@@ -162,24 +162,24 @@ unsigned char Object::GetInitializeRenderSymbol(Entity entity)
 	}
 }
 
-ccolors::Color Object::GetInitializeColorSymbol(Entity entity)
+Color Object::GetInitializeColorSymbol(Entity entity)
 {
 	switch (entity)
 	{
-		case Entity::empty:			return ccolors::Color::black;
-		case Entity::hero:			return ccolors::Color::green;
-		case Entity::wall:			return ccolors::Color::white;
-		case Entity::door:			return ccolors::Color::yellow;
-		case Entity::levelDoor:		return ccolors::Color::blue;
-		case Entity::key:			return ccolors::Color::cyan;
-		case Entity::levelKey:		return ccolors::Color::blue;
-		case Entity::box:			return ccolors::Color::brown;
-		case Entity::exitDoor:		return ccolors::Color::magenta;
-		case Entity::crystal:		return ccolors::Color::magenta;
-		case Entity::mine:			return ccolors::Color::red;
-		case Entity::fogOfWar:		return ccolors::Color::gray;
+		case Entity::empty:			return Color::black;
+		case Entity::hero:			return Color::green;
+		case Entity::wall:			return Color::white;
+		case Entity::door:			return Color::yellow;
+		case Entity::levelDoor:		return Color::blue;
+		case Entity::key:			return Color::cyan;
+		case Entity::levelKey:		return Color::blue;
+		case Entity::box:			return Color::brown;
+		case Entity::exitDoor:		return Color::magenta;
+		case Entity::crystal:		return Color::magenta;
+		case Entity::mine:			return Color::red;
+		case Entity::fogOfWar:		return Color::gray;
 
 		case Entity::error:
-		default: return ccolors::Color::red;
+		default: return Color::red;
 	}
 }
