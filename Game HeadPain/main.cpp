@@ -11,8 +11,8 @@
 
 // Logic
 bool isGameActive = true;
-unsigned char levelMap[game_info::y_size_lvl][game_info::x_size_lvl];
-bool fogOfWarB[game_info::y_size_lvl][game_info::x_size_lvl];
+unsigned char levelMap[y_size_lvl][x_size_lvl];
+bool fogOfWarB[y_size_lvl][x_size_lvl];
 
 // Objects Map.
 // Initially, the idea was to store the addresses of objects, this would allow us to address them directly.
@@ -22,7 +22,7 @@ bool fogOfWarB[game_info::y_size_lvl][game_info::x_size_lvl];
 // (It seems to me that the solution is temporary).
 // -----------------------------------------------------------------
 // As a result, i decided to leave the map of objects, but at the same time remove the vector in principle.
-Object* objectsMap[game_info::y_size_lvl][game_info::x_size_lvl];
+Object* objectsMap[y_size_lvl][x_size_lvl];
 
 bool hard = false;
 
@@ -47,7 +47,7 @@ void Start()
 
 void SetupSystem()
 {
-	ccolors::HideCursor();
+	renderSys.Initialize();
 }
 
 void RevealFogOfWar(int y_pos, int x_pos)
@@ -63,24 +63,24 @@ void RevealFogOfWar(int y_pos, int x_pos)
 void Initialise()
 {
 	// Load objects
-	for (int y = 0; y < game_info::y_size_lvl; y++)
+	for (int y = 0; y < y_size_lvl; y++)
 	{
-		for (int x = 0; x < game_info::x_size_lvl; x++)
+		for (int x = 0; x < x_size_lvl; x++)
 		{
 			if (hard == true)
 				fogOfWarB[y][x] = true;
 			else
 				fogOfWarB[y][x] = false;
 
-			unsigned char symbol = game_info::levelsData[game_info::level][y][x];
+			unsigned char symbol = levelsData[level][y][x];
 
 			// Create an object
-			if (symbol == game_info::mapSymbol_hero)
+			if (symbol == mapSymbol_hero)
 			{
-				game_info::hero->SetCoord(x, y);
+				hero->SetCoord(x, y);
 
 				// Set hero on objects map
-				objectsMap[y][x] = game_info::hero;
+				objectsMap[y][x] = hero;
 			}
 			else
 			{
@@ -92,26 +92,24 @@ void Initialise()
 					
 			switch (symbol)
 			{
-				case game_info::mapSymbol_crystal: game_info::CrystalScoreONLVL++; break;
-				case game_info::mapSymbol_key:     game_info::KeyScoreONLVL++;     break;
+				case mapSymbol_crystal: CrystalScoreONLVL++; break;
+				case mapSymbol_key:     KeyScoreONLVL++;     break;
 			}
 		}
 	}
 
 	// Dispelling the fog of war around the player
-	Coord hero_coord = game_info::hero->GetCoord();
+	Coord hero_coord = hero->GetCoord();
 	RevealFogOfWar(hero_coord.y, hero_coord.x);
 }
 
 void Render()
 {
-	// Cursor to (0,0)
-	ccolors::SetCursor(0, 0);
-
 	printf("\n\t");
-	for (int y = 0; y < game_info::y_size_lvl; y++)
+
+	for (int y = 0; y < y_size_lvl; y++)
 	{
-		for (int x = 0; x < game_info::x_size_lvl; x++)
+		for (int x = 0; x < x_size_lvl; x++)
 		{
 			if (fogOfWarB[y][x] == false)
 			{
@@ -125,16 +123,16 @@ void Render()
 			else
 			{
 				ccolors::SetColor(ccolors::Color::gray);
-				printf("%c", game_info::mapSymbol_fogOfWar);
+				printf("%c", mapSymbol_fogOfWar);
 			}
 		}
 
-		Inventory heroInventory = game_info::hero->GetInventory();
+		Inventory heroInventory = hero->GetInventory();
 
 		if (y == 2)
 		{
 			ccolors::SetColor(ccolors::Color::gray);
-			printf("   Level %i  ", game_info::level + 1);
+			printf("   Level %i  ", level + 1);
 		}
 
 		if (y == 3)
@@ -169,7 +167,7 @@ void Render()
 			ccolors::SetColor(ccolors::Color::darkMagenta);
 			printf("   Crystal");
 			ccolors::SetColor(ccolors::Color::gray);
-			printf(" on level: %i   ", game_info::CrystalScoreONLVL);
+			printf(" on level: %i   ", CrystalScoreONLVL);
 		}
 
 		if (y == 7)
@@ -177,10 +175,10 @@ void Render()
 			ccolors::SetColor(ccolors::Color::darkMagenta);
 			printf("   Key");
 			ccolors::SetColor(ccolors::Color::gray);
-			printf(" on level: %i   ", game_info::KeyScoreONLVL);
+			printf(" on level: %i   ", KeyScoreONLVL);
 		}
 
-		Coord heroCoord = game_info::hero->GetCoord();
+		Coord heroCoord = hero->GetCoord();
 		if (y == 9) // X coord hero for test
 		{
 			ccolors::SetColor(ccolors::Color::gray);
@@ -204,22 +202,25 @@ void Render()
 	printf(" to restart.\n");
 
 	printf("Objects count: %i", Object::GetObjectsCount());
+
+	// End frame
+	renderSys.Render();
 }
 
 void RestartLevel()
 {
 	// Getting inventory !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//Inventory heroInventory = game_info::hero->GetInventory();
+	//Inventory heroInventory = hero->GetInventory();
 
 	// Subtract the collected at this level
-	//heroInventory.crystal_count -= game_info::CrystalScoreCollected;
-	//heroInventory.key_count     -= game_info::KeyScoreCollected;
+	//heroInventory.crystal_count -= CrystalScoreCollected;
+	//heroInventory.key_count     -= KeyScoreCollected;
 
 	// Resetting the counters of items of this level
-	game_info::CrystalScoreCollected = 0;
-	game_info::CrystalScoreONLVL = 0;
-	game_info::KeyScoreCollected = 0;
-	game_info::KeyScoreONLVL = 0;
+	CrystalScoreCollected = 0;
+	CrystalScoreONLVL = 0;
+	KeyScoreCollected = 0;
+	KeyScoreONLVL = 0;
 
 	Initialise();
 }
@@ -238,9 +239,9 @@ void MoveHeroTo(int y, int x)
 		}
 		case Entity::crystal:
 		{
-			game_info::hero->AddCrystal();
-			++game_info::CrystalScoreCollected;
-			--game_info::CrystalScoreONLVL;
+			hero->AddCrystal();
+			++CrystalScoreCollected;
+			--CrystalScoreONLVL;
 
 			canMove = true;
 			break;
@@ -248,16 +249,16 @@ void MoveHeroTo(int y, int x)
 
 		case Entity::key:
 		{
-			game_info::hero->AddKey();
-			++game_info::KeyScoreCollected;
-			--game_info::KeyScoreONLVL;
+			hero->AddKey();
+			++KeyScoreCollected;
+			--KeyScoreONLVL;
 
 			canMove = true;
 			break;
 		}
 		case Entity::levelKey:
 		{
-			game_info::hero->GiveLvlKey();
+			hero->GiveLvlKey();
 
 			canMove = true;
 			break;
@@ -273,9 +274,9 @@ void MoveHeroTo(int y, int x)
 		// Exit
 		case Entity::exitDoor:
 		{
-			game_info::CrystalScoreONLVL = 0;
-			game_info::CrystalScoreCollected = 0;
-			game_info::KeyScoreONLVL = 0;
+			CrystalScoreONLVL = 0;
+			CrystalScoreCollected = 0;
+			KeyScoreONLVL = 0;
 
 			isGameActive = false;
 			break;
@@ -285,7 +286,7 @@ void MoveHeroTo(int y, int x)
 		case Entity::box:
 		{
 			// Hero move direction
-			Coord heroCoord = game_info::hero->GetCoord();
+			Coord heroCoord = hero->GetCoord();
 			int heroDirectoinY = y - heroCoord.y;
 			int heroDirectionX = x - heroCoord.x;
 
@@ -297,7 +298,7 @@ void MoveHeroTo(int y, int x)
 			{
 				// Bye bye, Crystal !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				if (entityBehindBox == Entity::crystal)
-					--game_info::CrystalScoreONLVL;
+					--CrystalScoreONLVL;
 
 				// Save box adress 
 				Object* boxObject = objectsMap[y][x];
@@ -322,10 +323,10 @@ void MoveHeroTo(int y, int x)
 		// Door
 		case Entity::door:
 		{
-			if (game_info::hero->CheckKey())
+			if (hero->CheckKey())
 			{
-				game_info::hero->TakeKey();
-				game_info::KeyScoreONLVL--;
+				hero->TakeKey();
+				KeyScoreONLVL--;
 
 				canMove = true;
 				break;
@@ -335,9 +336,9 @@ void MoveHeroTo(int y, int x)
 		// Level Door
 		case Entity::levelDoor:
 		{
-			if (game_info::hero->CheckLvlkey())
+			if (hero->CheckLvlkey())
 			{
-				game_info::hero->TakeLvlKey();
+				hero->TakeLvlKey();
 
 				canMove = true;
 				break;
@@ -348,16 +349,16 @@ void MoveHeroTo(int y, int x)
 
 	if (canMove)
 	{
-		Coord heroCoord = game_info::hero->GetCoord();
+		Coord heroCoord = hero->GetCoord();
 
 		// Remove Hero and set Empty
 		objectsMap[heroCoord.y][heroCoord.x] = objectsMap[y][x];
 
 		// Set Hero position
-		game_info::hero->SetCoord(x, y);
+		hero->SetCoord(x, y);
 
 		// Set Hero
-		objectsMap[y][x] = game_info::hero;
+		objectsMap[y][x] = hero;
 
 		// Reveal Fog of war
 		if (hard == true)
@@ -370,7 +371,7 @@ void Move()
 	unsigned char inputChar = _getch();
 	inputChar = tolower(inputChar);
 
-	Coord heroCoord = game_info::hero->GetCoord();
+	Coord heroCoord = hero->GetCoord();
 
 	switch (inputChar)
 	{
@@ -408,14 +409,14 @@ void Move()
 			RestartLevel();
 			break;
 		}
-		//Inventory heroInventory = game_info::hero->GetInventory();
+		//Inventory heroInventory = hero->GetInventory();
 		// Next LVL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		case '2':
 		{
-			game_info::CrystalScoreONLVL     = 0;
-			game_info::CrystalScoreCollected = 0;
+			CrystalScoreONLVL     = 0;
+			CrystalScoreCollected = 0;
 			//heroInventory.key_count = 0;
-			game_info::level++;
+			level++;
 
 			Initialise();
 			break;
@@ -424,10 +425,10 @@ void Move()
 		// Back LVL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		case '1':
 		{
-			game_info::CrystalScoreONLVL = 0;
-			game_info::CrystalScoreCollected = 0;
+			CrystalScoreONLVL = 0;
+			CrystalScoreCollected = 0;
 			//heroInventory.key_count = 0;
-			game_info::level--;
+			level--;
 
 			Initialise();
 			break;
@@ -458,10 +459,10 @@ int main()
 		}
 		while (isGameActive);
 		system("cls");
-		game_info::level++;
+		level++;
 		isGameActive = true;
 	}
-	while (game_info::level != 6);
+	while (level != 6);
 
 	Shutdown();
 }
