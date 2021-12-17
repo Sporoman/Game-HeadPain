@@ -1,6 +1,6 @@
 #include "renderSystem.h"
 
-#include "..//consoleColor/console_colors.h"
+#include "../colors.h"
 #include <cstdio>
 
 
@@ -10,8 +10,8 @@ RenderSystem::RenderSystem()
 		for (int x = 0; x < _screenX; x++)
 		{
 			_backBuffer[y][x].symbol          = 0;
-			_backBuffer[y][x].symbolColor     = ccolors::Color::gray;
-			_backBuffer[y][x].backgroundColor = ccolors::Color::black;
+			_backBuffer[y][x].symbolColor     = Color::gray;
+			_backBuffer[y][x].backgroundColor = Color::black;
 
 			_screenBuffer[y][x] = _backBuffer[y][x];
 		}
@@ -24,7 +24,7 @@ void RenderSystem::Initialize()
 	_consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	// Hide console cursor
-	ccolors::HideCursor();
+	HideCursor();
 }
 
 void RenderSystem::Clear()
@@ -33,12 +33,12 @@ void RenderSystem::Clear()
 		for (int c = 0; c < _screenX; c++)
 		{
 			_backBuffer[r][c].symbol          = 0;
-			_backBuffer[r][c].symbolColor     = ccolors::Color::black;
-			_backBuffer[r][c].backgroundColor = ccolors::Color::black;
+			_backBuffer[r][c].symbolColor     = Color::black;
+			_backBuffer[r][c].backgroundColor = Color::black;
 		}
 }
 
-void RenderSystem::DrawChar(int y, int x, char symbol, ccolors::Color symbolColor, ccolors::Color backgroundColor)
+void RenderSystem::DrawChar(int y, int x, char symbol, Color symbolColor, Color backgroundColor)
 {
 	if (y < 0 || x < 0 || y >= _screenY || x >= _screenX)
 		return;
@@ -48,7 +48,7 @@ void RenderSystem::DrawChar(int y, int x, char symbol, ccolors::Color symbolColo
 	_backBuffer[y][x].backgroundColor = backgroundColor;
 }
 
-void RenderSystem::DrawTextW(int y, int x, const char* text, ccolors::Color symbolColor, ccolors::Color backgroundColor)
+void RenderSystem::SendText(int y, int x, const char* text, Color symbolColor, Color backgroundColor)
 {
 	int  next_x = x;
 	char symbol = *text;
@@ -60,6 +60,9 @@ void RenderSystem::DrawTextW(int y, int x, const char* text, ccolors::Color symb
 		++text;
 		++next_x;
 		symbol = *text;
+
+		if (next_x >= _screenX)
+			return;
 	}
 }
 
@@ -77,12 +80,10 @@ void RenderSystem::Render()
 				_screenBuffer[y][x] = _backBuffer[y][x];
 
 				// Draw symbol in (y,x) position
-				ccolors::SetCursor(y, x);
-				char* text = &_screenBuffer[y][x].symbol;
-				ccolors::ShowText(text, _screenBuffer[y][x].symbolColor, _screenBuffer[y][x].backgroundColor);
-				//ccolors::SetColor(_screenBuffer[y][x].symbolColor, _screenBuffer[y][x].backgroundColor);
-				//printf("%c", _screenBuffer[y][x]);
-				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				SetCursor(y, x);
+				SetColor(_screenBuffer[y][x].symbolColor, _screenBuffer[y][x].backgroundColor);
+				printf("%c", _screenBuffer[y][x].symbol);
+
 				screenBufferModified = true;
 			}
 		}
@@ -90,7 +91,7 @@ void RenderSystem::Render()
 
 	// Return console cursor to (0,0)
 	//if (screenBufferModified)
-	//	ccolors::SetCursor(0, 0);
+	//	SetCursor(0, 0);
 }
 
 bool RenderSystem::CompareBuffers(const ConsoleSymbolData* buf_1, const ConsoleSymbolData* buf_2) const
@@ -132,14 +133,14 @@ void RenderSystem::ShowCursor()
 }
 
 // Изменение цвета вывода
-void RenderSystem::SetColor(ccolors::Color symbolColor, ccolors::Color backgroundColor)
+void RenderSystem::SetColor(Color symbolColor, Color backgroundColor)
 {
 	int consoleColor = static_cast<int>(symbolColor) | static_cast<int>(backgroundColor) << 4;
 	SetConsoleTextAttribute(_consoleHandle, consoleColor);
 }
 
 // Изменение цвета вывода
-void RenderSystem::SetColor(ccolors::Color symbolColor)
+void RenderSystem::SetColor(Color symbolColor)
 {
 	int consoleColor = static_cast<int>(symbolColor);
 	SetConsoleTextAttribute(_consoleHandle, consoleColor);
@@ -148,6 +149,6 @@ void RenderSystem::SetColor(ccolors::Color symbolColor)
 // Установка серого текста и чёрного фона
 void RenderSystem::SetDefault()
 {
-	int consoleColor = static_cast<int>(ccolors::Color::gray) | static_cast<int>(ccolors::Color::black) << 4;
+	int consoleColor = static_cast<int>(Color::gray) | static_cast<int>(Color::black) << 4;
 	SetConsoleTextAttribute(_consoleHandle, consoleColor);
 }
