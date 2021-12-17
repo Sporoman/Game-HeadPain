@@ -139,7 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="consoleColor\console_colors.cpp" />
     <ClCompile Include="Hero.cpp" />
     <ClCompile Include="levels.h" />
     <ClCompile Include="main.cpp" />
@@ -147,8 +146,7 @@
     <ClCompile Include="renderSystem\renderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="consoleColor\colors.h" />
-    <ClInclude Include="consoleColor\console_colors.h" />
+    <ClInclude Include="colors.h" />
     <ClInclude Include="Coord.h" />
     <ClInclude Include="Hero.h" />
     <ClInclude Include="Inventory.h" />

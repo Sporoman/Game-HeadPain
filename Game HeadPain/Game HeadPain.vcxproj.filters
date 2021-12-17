@@ -21,9 +21,6 @@
     <ClCompile Include="levels.h">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="consoleColor\console_colors.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Hero.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -35,10 +32,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="consoleColor\colors.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="consoleColor\console_colors.h">
+    <ClInclude Include="colors.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Hero.h">
