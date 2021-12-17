@@ -9,11 +9,11 @@ RenderSystem::RenderSystem()
 	for (int y = 0; y < _screenY; y++)
 		for (int x = 0; x < _screenX; x++)
 		{
-			m_backBuffer[y][x].symbol          = 0;
-			m_backBuffer[y][x].symbolColor     = ccolors::Color::gray;
-			m_backBuffer[y][x].backgroundColor = ccolors::Color::black;
+			_backBuffer[y][x].symbol          = 0;
+			_backBuffer[y][x].symbolColor     = ccolors::Color::gray;
+			_backBuffer[y][x].backgroundColor = ccolors::Color::black;
 
-			m_screenBuffer[y][x] = m_backBuffer[y][x];
+			_screenBuffer[y][x] = _backBuffer[y][x];
 		}
 }
 
@@ -21,14 +21,10 @@ RenderSystem::RenderSystem()
 void RenderSystem::Initialize()
 {
 	// Get console handle
-	//m_consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	_consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	// Hide console cursor
 	ccolors::HideCursor();
-	//CONSOLE_CURSOR_INFO cursorInfo;
-	//cursorInfo.dwSize = 1;
-	//cursorInfo.bVisible = 0;
-	///SetConsoleCursorInfo(m_consoleHandle, &cursorInfo);
 }
 
 void RenderSystem::Clear()
@@ -36,9 +32,9 @@ void RenderSystem::Clear()
 	for (int r = 0; r < _screenY; r++)
 		for (int c = 0; c < _screenX; c++)
 		{
-			m_backBuffer[r][c].symbol          = 0;
-			m_backBuffer[r][c].symbolColor     = ccolors::Color::black;
-			m_backBuffer[r][c].backgroundColor = ccolors::Color::black;
+			_backBuffer[r][c].symbol          = 0;
+			_backBuffer[r][c].symbolColor     = ccolors::Color::black;
+			_backBuffer[r][c].backgroundColor = ccolors::Color::black;
 		}
 }
 
@@ -47,12 +43,12 @@ void RenderSystem::DrawChar(int y, int x, char symbol, ccolors::Color symbolColo
 	if (y < 0 || x < 0 || y >= _screenY || x >= _screenX)
 		return;
 
-	m_backBuffer[y][x].symbol          = symbol;
-	m_backBuffer[y][x].symbolColor     = symbolColor;
-	m_backBuffer[y][x].backgroundColor = backgroundColor;
+	_backBuffer[y][x].symbol          = symbol;
+	_backBuffer[y][x].symbolColor     = symbolColor;
+	_backBuffer[y][x].backgroundColor = backgroundColor;
 }
 
-void RenderSystem::DrawText(int y, int x, char* text, ccolors::Color symbolColor, ccolors::Color backgroundColor)
+void RenderSystem::DrawTextW(int y, int x, const char* text, ccolors::Color symbolColor, ccolors::Color backgroundColor)
 {
 	int  next_x = x;
 	char symbol = *text;
@@ -75,15 +71,17 @@ void RenderSystem::Render()
 	{
 		for (int x = 0; x < _screenX; x++)
 		{
-			if (CompareBuffers(&m_backBuffer[y][x], &m_screenBuffer[y][x]))
+			if (CompareBuffers(&_backBuffer[y][x], &_screenBuffer[y][x]))
 			{
 				// Copy symbol data from back to screen buffer
-				m_screenBuffer[y][x] = m_backBuffer[y][x];
+				_screenBuffer[y][x] = _backBuffer[y][x];
 
 				// Draw symbol in (y,x) position
 				ccolors::SetCursor(y, x);
-				ccolors::SetColor(m_screenBuffer[y][x].symbolColor, m_screenBuffer[y][x].backgroundColor);
-				printf("%c", m_screenBuffer[y][x]);
+				char* text = &_screenBuffer[y][x].symbol;
+				ccolors::ShowText(text, _screenBuffer[y][x].symbolColor, _screenBuffer[y][x].backgroundColor);
+				//ccolors::SetColor(_screenBuffer[y][x].symbolColor, _screenBuffer[y][x].backgroundColor);
+				//printf("%c", _screenBuffer[y][x]);
 				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				screenBufferModified = true;
 			}
@@ -91,8 +89,8 @@ void RenderSystem::Render()
 	}
 
 	// Return console cursor to (0,0)
-	if (screenBufferModified)
-		ccolors::SetCursor(0, 0);
+	//if (screenBufferModified)
+	//	ccolors::SetCursor(0, 0);
 }
 
 bool RenderSystem::CompareBuffers(const ConsoleSymbolData* buf_1, const ConsoleSymbolData* buf_2) const
@@ -104,4 +102,52 @@ bool RenderSystem::CompareBuffers(const ConsoleSymbolData* buf_1, const ConsoleS
 		return true;
 	else
 		return false;
+}
+
+// Установка курсора консоли
+void RenderSystem::SetCursor(int Y, int X)
+{
+	COORD cursorCoord;
+	cursorCoord.X = X;
+	cursorCoord.Y = Y;
+	SetConsoleCursorPosition(_consoleHandle, cursorCoord);
+}
+
+// Скрыть курсор
+void RenderSystem::HideCursor()
+{
+	CONSOLE_CURSOR_INFO cursorInfo;
+	cursorInfo.bVisible = false;
+	cursorInfo.dwSize = 1;	// От 1 до 100
+	SetConsoleCursorInfo(_consoleHandle, &cursorInfo);
+}
+
+// Отобразить курсор
+void RenderSystem::ShowCursor()
+{
+	CONSOLE_CURSOR_INFO cursorInfo;
+	cursorInfo.bVisible = true;
+	cursorInfo.dwSize = 25;	// От 1 до 100
+	SetConsoleCursorInfo(_consoleHandle, &cursorInfo);
+}
+
+// Изменение цвета вывода
+void RenderSystem::SetColor(ccolors::Color symbolColor, ccolors::Color backgroundColor)
+{
+	int consoleColor = static_cast<int>(symbolColor) | static_cast<int>(backgroundColor) << 4;
+	SetConsoleTextAttribute(_consoleHandle, consoleColor);
+}
+
+// Изменение цвета вывода
+void RenderSystem::SetColor(ccolors::Color symbolColor)
+{
+	int consoleColor = static_cast<int>(symbolColor);
+	SetConsoleTextAttribute(_consoleHandle, consoleColor);
+}
+
+// Установка серого текста и чёрного фона
+void RenderSystem::SetDefault()
+{
+	int consoleColor = static_cast<int>(ccolors::Color::gray) | static_cast<int>(ccolors::Color::black) << 4;
+	SetConsoleTextAttribute(_consoleHandle, consoleColor);
 }

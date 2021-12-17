@@ -5,17 +5,24 @@
 #include "../consoleColor/colors.h"
 
 
-struct ConsoleSymbolData;
+struct ConsoleSymbolData
+{
+	char symbol;
+	ccolors::Color symbolColor;
+	ccolors::Color backgroundColor;
+};
 
 
 class RenderSystem
 {
 private:
-	static const int _screenY = 21;
-	static const int _screenX = 40;
+	static const int _screenY = 21 + 10; //temp!!!!!!!!!!!!!!!!!!!!!!!!!
+	static const int _screenX = 40 + 20; //temp!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	ConsoleSymbolData m_backBuffer[_screenY][_screenX];
-	ConsoleSymbolData m_screenBuffer[_screenY][_screenX];
+	ConsoleSymbolData _backBuffer[_screenY][_screenX];
+	ConsoleSymbolData _screenBuffer[_screenY][_screenX];
+
+	HANDLE _consoleHandle;
 
 public:
 	RenderSystem();
@@ -23,19 +30,25 @@ public:
 	void Initialize();
 	void Clear();
 	void DrawChar(int y, int x, char symbol, ccolors::Color symbolColor, ccolors::Color backgroundColor);
-	void DrawText(int y, int x, char* text, ccolors::Color symbolColor, ccolors::Color backgroundColor);
+	void DrawTextW(int y, int x, const char* text, ccolors::Color symbolColor, ccolors::Color backgroundColor);
 	void Render();
 
 private:
 	bool CompareBuffers(const ConsoleSymbolData* buf_1, const ConsoleSymbolData* buf_2) const;
+	void SetCursor(int Y, int X);
+	void HideCursor();
+	void ShowCursor();
+	void SetColor(ccolors::Color symbolColor, ccolors::Color backgroundColor);
+	void SetColor(ccolors::Color symbolColor);
+	void SetDefault();
 };
 
 
-struct ConsoleSymbolData
-{
-	char symbol;
-	ccolors::Color symbolColor;
-	ccolors::Color backgroundColor;
-};
+//struct ConsoleSymbolData
+//{
+//	char symbol;
+//	ccolors::Color symbolColor;
+//	ccolors::Color backgroundColor;
+//};
 
 #endif // !RENDERSYSTEM_H
