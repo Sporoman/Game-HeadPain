@@ -12,8 +12,7 @@
 
 // Logic
 bool isGameActive = true;
-unsigned char levelMap[y_size_lvl][x_size_lvl];
-bool fogOfWarB[y_size_lvl][x_size_lvl];
+bool fogOfWarB[y_size_lvl][x_size_lvl] {false};
 
 // Objects Map.
 // Initially, the idea was to store the addresses of objects, this would allow us to address them directly.
@@ -28,13 +27,11 @@ Object* objectsMap[y_size_lvl][x_size_lvl];
 bool hard = false;
 
 Object* CreateObject(unsigned char symbol, Coord coord);
-void DeleteObject(Object* object);
 
 // Functions
 void Start()
 {
 	int i = 0;
-	printf("\t\n");
 	do
 	{
 		printf("\nChoose your difficult level (1 - s1mple, 2 - hard): ");
@@ -54,35 +51,41 @@ void SetupSystem()
 void RevealFogOfWar(int y_pos, int x_pos)
 {
 	if (hard == true)
-	{
 		for (int y = y_pos - 3; y <= y_pos + 3; y++)
 			for (int x = x_pos - 3; x <= x_pos + 3; x++)
 				fogOfWarB[y][x] = false;
-	}
 }
 
 void Initialise()
 {
+	// Clear object map
+	for (int y = 0; y < y_size_lvl; y++)
+		for (int x = 0; x < x_size_lvl; x++)
+			if ((objectsMap[y][x] != _hero) && (objectsMap[y][x] != _empty) && (objectsMap[y][x] != _wall))
+				delete objectsMap[y][x];
+			
 	// Load objects
 	for (int y = 0; y < y_size_lvl; y++)
-	{
 		for (int x = 0; x < x_size_lvl; x++)
 		{
 			if (hard == true)
 				fogOfWarB[y][x] = true;
-			else
-				fogOfWarB[y][x] = false;
 
+			// Take symbol from levels map
 			unsigned char symbol = levelsData[level][y][x];
 
 			// Create an object
 			if (symbol == mapSymbol_hero)
 			{
-				hero->SetCoord(x, y);
+				_hero->SetCoord(x, y);
 
 				// Set hero on objects map
-				objectsMap[y][x] = hero;
+				objectsMap[y][x] = _hero;
 			}
+			else if (symbol == mapSymbol_empty)
+				objectsMap[y][x] = _empty;
+			else if (symbol == mapSymbol_wall)
+				objectsMap[y][x] = _wall;
 			else
 			{
 				Object* object = CreateObject(symbol, Coord{x,y});
@@ -97,17 +100,18 @@ void Initialise()
 				case mapSymbol_key:     KeyScoreONLVL++;     break;
 			}
 		}
-	}
 
+	// Clear render system
+	renderSys.Clear();
+	
 	// Dispelling the fog of war around the player
-	Coord hero_coord = hero->GetCoord();
+	Coord hero_coord = _hero->GetCoord();
 	RevealFogOfWar(hero_coord.y, hero_coord.x);
 }
 
 void Render()
 {
-	Inventory heroInventory = hero->GetInventory();
-	Color background = Color::black;
+	Inventory heroInventory = _hero->GetInventory();
 	Color foreground = Color::black;
 	std::string str;
 
@@ -115,17 +119,15 @@ void Render()
 	{
 		for (int x = 0; x < x_size_lvl; x++)
 		{
-			//printf("\n\t");
-
 			if (fogOfWarB[y][x] == false)
 			{
 				unsigned char renderSymbol = objectsMap[y][x]->GetRenderSymbol();
-				Color cellColor   = objectsMap[y][x]->GetColor();
+				Color cellColor = objectsMap[y][x]->GetColor();
 
-				renderSys.DrawChar(y, x, renderSymbol, cellColor, Color::black);
+				renderSys.DrawChar(y, x, renderSymbol, cellColor);
 			}
 			else
-				renderSys.DrawChar(y, x, mapSymbol_fogOfWar, Color::gray, Color::black);
+				renderSys.DrawChar(y, x, mapSymbol_fogOfWar, Color::gray);
 		}
 
 		// temp!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -134,15 +136,15 @@ void Render()
 
 		if (y == 2)
 		{
-			sprintf_s(textBuffer, "Level %i", level + 1);
+			sprintf_s(textBuffer, "Level %i  ", level + 1);
 			foreground = Color::gray;
-			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst, textBuffer, foreground);
 		}
 		if (y == 3)
 		{
 			sprintf_s(textBuffer, "Level Key ");
 			foreground = Color::blue;
-			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst, textBuffer, foreground);
 
 			foreground = Color::gray;
 			if (heroInventory.lvl_key)
@@ -150,145 +152,73 @@ void Render()
 			else
 				sprintf_s(textBuffer, ": nope");
 
-			renderSys.SendText(y, def_otst + 10, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst + 10, textBuffer, foreground);
 		}
 		if (y == 4)
 		{
 			sprintf_s(textBuffer, "Keys");
 			foreground = Color::cyan;
-			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst, textBuffer, foreground);
 
-			sprintf_s(textBuffer, ": %i", heroInventory.key_count);
+			sprintf_s(textBuffer, ": %i  ", heroInventory.key_count);
 			foreground = Color::gray;
-			renderSys.SendText(y, def_otst + 4, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst + 4, textBuffer, foreground);
 		}
 		if (y == 5)
 		{
 			sprintf_s(textBuffer, "Crystal");
 			foreground = Color::darkMagenta;
-			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst, textBuffer, foreground);
 
-			sprintf_s(textBuffer, ": %i", heroInventory.crystal_count);
+			sprintf_s(textBuffer, ": %i  ", heroInventory.crystal_count);
 			foreground = Color::gray;
-			renderSys.SendText(y, def_otst + 7, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst + 7, textBuffer, foreground);
 		}
 		if (y == 6)
 		{
 			sprintf_s(textBuffer, "Crystal");
 			foreground = Color::darkMagenta;
-			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst, textBuffer, foreground);
 
-			sprintf_s(textBuffer, " on level: %i", CrystalScoreONLVL);
+			sprintf_s(textBuffer, " on level: %i  ", CrystalScoreONLVL);
 			foreground = Color::gray;
-			renderSys.SendText(y, def_otst + 7, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst + 7, textBuffer, foreground);
 		}
 		if (y == 7)
 		{
 			sprintf_s(textBuffer, "Key");
 			foreground = Color::cyan;
-			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst, textBuffer, foreground);
 
-			sprintf_s(textBuffer, " on level: %i", KeyScoreONLVL);
+			sprintf_s(textBuffer, " on level: %i  ", KeyScoreONLVL);
 			foreground = Color::gray;
-			renderSys.SendText(y, def_otst + 3, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst + 3, textBuffer, foreground);
 		}
 
-		Coord heroCoord = hero->GetCoord();
+		Coord heroCoord = _hero->GetCoord();
 		if (y == 9) // X coord hero for test
 		{
-			sprintf_s(textBuffer, "X coord hero: %i", heroCoord.x);
+			sprintf_s(textBuffer, "X coord hero: %i  ", heroCoord.x);
 			foreground = Color::gray;
-			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst, textBuffer, foreground);
 		}
 		if (y == 10) // Y coord hero for test
 		{
-			sprintf_s(textBuffer, "Y coord hero: %i", heroCoord.y);
+			sprintf_s(textBuffer, "Y coord hero: %i  ", heroCoord.y);
 			foreground = Color::gray;
-			renderSys.SendText(y, def_otst, textBuffer, foreground, background);
+			renderSys.SendText(y, def_otst, textBuffer, foreground);
 		}
-
-		//if (y == 2)
-		//{
-		//	str = "\t Level " + (level + 1);
-
-		//	SetColor(Color::gray);
-		//	sprintf(str, "   Level %i  ", level + 1);
-		//}
-
-		//if (y == 3)
-		//{
-		//	SetColor(Color::blue);
-		//	printf("   Level Key ");
-		//	SetColor(Color::gray);
-		//	if (heroInventory.lvl_key == true)
-		//		printf(": yeap  ");
-		//	else
-		//		printf(": nope  ");
-		//}
-
-		//if (y == 4)
-		//{
-		//	SetColor(Color::cyan);
-		//	printf("   Key ");
-		//	SetColor(Color::gray);
-		//	printf(": %i  ", heroInventory.key_count);
-		//}
-
-		//if (y == 5)
-		//{
-		//	SetColor(Color::darkMagenta);
-		//	printf("   Crystal");
-		//	SetColor(Color::gray);
-		//	printf(": %i  \t", heroInventory.crystal_count);
-		//}
-
-		//if (y == 6)
-		//{
-		//	SetColor(Color::darkMagenta);
-		//	printf("   Crystal");
-		//	SetColor(Color::gray);
-		//	printf(" on level: %i   ", CrystalScoreONLVL);
-		//}
-
-		//if (y == 7)
-		//{
-		//	SetColor(Color::darkMagenta);
-		//	printf("   Key");
-		//	SetColor(Color::gray);
-		//	printf(" on level: %i   ", KeyScoreONLVL);
-		//}
-
-		//Coord heroCoord = hero->GetCoord();
-		//if (y == 9) // X coord hero for test
-		//{
-		//	SetColor(Color::gray);
-		//	printf("   X coord hero: %i   ", heroCoord.x);
-		//}
-		//if (y == 10) // Y coord hero for test
-		//{
-		//	SetColor(Color::gray);
-		//	printf("   Y coord hero: %i   ", heroCoord.y);
-		//}
 	}
 
-	//printf("\n\tUse WASD to move ");
-	//SetColor(Color::green);
-	//printf("Hero");
-	//SetColor(Color::gray);
-	//printf(". Press ");
-	//SetColor(Color::red);
-	//printf("R");
-	//SetColor(Color::gray);
-	//printf(" to restart.\n");
+	renderSys.SendText(y_size_lvl + 1, 4, "Use WASD to move ", Color::gray);
+	renderSys.SendText(y_size_lvl + 1, 4+17, "Hero", Color::green);
+	renderSys.SendText(y_size_lvl + 2, 4, "Press ", Color::gray);
+	renderSys.SendText(y_size_lvl + 2, 4+6, "R ", Color::red);
+	renderSys.SendText(y_size_lvl + 2, 4+6+2, "to restart", Color::gray);
 
-	//printf("Objects count: %i", Object::GetObjectsCount());
-
-	renderSys.SendText(y_size_lvl + 1, 4, "Use WASD to move ", Color::gray, background);
-	renderSys.SendText(y_size_lvl + 1, 4+22, "Hero", Color::green, background);
-	renderSys.SendText(y_size_lvl + 2, 4, "Press ", Color::gray, background);
-	renderSys.SendText(y_size_lvl + 2, 4+6, "R ", Color::red, background);
-	renderSys.SendText(y_size_lvl + 2, 4+6+2, "to restart", Color::gray, background);
-	renderSys.SendText(y_size_lvl + 3, 4, "Objects count: " + Object::GetObjectsCount(), Color::gray, background);
+	char txtBuffer[25];
+	sprintf_s(txtBuffer, "Objects count: %i  ", Object::GetObjectsCount());
+	renderSys.SendText(y_size_lvl + 3, 4, txtBuffer, Color::gray);
 
 	// End frame
 	renderSys.Render();
@@ -326,17 +256,16 @@ void MoveHeroTo(int y, int x)
 		}
 		case Entity::crystal:
 		{
-			hero->AddCrystal();
+			_hero->AddCrystal();
 			++CrystalScoreCollected;
 			--CrystalScoreONLVL;
 
 			canMove = true;
 			break;
 		}
-
 		case Entity::key:
 		{
-			hero->AddKey();
+			_hero->AddKey();
 			++KeyScoreCollected;
 			--KeyScoreONLVL;
 
@@ -345,20 +274,16 @@ void MoveHeroTo(int y, int x)
 		}
 		case Entity::levelKey:
 		{
-			hero->GiveLvlKey();
+			_hero->GiveLvlKey();
 
 			canMove = true;
 			break;
 		}
-
-		// Mine
 		case Entity::mine:
 		{
 			RestartLevel();
 			break;
 		}
-
-		// Exit
 		case Entity::exitDoor:
 		{
 			CrystalScoreONLVL = 0;
@@ -368,12 +293,10 @@ void MoveHeroTo(int y, int x)
 			isGameActive = false;
 			break;
 		}
-
-		// Box
 		case Entity::box:
 		{
 			// Hero move direction
-			Coord heroCoord = hero->GetCoord();
+			Coord heroCoord = _hero->GetCoord();
 			int heroDirectoinY = y - heroCoord.y;
 			int heroDirectionX = x - heroCoord.x;
 
@@ -388,10 +311,10 @@ void MoveHeroTo(int y, int x)
 					--CrystalScoreONLVL;
 
 				// Save box adress 
-				Object* boxObject = objectsMap[y][x];
+				Object* boxObject = collidingObject;
 
 				// Replace box .........(Пока что так)
-				objectsMap[y][x] = objectsMap[y + heroDirectoinY][x + heroDirectionX];
+				objectsMap[y][x] = _empty;
 
 				// Set box
 				objectsMap[y + heroDirectoinY][x + heroDirectionX] = boxObject;
@@ -406,26 +329,22 @@ void MoveHeroTo(int y, int x)
 			}
 			break;
 		}
-
-		// Door
 		case Entity::door:
 		{
-			if (hero->CheckKey())
+			if (_hero->CheckKey())
 			{
-				hero->TakeKey();
-				KeyScoreONLVL--;
+				_hero->TakeKey();
+				--KeyScoreCollected;
 
 				canMove = true;
 				break;
 			}
 		}
-
-		// Level Door
 		case Entity::levelDoor:
 		{
-			if (hero->CheckLvlkey())
+			if (_hero->CheckLvlkey())
 			{
-				hero->TakeLvlKey();
+				_hero->TakeLvlKey();
 
 				canMove = true;
 				break;
@@ -436,16 +355,17 @@ void MoveHeroTo(int y, int x)
 
 	if (canMove)
 	{
-		Coord heroCoord = hero->GetCoord();
+		Coord heroCoord = _hero->GetCoord();
+		Object* actualObject = objectsMap[y][x];
 
 		// Remove Hero and set Empty
-		objectsMap[heroCoord.y][heroCoord.x] = objectsMap[y][x];
+		objectsMap[heroCoord.y][heroCoord.x] = _empty;
+		if ((actualObject != _hero) && (actualObject != _empty) && (actualObject != _wall))
+			delete actualObject;
 
-		// Set Hero position
-		hero->SetCoord(x, y);
-
-		// Set Hero
-		objectsMap[y][x] = hero;
+		// Set Hero on objects map and set his position
+		objectsMap[y][x] = _hero;
+		_hero->SetCoord(x, y);
 
 		// Reveal Fog of war
 		if (hard == true)
@@ -458,7 +378,7 @@ void Move()
 	unsigned char inputChar = _getch();
 	inputChar = tolower(inputChar);
 
-	Coord heroCoord = hero->GetCoord();
+	Coord heroCoord = _hero->GetCoord();
 
 	switch (inputChar)
 	{
@@ -503,7 +423,7 @@ void Move()
 			CrystalScoreONLVL     = 0;
 			CrystalScoreCollected = 0;
 			//heroInventory.key_count = 0;
-			level++;
+			++level;
 
 			Initialise();
 			break;
@@ -512,10 +432,10 @@ void Move()
 		// Back LVL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		case '1':
 		{
-			CrystalScoreONLVL = 0;
+			CrystalScoreONLVL     = 0;
 			CrystalScoreCollected = 0;
 			//heroInventory.key_count = 0;
-			level--;
+			--level;
 
 			Initialise();
 			break;
@@ -534,22 +454,21 @@ void Shutdown()
 int main()
 {
 	Start();
+	SetupSystem();
 
-	do
+	while (level != 6)
 	{
-		SetupSystem();
 		Initialise();
-		do
+
+		while(isGameActive)
 		{
 			Render();
 			Move();
 		}
-		while (isGameActive);
-		system("cls");
+
 		level++;
 		isGameActive = true;
 	}
-	while (level != 6);
 
 	Shutdown();
 }
@@ -559,9 +478,4 @@ Object* CreateObject(unsigned char symbol, Coord coord)
 	Object* object = new Object(symbol, coord);
 
 	return object;
-}
-
-void DeleteObject(Object* object)
-{
-	delete object;
 }
