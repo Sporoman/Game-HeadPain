@@ -6,7 +6,9 @@
 #include "Hero.h"
 #include "renderSystem/renderSystem.h"
 
-static Hero* hero = new Hero();
+static Hero* _hero    = new Hero();
+static Object* _empty = new Object(' ');
+static Object* _wall  = new Object('#');
 static RenderSystem renderSys;
 
 static unsigned int level = 0;
