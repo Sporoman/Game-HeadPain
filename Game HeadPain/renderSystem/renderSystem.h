@@ -43,12 +43,4 @@ private:
 	void SetDefault();
 };
 
-
-//struct ConsoleSymbolData
-//{
-//	char symbol;
-//	Color symbolColor;
-//	Color backgroundColor;
-//};
-
 #endif // !RENDERSYSTEM_H
