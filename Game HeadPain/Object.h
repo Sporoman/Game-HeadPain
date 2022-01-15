@@ -3,6 +3,7 @@
 
 #include "Coord.h"
 #include "Colors.h"
+#include "RenderObject.h"
 
 enum class Entity;
 enum class DirMove;
@@ -10,15 +11,14 @@ enum class DirMove;
 class Object
 {
 private:
-	static int __idObjects;			// To issue id to objects
-	static int __countObjects;		// Total number of objects
+	static int __idObjects;		// To give id to objects
+	static int __countObjects;	// Total number of objects
 
 	int    _id;
 	Entity _entity;
 	Coord  _coord;
-	unsigned char _mapSymbol;		// Symbol on the physical map (before render)
-	unsigned char _renderSymbol;	// Symbol on the visual map (after render)
-	Color _colorSymbol;		// Symbol color
+	unsigned char _mapSymbol;	// Symbol on the physical map (before render)
+	RenderObject _renderObj;	// struct: symbol + color symbol + color backgorund
 
 public:
 	Object(unsigned char mapSymbol, Coord coord);
@@ -35,7 +35,9 @@ public:
 	virtual Coord GetCoord();
 	virtual unsigned char GetMapSymbol();
 	virtual unsigned char GetRenderSymbol();
-	virtual Color GetColor();
+	virtual Color GetColorSymbol();
+	virtual Color GetColorBackground();
+	virtual const RenderObject& GetRenderObject();
 	
 
 private:
@@ -45,9 +47,10 @@ private:
 	void MoveOnDown();
 
 	//void GetInitializeMapSymbol(Entity entity);
-	Entity GetInitializeEntity(unsigned char mapSymbol);
-	unsigned char GetInitializeRenderSymbol(Entity entity);
-	Color GetInitializeColorSymbol(Entity entity);
+	static Entity GetInitializeEntity(unsigned char mapSymbol);
+	static unsigned char GetInitializeRenderSymbol(Entity entity);
+	static Color GetInitializeColorSymbol(Entity entity);
+	static Color GetInitializeColorBackground(Entity entity);
 
 };
 
