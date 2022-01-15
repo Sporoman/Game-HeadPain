@@ -121,13 +121,14 @@ void Render()
 		{
 			if (fogOfWarB[y][x] == false)
 			{
-				unsigned char renderSymbol = objectsMap[y][x]->GetRenderSymbol();
-				Color cellColor = objectsMap[y][x]->GetColor();
-
-				renderSys.DrawChar(y, x, renderSymbol, cellColor);
+				RenderObject renderObj = objectsMap[y][x]->GetRenderObject();
+				renderSys.DrawChar(y, x, renderObj);
 			}
 			else
-				renderSys.DrawChar(y, x, mapSymbol_fogOfWar, Color::gray);
+			{
+				RenderObject r_fogOfWar{ mapSymbol_fogOfWar, Color::gray, Color::black };
+				renderSys.DrawChar(y, x, r_fogOfWar);
+			}
 		}
 
 		// temp!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -142,7 +143,7 @@ void Render()
 		}
 		if (y == 3)
 		{
-			sprintf_s(textBuffer, "Level Key ");
+			sprintf_s(textBuffer, "Level Key");
 			foreground = Color::blue;
 			renderSys.SendText(y, def_otst, textBuffer, foreground);
 

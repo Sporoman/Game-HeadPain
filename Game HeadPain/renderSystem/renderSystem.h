@@ -3,24 +3,19 @@
 
 #include <Windows.h>
 #include "../colors.h"
+#include "../RenderObject.h"
 
-
-struct ConsoleSymbolData
-{
-	char symbol;
-	Color symbolColor;
-	Color backgroundColor;
-};
-
+// Feature of the system: 
+// 1) If the object has a black background, it is not rendered(= transparent)
 
 class RenderSystem
 {
 private:
 	static const int _screenY = 21 + 10; //temp!!!!!!!!!!!!!!!!!!!!!!!!!
-	static const int _screenX = 40 + 21; //temp!!!!!!!!!!!!!!!!!!!!!!!!!
+	static const int _screenX = 40 + 25; //temp!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	ConsoleSymbolData _backBuffer[_screenY][_screenX];
-	ConsoleSymbolData _screenBuffer[_screenY][_screenX];
+	RenderObject _backBuffer[_screenY][_screenX];
+	RenderObject _screenBuffer[_screenY][_screenX];
 
 	HANDLE _consoleHandle;
 
@@ -29,12 +24,14 @@ public:
 
 	void Initialize();
 	void Clear();
-	void DrawChar(int y, int x, char symbol, Color symbolColor = Color::gray, Color backgroundColor = Color::black);
+	void DrawChar(int y, int x, const RenderObject& object);
+	void DrawFrontChar(int y, int x, const RenderObject& object);
+	void DrawBackground(int y, int x, Color backgroundColor);
 	void SendText(int y, int x, const char* text, Color symbolColor = Color::gray, Color backgroundColor = Color::black);
 	void Render();
 
 private:
-	bool CompareBuffers(const ConsoleSymbolData* buf_1, const ConsoleSymbolData* buf_2) const;
+	bool CompareBuffers(const RenderObject* buf_1, const RenderObject* buf_2) const;
 	void SetCursor(int Y, int X);
 	void HideCursor();
 	void ShowCursor();

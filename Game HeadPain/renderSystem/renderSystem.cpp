@@ -38,24 +38,44 @@ void RenderSystem::Clear()
 		}
 }
 
-void RenderSystem::DrawChar(int y, int x, char symbol, Color symbolColor, Color backgroundColor)
+void RenderSystem::DrawChar(int y, int x, const RenderObject& obj)
 {
 	if (y < 0 || x < 0 || y >= _screenY || x >= _screenX)
 		return;
 
-	_backBuffer[y][x].symbol          = symbol;
-	_backBuffer[y][x].symbolColor     = symbolColor;
+	_backBuffer[y][x].symbol      = obj.symbol;
+	_backBuffer[y][x].symbolColor = obj.symbolColor;
+
+	// If the object has a black background, it is not rendered(= transparent)
+	if (obj.backgroundColor != Color::black)
+		_backBuffer[y][x].backgroundColor = obj.backgroundColor;
+}
+
+void RenderSystem::DrawFrontChar(int y, int x, const RenderObject& obj)
+{
+	if (y < 0 || x < 0 || y >= _screenY || x >= _screenX)
+		return;
+
+	_backBuffer[y][x].symbol      = obj.symbol;
+	_backBuffer[y][x].symbolColor = obj.symbolColor;
+}
+
+void RenderSystem::DrawBackground(int y, int x, Color backgroundColor)
+{
+	if (y < 0 || x < 0 || y >= _screenY || x >= _screenX)
+		return;
+
 	_backBuffer[y][x].backgroundColor = backgroundColor;
 }
 
 void RenderSystem::SendText(int y, int x, const char* text, Color symbolColor, Color backgroundColor)
 {
-	int  next_x = x;
-	char symbol = *text;
+	int next_x = x;
+	unsigned char symbol = *text;
 
 	while (symbol != 0)
 	{
-		DrawChar(y, next_x, symbol, symbolColor, backgroundColor);
+		DrawChar(y, next_x, RenderObject{symbol, symbolColor, backgroundColor });
 
 		++text;
 		++next_x;
@@ -94,7 +114,7 @@ void RenderSystem::Render()
 	//	SetCursor(0, 0);
 }
 
-bool RenderSystem::CompareBuffers(const ConsoleSymbolData* buf_1, const ConsoleSymbolData* buf_2) const
+bool RenderSystem::CompareBuffers(const RenderObject* buf_1, const RenderObject* buf_2) const
 {
 	if (  (buf_1->symbol != buf_2->symbol)
 	   || (buf_1->symbolColor != buf_2->symbolColor)
@@ -105,7 +125,6 @@ bool RenderSystem::CompareBuffers(const ConsoleSymbolData* buf_1, const ConsoleS
 		return false;
 }
 
-// Установка курсора консоли
 void RenderSystem::SetCursor(int Y, int X)
 {
 	COORD cursorCoord;
@@ -114,7 +133,6 @@ void RenderSystem::SetCursor(int Y, int X)
 	SetConsoleCursorPosition(_consoleHandle, cursorCoord);
 }
 
-// Скрыть курсор
 void RenderSystem::HideCursor()
 {
 	CONSOLE_CURSOR_INFO cursorInfo;
@@ -123,30 +141,25 @@ void RenderSystem::HideCursor()
 	SetConsoleCursorInfo(_consoleHandle, &cursorInfo);
 }
 
-// Отобразить курсор
 void RenderSystem::ShowCursor()
 {
 	CONSOLE_CURSOR_INFO cursorInfo;
 	cursorInfo.bVisible = true;
-	cursorInfo.dwSize = 25;	// От 1 до 100
+	cursorInfo.dwSize = 25;	// From 1 to 100
 	SetConsoleCursorInfo(_consoleHandle, &cursorInfo);
 }
 
-// Изменение цвета вывода
 void RenderSystem::SetColor(Color symbolColor, Color backgroundColor)
 {
 	int consoleColor = static_cast<int>(symbolColor) | static_cast<int>(backgroundColor) << 4;
 	SetConsoleTextAttribute(_consoleHandle, consoleColor);
 }
-
-// Изменение цвета вывода
 void RenderSystem::SetColor(Color symbolColor)
 {
 	int consoleColor = static_cast<int>(symbolColor);
 	SetConsoleTextAttribute(_consoleHandle, consoleColor);
 }
 
-// Установка серого текста и чёрного фона
 void RenderSystem::SetDefault()
 {
 	int consoleColor = static_cast<int>(Color::gray) | static_cast<int>(Color::black) << 4;
