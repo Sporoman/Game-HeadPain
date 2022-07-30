@@ -184,7 +184,7 @@ Color Object::GetInitializeColorSymbol(Entity entity)
 		case Entity::wall:			return Color::white;
 		case Entity::door:			return Color::yellow;
 		case Entity::levelDoor:		return Color::blue;
-		case Entity::key:			return Color::cyan;
+		case Entity::key:			return Color::yellow;
 		case Entity::levelKey:		return Color::blue;
 		case Entity::box:			return Color::brown;
 		case Entity::exitDoor:		return Color::magenta;
@@ -205,4 +205,24 @@ Color Object::GetInitializeColorBackground(Entity entity)
 	//{
 	//	default: return Color::black;
 	//}
+}
+
+Color Object::GetInitializeColorBackgroundFromMap(unsigned char symbol)
+{
+	switch (symbol)
+	{
+		case '#': 
+		case '0':    return Color::black;
+		case 'B':    return Color::darkBlue;
+		case 'G':    return Color::darkGreen;
+		case 'C':    return Color::darkCyan;
+		case 'R':    return Color::darkRed;
+		case 'M':    return Color::darkMagenta;
+		case 'Y':    return Color::brown;
+		case 'W':    return Color::white;
+		case 'S':    return Color::gray;
+		case '-':    return Color::darkGray;
+
+		default: return Color::black;
+	}
 }

@@ -18,7 +18,7 @@ private:
 	Entity _entity;
 	Coord  _coord;
 	unsigned char _mapSymbol;	// Symbol on the physical map (before render)
-	RenderObject _renderObj;	// struct: symbol + color symbol + color backgorund
+	RenderObject  _renderObj;	// struct: symbol + color symbol + color backgorund
 
 public:
 	Object(unsigned char mapSymbol, Coord coord);
@@ -39,6 +39,7 @@ public:
 	virtual Color GetColorBackground();
 	virtual const RenderObject& GetRenderObject();
 	
+	static Color GetInitializeColorBackgroundFromMap(unsigned char symbol);    // Test
 
 private:
 	void MoveOnUp();
@@ -51,7 +52,6 @@ private:
 	static unsigned char GetInitializeRenderSymbol(Entity entity);
 	static Color GetInitializeColorSymbol(Entity entity);
 	static Color GetInitializeColorBackground(Entity entity);
-
 };
 
 enum class Entity

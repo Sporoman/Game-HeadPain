@@ -71,6 +71,11 @@ Inventory Hero::GetInventory()
 	return _inventory;
 }
 
+void Hero::SetInventory(const Inventory& inventory)
+{
+	_inventory = inventory;
+}
+
 bool Hero::CheckKey()
 {
 	return _inventory.key_count > 0 ? true : false;
