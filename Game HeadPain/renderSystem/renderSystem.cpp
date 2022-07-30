@@ -6,6 +6,7 @@
 
 RenderSystem::RenderSystem()
 {
+	// Setup buffers
 	for (int y = 0; y < _screenY; y++)
 		for (int x = 0; x < _screenX; x++)
 		{
@@ -15,11 +16,7 @@ RenderSystem::RenderSystem()
 
 			_screenBuffer[y][x] = _backBuffer[y][x];
 		}
-}
 
-
-void RenderSystem::Initialize()
-{
 	// Get console handle
 	_consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 

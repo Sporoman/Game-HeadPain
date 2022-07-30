@@ -31,6 +31,7 @@ public:
 	void SetKey(int count);
 
 	Inventory GetInventory();
+	void SetInventory(const Inventory& inventory);
 
 	//void AddItem(Item item);
 	//void AddItem(Item item, int count);
