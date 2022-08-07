@@ -11,8 +11,8 @@
 class RenderSystem
 {
 private:
-	static const int _screenY = 21 + 10; //temp!!!!!!!!!!!!!!!!!!!!!!!!!
-	static const int _screenX = 40 + 25; //temp!!!!!!!!!!!!!!!!!!!!!!!!!
+	static const int _screenY = 21 + 10; // additional cells
+	static const int _screenX = 40 + 25; //     for hud
 
 	RenderObject _backBuffer[_screenY][_screenX];
 	RenderObject _screenBuffer[_screenY][_screenX];
