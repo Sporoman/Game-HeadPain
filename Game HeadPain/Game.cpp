@@ -96,10 +96,11 @@ void Game::Initialize()
 	// Clear render system
 	_renSys->Clear();
 
-	// Render Background
-	for (int y = 0; y < _lvlSizeY; ++y)
-		for (int x = 0; x < _lvlSizeX; ++x)
-			_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
+	// Render Background if hardMode is false
+	if (_hardMode == false)
+		for (int y = 0; y < _lvlSizeY; ++y)
+			for (int x = 0; x < _lvlSizeX; ++x)
+				_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
 
 	// Remember the inventory state at the level start
 	_inventoryAtLevelStart = _hero->GetInventory();
@@ -403,7 +404,13 @@ void Game::DispelFogOfWar(int y_pos, int x_pos)
 	if (_hardMode == true)
 		for (int y = y_pos - 2; y <= y_pos + 2; y++)
 			for (int x = x_pos - 3; x <= x_pos + 3; x++)
-				fogOfWarB[y][x] = false;
+				if (fogOfWarB[y][x] == true)
+				{
+					// Dispel the fog of war
+					// and redraw background symbol
+					fogOfWarB[y][x] = false;
+					_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
+				}
 }
 
 Object* Game::CreateObject(unsigned char symbol, Coord coord)
