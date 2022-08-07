@@ -266,6 +266,7 @@ void Game::MoveHeroTo(int y, int x)
 			int heroDirectionX = x - heroCoord.x;
 
 			// Check space behind the box
+			// and handling collisions with objects
 			Entity entityBehindBox = _objectsMap[y + heroDirectoinY][x + heroDirectionX]->GetEntity();
 			if ((entityBehindBox == Entity::empty)
 				|| (entityBehindBox == Entity::crystal)
@@ -277,19 +278,14 @@ void Game::MoveHeroTo(int y, int x)
 
 				switch (entityBehindBox)
 				{
-				case Entity::key:         _keysOnLvl;        break;
-				case Entity::levelKey:    break;
-				case Entity::crystal:     _crystalsOnLvl;    break;
+					case Entity::key:         _keysOnLvl--;        break;
+					case Entity::levelKey:    break;
+					case Entity::crystal:     _crystalsOnLvl--;    break;
 				}
 
-
-				// Save box adress 
+				// Replace box
 				Object* boxObject = collidingObject;
-
-				// Replace box .........(Пока что так)
 				_objectsMap[y][x] = _empty;
-
-				// Set box
 				_objectsMap[y + heroDirectoinY][x + heroDirectionX] = boxObject;
 
 				canMove = true;
