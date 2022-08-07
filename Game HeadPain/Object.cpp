@@ -8,10 +8,10 @@ Object::Object(unsigned char mapSymbol, Coord coord)
 {
 	// Object id
 	_id = __idObjects;
-	++__idObjects;
+	__idObjects++;
 
 	// Plus the count of objects
-	++__countObjects;
+	__countObjects++;
 
 	// Initializing the object
 	//_mapSymbol;
@@ -29,7 +29,7 @@ Object::Object(unsigned char mapSymbol) : Object(mapSymbol, Coord{ 0,0 })
 Object::~Object()
 {
 	// Minus the count of objects
-	--__countObjects;
+	__countObjects--;
 }
 
 void Object::MoveOn(DirMove dir)
