@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <conio.h>
 #include "renderSystem/renderSystem.h"
 #include "Object.h"
 #include "Hero.h"
