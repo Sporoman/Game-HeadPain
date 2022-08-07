@@ -112,14 +112,8 @@ void Game::Initialize()
 
 void Game::Render()
 {
-	Inventory heroInventory = _hero->GetInventory();
-	Color foreground = Color::black;
-	std::string str;
-
 	for (int y = 0; y < _lvlSizeY; y++)
-	{
 		for (int x = 0; x < _lvlSizeX; x++)
-		{
 			if (fogOfWarB[y][x] == false)
 			{
 				RenderObject renderObj = _objectsMap[y][x]->GetRenderObject();
@@ -128,102 +122,60 @@ void Game::Render()
 			else
 			{
 				RenderObject r_fogOfWar{ mapSymbol_fogOfWar, Color::gray, Color::black };
-				_renSys->DrawChar(y, x, r_fogOfWar);
+				_renSys->DrawChar(y, x, r_fogOfWar); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			}
-		}
 
-		// temp!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		int def_otst = 45;
-		char textBuffer[25];
-
-		if (y == 2)
-		{
-			sprintf_s(textBuffer, "Level %i  ", _activeLevel + 1);
-			foreground = Color::gray;
-			_renSys->SendText(y, def_otst, textBuffer, foreground);
-		}
-		if (y == 3)
-		{
-			sprintf_s(textBuffer, "Level Key");
-			foreground = Color::blue;
-			_renSys->SendText(y, def_otst, textBuffer, foreground);
-
-			foreground = Color::gray;
-			if (heroInventory.lvl_key)
-				sprintf_s(textBuffer, ": yeap");
-			else
-				sprintf_s(textBuffer, ": nope");
-
-			_renSys->SendText(y, def_otst + 10, textBuffer, foreground);
-		}
-		if (y == 4)
-		{
-			sprintf_s(textBuffer, "Keys");
-			foreground = Color::cyan;
-			_renSys->SendText(y, def_otst, textBuffer, foreground);
-
-			sprintf_s(textBuffer, ": %i  ", heroInventory.key_count);
-			foreground = Color::gray;
-			_renSys->SendText(y, def_otst + 4, textBuffer, foreground);
-		}
-		if (y == 5)
-		{
-			sprintf_s(textBuffer, "Crystal");
-			foreground = Color::darkMagenta;
-			_renSys->SendText(y, def_otst, textBuffer, foreground);
-
-			sprintf_s(textBuffer, ": %i  ", heroInventory.crystal_count);
-			foreground = Color::gray;
-			_renSys->SendText(y, def_otst + 7, textBuffer, foreground);
-		}
-		if (y == 6)
-		{
-			sprintf_s(textBuffer, "Crystal");
-			foreground = Color::darkMagenta;
-			_renSys->SendText(y, def_otst, textBuffer, foreground);
-
-			sprintf_s(textBuffer, " on level: %i  ", _crystalsOnLvl);
-			foreground = Color::gray;
-			_renSys->SendText(y, def_otst + 7, textBuffer, foreground);
-		}
-		if (y == 7)
-		{
-			sprintf_s(textBuffer, "Key");
-			foreground = Color::cyan;
-			_renSys->SendText(y, def_otst, textBuffer, foreground);
-
-			sprintf_s(textBuffer, " on level: %i  ", _keysOnLvl);
-			foreground = Color::gray;
-			_renSys->SendText(y, def_otst + 3, textBuffer, foreground);
-		}
-
-		Coord heroCoord = _hero->GetCoord();
-		if (y == 9) // X coord hero for test
-		{
-			sprintf_s(textBuffer, "X coord hero: %i  ", heroCoord.x);
-			foreground = Color::gray;
-			_renSys->SendText(y, def_otst, textBuffer, foreground);
-		}
-		if (y == 10) // Y coord hero for test
-		{
-			sprintf_s(textBuffer, "Y coord hero: %i  ", heroCoord.y);
-			foreground = Color::gray;
-			_renSys->SendText(y, def_otst, textBuffer, foreground);
-		}
-	}
-
-	_renSys->SendText(_lvlSizeY + 1, 4, "Use WASD to move ", Color::gray);
-	_renSys->SendText(_lvlSizeY + 1, 4+17, "Hero", Color::green);
-	_renSys->SendText(_lvlSizeY + 2, 4, "Press ", Color::gray);
-	_renSys->SendText(_lvlSizeY + 2, 4+6, "R ", Color::red);
-	_renSys->SendText(_lvlSizeY + 2, 4+6+2, "to restart", Color::gray);
-
-	char txtBuffer[25];
-	sprintf_s(txtBuffer, "Objects count: %i  ", Object::GetObjectsCount());
-	_renSys->SendText(_lvlSizeY + 3, 4, txtBuffer, Color::gray);
-
-	// End frame
+	RenderHud();
 	_renSys->Render();
+}
+
+void Game::RenderHud()
+{
+	static char textBuffer[25];
+
+	Inventory inventory = _hero->GetInventory();
+
+	// GLHF
+	sprintf_s(textBuffer, "Level %i  ", _activeLevel + 1);
+	_renSys->SendText(2, _indentX, textBuffer);
+
+	sprintf_s(textBuffer, "Level Key");
+	_renSys->SendText(4, _indentX, textBuffer, Color::blue);
+	inventory.lvl_key == true ? sprintf_s(textBuffer, ": yeap") : sprintf_s(textBuffer, ": nope");
+	_renSys->SendText(4, _indentX + 9, textBuffer);
+	
+	sprintf_s(textBuffer, "Keys");
+	_renSys->SendText(5, _indentX, textBuffer, Color::cyan);
+	sprintf_s(textBuffer, ": %i  ", inventory.key_count);
+	_renSys->SendText(5, _indentX + 4, textBuffer);
+	
+	sprintf_s(textBuffer, "Crystals");
+	_renSys->SendText(6, _indentX, textBuffer, Color::darkMagenta);
+	sprintf_s(textBuffer, ": %i  ", inventory.crystal_count);
+	_renSys->SendText(6, _indentX + 7, textBuffer);
+
+	sprintf_s(textBuffer, "Crystals");
+	_renSys->SendText(7, _indentX, textBuffer, Color::darkMagenta);
+	sprintf_s(textBuffer, " on level: %i  ", _crystalsOnLvl);
+	_renSys->SendText(7, _indentX + 7, textBuffer);
+
+	sprintf_s(textBuffer, "Keys");
+	_renSys->SendText(8, _indentX, textBuffer, Color::cyan);
+	sprintf_s(textBuffer, " on level: %i  ", _keysOnLvl);
+	_renSys->SendText(8, _indentX + 3, textBuffer);
+
+	sprintf_s(textBuffer, "X coord hero: %i  ", _hero->GetCoord().x);
+	_renSys->SendText(10, _indentX, textBuffer);
+	sprintf_s(textBuffer, "Y coord hero: %i  ", _hero->GetCoord().y);
+	_renSys->SendText(11, _indentX, textBuffer);
+
+	sprintf_s(textBuffer, "Objects count: %i  ", Object::GetObjectsCount());
+	_renSys->SendText(13, _indentX, textBuffer);
+
+	_renSys->SendText(_lvlSizeY + 1, 4, "Use WASD to move ");
+	_renSys->SendText(_lvlSizeY + 1, 4 + 17, "Hero", Color::green);
+	_renSys->SendText(_lvlSizeY + 2, 4, "Press R to restart");
+	_renSys->SendText(_lvlSizeY + 2, 4 + 6, "R", Color::red);
 }
 
 void Game::RestartLevel()

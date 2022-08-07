@@ -26,6 +26,7 @@ private:
 	const int _lvlSizeY = 21;
 	const int _lvlSizeX = 40;
 	const int _levelsCount = 7;
+	const int _indentX = 45;
 
 	Object* _objectsMap[21][40];
 	
@@ -36,6 +37,7 @@ public:
 	void Start();
 	void Initialize();
 	void Render();
+	
 	void RestartLevel();
 
 	void Move();
@@ -49,6 +51,8 @@ private:
 
 	void SetDefaultItemsValueOnLvl();
 	void DispelFogOfWar(int y, int x);
+
+	void RenderHud();
 
 	static const unsigned char mapSymbol_fogOfWar = 176;
 	static const unsigned char mapSymbol_empty = ' ';
