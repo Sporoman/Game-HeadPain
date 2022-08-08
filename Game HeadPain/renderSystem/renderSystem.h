@@ -6,7 +6,7 @@
 #include "../RenderObject.h"
 
 // Feature of the system: 
-// 1) If the object has a black background, it is not rendered(= transparent)
+// If the object has a black background, it is not rendered(= transparent)
 
 class RenderSystem
 {
