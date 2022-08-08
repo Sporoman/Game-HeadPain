@@ -6,11 +6,12 @@
 Game::Game() : _isGameActive(false), _hardMode(false),
 	_activeLevel(0)
 {
-	_renSys = new RenderSystem();
+	_renSys   = new RenderSystem();
 
-	_hero  = new Hero();
-	_empty = new Object(' ');
-	_wall  = new Object('#');
+	_hero     = new Hero();
+	_empty    = new Object(Entity::empty);
+	_wall     = new Object(Entity::wall);
+	_fogOfWar = new Object(Entity::fogOfWar);
 }
 
 Game::~Game()
@@ -20,6 +21,7 @@ Game::~Game()
 	delete _hero;
 	delete _empty;
 	delete _wall;
+	delete _fogOfWar;
 }
 
 void Game::Start()
@@ -67,16 +69,16 @@ void Game::Initialize()
 			unsigned char symbol = levelsData[_activeLevel][y][x];
 
 			// Create an object
-			if (symbol == mapSymbol_hero)
+			if (symbol == _hero->GetMapSymbol())
 			{
 				_hero->SetCoord(x, y);
 
 				// Set hero on objects map
 				_objectsMap[y][x] = _hero;
 			}
-			else if (symbol == mapSymbol_empty)
+			else if (symbol == _empty->GetMapSymbol())
 				_objectsMap[y][x] = _empty;
-			else if (symbol == mapSymbol_wall)
+			else if (symbol == _wall->GetMapSymbol())
 				_objectsMap[y][x] = _wall;
 			else
 			{
@@ -86,10 +88,10 @@ void Game::Initialize()
 				_objectsMap[y][x] = object;
 			}
 
-			switch (symbol)
+			switch (_objectsMap[y][x]->GetEntity())
 			{
-				case mapSymbol_crystal: _crystalsOnLvl++; break;
-				case mapSymbol_key:     _keysOnLvl++;     break;
+				case Entity::crystal:    _crystalsOnLvl++;    break;
+				case Entity::key:        _keysOnLvl++;        break;
 			}
 		}
 
@@ -115,15 +117,9 @@ void Game::Render()
 	for (int y = 0; y < _lvlSizeY; y++)
 		for (int x = 0; x < _lvlSizeX; x++)
 			if (_fogOfWarB[y][x] == false)
-			{
-				RenderObject renderObj = _objectsMap[y][x]->GetRenderObject();
-				_renSys->DrawChar(y, x, renderObj);
-			}
+				_renSys->DrawChar(y, x, _objectsMap[y][x]->GetRenderObject());
 			else
-			{
-				RenderObject r_fogOfWar{ mapSymbol_fogOfWar, Color::gray, Color::black };
-				_renSys->DrawChar(y, x, r_fogOfWar); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			}
+				_renSys->DrawChar(y, x, _fogOfWar->GetRenderObject());
 
 	RenderHud();
 	_renSys->Render();

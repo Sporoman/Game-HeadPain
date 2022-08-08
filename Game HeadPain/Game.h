@@ -16,6 +16,7 @@ private:
 	Hero*   _hero;
 	Object* _empty;
 	Object* _wall;
+	Object* _fogOfWar;
 
 	Inventory _inventoryAtLevelStart;
 	int _activeLevel;
@@ -52,19 +53,6 @@ private:
 	void SetDefaultItemsValueOnLvl();
 	void DispelFogOfWar(int y, int x);
 	void RenderHud();
-
-	static const unsigned char mapSymbol_fogOfWar = 176;
-	static const unsigned char mapSymbol_empty = ' ';
-	static const unsigned char mapSymbol_hero = 'H';
-	static const unsigned char mapSymbol_wall = '#';
-	static const unsigned char mapSymbol_door = 'D';
-	static const unsigned char mapSymbol_levelDoor = '[';
-	static const unsigned char mapSymbol_key = 'K';
-	static const unsigned char mapSymbol_levelKey = ']';
-	static const unsigned char mapSymbol_box = 'B';
-	static const unsigned char mapSymbol_exit = 'E';
-	static const unsigned char mapSymbol_crystal = 'C';
-	static const unsigned char mapSymbol_mine = 'M';
 
 	// Все объекты используют светлые цвета, а фон - тёмные (кроме ящика - он коричневый (тёмно-жёлтый))
 	const unsigned char levelsData[_levelsCount][_lvlSizeY][_lvlSizeX + 1] = {

@@ -21,8 +21,10 @@ private:
 	RenderObject  _renderObj;	// struct: symbol + color symbol + color backgorund
 
 public:
-	Object(unsigned char mapSymbol, Coord coord);
 	Object(unsigned char mapSymbol);
+	Object(unsigned char mapSymbol, Coord coord);
+	Object(Entity entity);
+	Object(Entity entity, Coord coord);
 	~Object();
 
 	static int GetObjectsCount();
@@ -40,18 +42,17 @@ public:
 	virtual const RenderObject& GetRenderObject();
 	
 	static Color GetInitializeColorBackgroundFromMap(unsigned char symbol);    // Test
+	static Entity GetInitializeEntity(unsigned char mapSymbol);
+	static unsigned char GetInitializeMapSymbol(Entity entity);
+	static unsigned char GetInitializeRenderSymbol(Entity entity);
+	static Color GetInitializeColorSymbol(Entity entity);
+	static Color GetInitializeColorBackground(Entity entity);
 
 private:
 	void MoveOnUp();
 	void MoveOnLeft();
 	void MoveOnRight();
 	void MoveOnDown();
-
-	//void GetInitializeMapSymbol(Entity entity);
-	static Entity GetInitializeEntity(unsigned char mapSymbol);
-	static unsigned char GetInitializeRenderSymbol(Entity entity);
-	static Color GetInitializeColorSymbol(Entity entity);
-	static Color GetInitializeColorBackground(Entity entity);
 };
 
 enum class Entity

@@ -14,8 +14,7 @@ Object::Object(unsigned char mapSymbol, Coord coord)
 	__countObjects++;
 
 	// Initializing the object
-	//_mapSymbol;
-	_entity = GetInitializeEntity(_mapSymbol);
+	_entity    = GetInitializeEntity(_mapSymbol);
 
 	// Initializing the render object
 	_renderObj.symbol	       = GetInitializeRenderSymbol(_entity);
@@ -24,6 +23,28 @@ Object::Object(unsigned char mapSymbol, Coord coord)
 }
 
 Object::Object(unsigned char mapSymbol) : Object(mapSymbol, Coord{ 0,0 })
+{}
+
+Object::Object(Entity entity, Coord coord)
+	: _entity(entity), _coord(coord)
+{
+	// Object id
+	_id = __idObjects;
+	__idObjects++;
+
+	// Plus the count of objects
+	__countObjects++;
+
+	// Initializing the object
+	_mapSymbol = GetInitializeMapSymbol(_entity);
+
+	// Initializing the render object
+	_renderObj.symbol = GetInitializeRenderSymbol(_entity);
+	_renderObj.symbolColor = GetInitializeColorSymbol(_entity);
+	_renderObj.backgroundColor = GetInitializeColorBackground(_entity);
+}
+
+Object::Object(Entity entity) : Object(entity, Coord{ 0,0 })
 {}
 
 Object::~Object()
@@ -150,6 +171,28 @@ Entity Object::GetInitializeEntity(unsigned char mapSymbol)
 		case 176:	return Entity::fogOfWar;
 
 		default: return Entity::error;
+	}
+}
+
+unsigned char Object::GetInitializeMapSymbol(Entity entity)
+{
+	switch (entity)
+	{
+		case Entity::empty:			return ' ';
+		case Entity::hero:			return 'H';
+		case Entity::wall:			return '#';
+		case Entity::door:			return 'D';
+		case Entity::levelDoor:		return '[';
+		case Entity::key:			return 'K';
+		case Entity::levelKey:		return ']';
+		case Entity::box:			return 'B';
+		case Entity::exitDoor:		return 'E';
+		case Entity::crystal:		return 'C';
+		case Entity::mine:			return 'M';
+		case Entity::fogOfWar:		return 176;
+
+		case Entity::error:
+		default: return '?';
 	}
 }
 
