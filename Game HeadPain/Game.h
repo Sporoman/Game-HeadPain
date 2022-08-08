@@ -22,12 +22,13 @@ private:
 	int _crystalsOnLvl;
 	int _keysOnLvl;
 
-	const int _lvlSizeY = 21;
-	const int _lvlSizeX = 40;
-	const int _levelsCount = 7;
-	const int _indentX = 45;
+	static const int _lvlSizeY    = 21;
+	static const int _lvlSizeX    = 40;
+	static const int _levelsCount = 7;
+	static const int _indentX     = 45;
 
-	Object* _objectsMap[21][40];
+	bool _fogOfWarB[_lvlSizeY][_lvlSizeX]{ false };
+	Object* _objectsMap[_lvlSizeY][_lvlSizeX];
 	
 public:
 	Game();
@@ -50,7 +51,6 @@ private:
 
 	void SetDefaultItemsValueOnLvl();
 	void DispelFogOfWar(int y, int x);
-
 	void RenderHud();
 
 	static const unsigned char mapSymbol_fogOfWar = 176;
@@ -66,14 +66,8 @@ private:
 	static const unsigned char mapSymbol_crystal = 'C';
 	static const unsigned char mapSymbol_mine = 'M';
 
-	const int lvlSizeY = 21;
-	const int lvlSizeX = 40;
-	const int levelsCount = 7;
-
-	bool fogOfWarB[21][40]{ false };
-
 	// Все объекты используют светлые цвета, а фон - тёмные (кроме ящика - он коричневый (тёмно-жёлтый))
-	const unsigned char levelsData[7][21][40 + 1] = {
+	const unsigned char levelsData[_levelsCount][_lvlSizeY][_lvlSizeX + 1] = {
 																	{
 																		"########################################",
 																		"########################################",
@@ -226,7 +220,7 @@ private:
 	// S = Тёмно-серый
 	// - = Серый
 
-	const unsigned char levelsBackgroundData[7][21][40 + 1] = {
+	const unsigned char levelsBackgroundData[_levelsCount][_lvlSizeY][_lvlSizeX + 1] = {
 																	{
 																		"########################################",
 																		"########################################",
@@ -236,11 +230,11 @@ private:
 																		"########################################",
 																		"########################################",
 																		"########################################",
-																		"###   -----#--   --# #- -----#BBBBBBS###",
-																		"##   --- ----------  ---- ---BBBBBBBSS##",
-																		"## H-- --------- -#-# #-----BBBBB#BBBSSM",
-																		"##   ---- ---- --------   -- BBBBBBBSS##",
-																		"###  -  ---#- --- -#-#-------#BBBBBBS###",
+																		"###SSSSSSSS#SSSSSSS#S#SSSSSSS#BBBBBBS###",
+																		"##                          BBBBBBBBSS##",
+																		"##                         CCCCCC#BBBSSM",
+																		"##                          BBBBBBBBSS##",
+																		"###SSSSSSSS#SSSSSSS#S#SSSSSSS#BBBBBBS###",
 																		"########################################",
 																		"########################################",
 																		"########################################",
@@ -297,16 +291,6 @@ private:
 																		"########################################",
 																	}
 	};
-
 };
-
-// Objects Map.
-// Initially, the idea was to store the addresses of objects, this would allow us to address them directly.
-// But this solution does not allow us to effectively remove objects from the vector (most likely, i just don't know how).
-// ??? It may be worth making the Objects Map store the ID of objects in a vector.
-// ??? This will allow us to access these elements and work with them at the vector level.
-// (It seems to me that the solution is temporary).
-// -----------------------------------------------------------------
-// As a result, i decided to leave the map of objects, but at the same time remove the vector in principle.
 
 #endif // GAME_H

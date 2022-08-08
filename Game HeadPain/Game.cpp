@@ -61,7 +61,7 @@ void Game::Initialize()
 		for (int x = 0; x < _lvlSizeX; x++)
 		{
 			if (_hardMode == true)
-				fogOfWarB[y][x] = true;
+				_fogOfWarB[y][x] = true;
 
 			// Take symbol from levels map
 			unsigned char symbol = levelsData[_activeLevel][y][x];
@@ -114,7 +114,7 @@ void Game::Render()
 {
 	for (int y = 0; y < _lvlSizeY; y++)
 		for (int x = 0; x < _lvlSizeX; x++)
-			if (fogOfWarB[y][x] == false)
+			if (_fogOfWarB[y][x] == false)
 			{
 				RenderObject renderObj = _objectsMap[y][x]->GetRenderObject();
 				_renSys->DrawChar(y, x, renderObj);
@@ -174,7 +174,7 @@ void Game::RenderHud()
 
 	_renSys->SendText(_lvlSizeY + 1, 4, "Use WASD to move ");
 	_renSys->SendText(_lvlSizeY + 1, 4 + 17, "Hero", Color::green);
-	_renSys->SendText(_lvlSizeY + 2, 4, "Press R to restart");
+	_renSys->SendText(_lvlSizeY + 2, 4, "Press R to restart level.");
 	_renSys->SendText(_lvlSizeY + 2, 4 + 6, "R", Color::red);
 }
 
@@ -352,11 +352,11 @@ void Game::DispelFogOfWar(int y_pos, int x_pos)
 	if (_hardMode == true)
 		for (int y = y_pos - 2; y <= y_pos + 2; y++)
 			for (int x = x_pos - 3; x <= x_pos + 3; x++)
-				if (fogOfWarB[y][x] == true)
+				if (_fogOfWarB[y][x] == true)
 				{
 					// Dispel the fog of war
 					// and redraw background symbol
-					fogOfWarB[y][x] = false;
+					_fogOfWarB[y][x] = false;
 					_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
 				}
 }
