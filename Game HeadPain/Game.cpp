@@ -322,7 +322,7 @@ void Game::MoveHeroTo(int y, int x)
 
 		// Remove Hero and set Empty
 		_objectsMap[heroCoord.y][heroCoord.x] = _empty;
-		if ((actualObject != _hero) && (actualObject != _empty))
+		if ((actualObject != _hero) && (actualObject != _empty) && (actualObject != _fogOfWar))
 			delete actualObject;
 
 		// Set Hero on objects map and set his position
@@ -348,13 +348,13 @@ void Game::DispelFogOfWar(int y_pos, int x_pos)
 	if (_hardMode == true)
 		for (int y = y_pos - 2; y <= y_pos + 2; y++)
 			for (int x = x_pos - 3; x <= x_pos + 3; x++)
-				if (_fogOfWarB[y][x] == true)
-				{
-					// Dispel the fog of war
-					// and redraw background symbol
-					_fogOfWarB[y][x] = false;
-					_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
-				}
+				if (x < _lvlSizeX && y < _lvlSizeY && x >= 0 && y >= 0)
+					if (_fogOfWarB[y][x] == true)
+					{
+						// Dispel the fog of war and redraw background symbol
+						_fogOfWarB[y][x] = false;
+						_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
+					}
 }
 
 Object* Game::CreateObject(unsigned char symbol, Coord coord)
