@@ -111,7 +111,7 @@ void Object::MoveOnUp()
 	if (_coord.y <= 0)
 		_coord.y = 0;
 	else
-		--_coord.y;
+		_coord.y--;
 }
 
 void Object::MoveOnLeft()
@@ -119,24 +119,23 @@ void Object::MoveOnLeft()
 	if (_coord.x <= 0)
 		_coord.x = 0;
 	else
-		--_coord.x;
+		_coord.x--;
 }
 
 void Object::MoveOnRight()
 {
-	++_coord.x;
+	_coord.x++;
 }
 
 void Object::MoveOnDown()
 {
-	++_coord.y;
+	_coord.y++;
 }
 
 Entity Object::GetInitializeEntity(unsigned char mapSymbol)
 {
 	switch (mapSymbol)
 	{
-		case 176:	return Entity::fogOfWar;
 		case ' ':	return Entity::empty;
 		case 'H':	return Entity::hero;
 		case '#':	return Entity::wall;
@@ -148,6 +147,7 @@ Entity Object::GetInitializeEntity(unsigned char mapSymbol)
 		case 'E':	return Entity::exitDoor;
 		case 'C':	return Entity::crystal;
 		case 'M':	return Entity::mine;
+		case 176:	return Entity::fogOfWar;
 
 		default: return Entity::error;
 	}
