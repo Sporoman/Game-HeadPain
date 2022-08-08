@@ -36,23 +36,21 @@ public:
 	~Game();
 
 	void Start();
-	void Initialize();
-	void Render();
-	
-	void RestartLevel();
-
-	void Move();
-	void MoveHeroTo(int y, int x);
-
-	void Shutdown();
 
 private:
 	void ChooseMode();
-	Object* CreateObject(unsigned char symbol, Coord coord);
+	void Shutdown();
 
+	void Initialize();
+	void Render();
+	void RestartLevel();
+	void Move();
+	void MoveHeroTo(int y, int x);
 	void SetDefaultItemsValueOnLvl();
 	void DispelFogOfWar(int y, int x);
 	void RenderHud();
+
+	Object* CreateObject(unsigned char symbol, Coord coord);
 
 	// Все объекты используют светлые цвета, а фон - тёмные (кроме ящика - он коричневый (тёмно-жёлтый))
 	const unsigned char levelsData[_levelsCount][_lvlSizeY][_lvlSizeX + 1] = {
