@@ -3,8 +3,7 @@
 #include <iostream>
 #include <conio.h>
 
-Game::Game() : _isGameActive(false), _hardMode(false),
-	_activeLevel(0)
+Game::Game() : _isGameActive(false), _hardMode(false), _activeLevel(0)
 {
 	_renSys   = new RenderSystem();
 
