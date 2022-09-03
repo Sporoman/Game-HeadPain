@@ -1,0 +1,21 @@
+########################################
+##KMB     M   B    C#  M    B  B      ##
+##C   M  B  B#CM  B #    C  M    MC BB##
+## M  C  M B #B  M  CM  B#M B #CB BM  ##
+##C B MC   C #  B   #  M CB  #K#      ##
+##B   ######### M   #  B    #  #   C  ##
+## BMC#  BMC  #   MC#M   M #M  #  M#  ##
+##  BM#     MB##D#######D##MC B#  B  B##
+##C   DC####  #M B M#E  C #CMB #      ##
+########C CB  #  B #C B B #   M##B MMC##
+##CCCCCC# M B #KCB H#   BC#   B C#    ##
+##  M   #   C ############# M  BC##   ##
+## B M  #MB M#     CM   C   B   #  BMB##
+##B B  #    #  BM  MB    MB  M  #     ##
+##   M#CM MB#CB B B   M     B   #CM   ##
+## C   #     #  MB ########MC B#MB  C ##
+##BBM  K# BM B#   # C      ####KB   BB##
+## B   #C#   M #D# C B# BB     #M  M  ##
+## B      BMB B   B      B M  BC#    B##
+##C B M        MC  B   M     B     B B##
+########################################
