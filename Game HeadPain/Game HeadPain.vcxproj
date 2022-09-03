@@ -158,6 +158,13 @@
     <ClInclude Include="renderSystem\renderSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="levels\level_0.txt" />
+    <Text Include="levels\level_1.txt" />
+    <Text Include="levels\level_2.txt" />
+    <Text Include="levels\level_3.txt" />
+    <Text Include="levels\level_4.txt" />
+    <Text Include="levels\level_5.txt" />
+    <Text Include="levels\readme_ru.txt" />
     <Text Include="settings.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
