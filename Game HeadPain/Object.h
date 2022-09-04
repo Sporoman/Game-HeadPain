@@ -2,8 +2,8 @@
 #define OBJECT_H
 
 #include "Coord.h"
-#include "Colors.h"
-#include "RenderObject.h"
+#include "renderSystem//colors.h"
+#include "renderSystem//RenderObject.h"
 
 enum class Entity;
 enum class DirMove;

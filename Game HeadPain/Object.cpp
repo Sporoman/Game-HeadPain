@@ -17,9 +17,9 @@ Object::Object(unsigned char mapSymbol, Coord coord)
 	_entity    = GetInitializeEntity(_mapSymbol);
 
 	// Initializing the render object
-	_renderObj.symbol	       = GetInitializeRenderSymbol(_entity);
-	_renderObj.symbolColor     = GetInitializeColorSymbol(_entity);
-	_renderObj.backgroundColor = GetInitializeColorBackground(_entity);
+	_renderObj.symbol	   = GetInitializeRenderSymbol(_entity);
+	_renderObj.symbolColor = GetInitializeColorSymbol(_entity);
+	_renderObj.bkgColor    = GetInitializeColorBackground(_entity);
 }
 
 Object::Object(unsigned char mapSymbol) : Object(mapSymbol, Coord{ 0,0 })
@@ -39,9 +39,9 @@ Object::Object(Entity entity, Coord coord)
 	_mapSymbol = GetInitializeMapSymbol(_entity);
 
 	// Initializing the render object
-	_renderObj.symbol = GetInitializeRenderSymbol(_entity);
+	_renderObj.symbol      = GetInitializeRenderSymbol(_entity);
 	_renderObj.symbolColor = GetInitializeColorSymbol(_entity);
-	_renderObj.backgroundColor = GetInitializeColorBackground(_entity);
+	_renderObj.bkgColor    = GetInitializeColorBackground(_entity);
 }
 
 Object::Object(Entity entity) : Object(entity, Coord{ 0,0 })
@@ -104,7 +104,7 @@ Color Object::GetColorSymbol()
 
 Color Object::GetColorBackground()
 {
-	return _renderObj.backgroundColor;
+	return _renderObj.bkgColor;
 }
 
 const RenderObject& Object::GetRenderObject()
