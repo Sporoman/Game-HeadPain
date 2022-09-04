@@ -21,6 +21,8 @@ public:
 	const std::string* GetLastLevel();
 	const Settings* const GetSettings();
 
+	const std::map <std::string, int>* const GetSettings();
+
 private:
 	bool ReadSettings();
 	void SetupSettings();

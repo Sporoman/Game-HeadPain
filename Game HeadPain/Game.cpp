@@ -87,7 +87,7 @@ void Game::ChooseMode()
 			case '2': check = false; _hardMode = true; break;
 
 			default:
-			_renSys->SendText(2, 4, "Just choose mode -_-", static_cast<Color>(rand() % 16));	// 16 ColorsS
+			_renSys->SendText(2, 4, "Just choose mode -_-", static_cast<Color>(rand() % 16));	// 16 Colors
 			_renSys->Render();
 		}
 	}

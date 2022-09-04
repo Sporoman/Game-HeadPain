@@ -7,6 +7,11 @@
 // ---------
 // Сделать считывание карт из текстового файла
 
+const std::string GameManager::s_levelsPath    = "levels/";
+const std::string GameManager::s_mapFileName   = "map";
+const std::string GameManager::s_extensionName = ".txt";
+const std::string GameManager::s_settingsFileName  = "settings.txt";
+
 GameManager::GameManager()
 {
 	_settings  = new Settings();
