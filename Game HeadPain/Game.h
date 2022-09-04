@@ -37,6 +37,8 @@ public:
 
 private:
 	void ChooseMode();
+	void ClearObjectMap();
+	Object* CreateObject(unsigned char symbol, Coord coord);
 	void Shutdown();
 
 	void Initialize();
@@ -48,7 +50,6 @@ private:
 	void DispelFogOfWar(int y, int x);
 	void RenderHud();
 
-	Object* CreateObject(unsigned char symbol, Coord coord);
 };
 
 #endif // GAME_H
