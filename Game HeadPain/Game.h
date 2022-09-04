@@ -14,7 +14,7 @@ private:
 	bool _successfulBkgRead;
 
 	RenderSystem* _renSys;
-	GameManager* _manager;
+	GameManager*  _manager;
 	const Settings* _settings;
 
 	Hero*   _hero;
@@ -44,13 +44,12 @@ private:
 
 	void Initialize();
 	void Render();
+	void RenderHud();
 	void RestartLevel();
 	void Move();
 	void MoveHeroTo(int y, int x);
-	void SetDefaultItemsValueOnLvl();
 	void DispelFogOfWar(int y, int x);
-	void RenderHud();
-
+	void SetDefaultItemsValueOnLvl();
 };
 
 #endif // GAME_H
