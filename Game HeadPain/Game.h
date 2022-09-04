@@ -11,6 +11,7 @@ class Game
 private:
 	bool _isGameActive;
 	bool _hardMode;
+	bool _successfulBkgRead;
 
 	RenderSystem* _renSys;
 	GameManager* _manager;

@@ -3,7 +3,8 @@
 #include <iostream>
 #include <conio.h>
 
-Game::Game() : _isGameActive(false), _hardMode(false), _activeLevel(0)
+Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false),
+	_activeLevel(0), _crystalsOnLvl(0), _keysOnLvl(0)
 {
 	_renSys    = new RenderSystem();
 	_manager   = new GameManager();
@@ -96,12 +97,16 @@ void Game::Initialize()
 {
 	// Set default items value on this level
 	SetDefaultItemsValueOnLvl();
+	_successfulBkgRead = false;
 
 	// Clear object map
 	ClearObjectMap();
 
 	// Load level and objects
-	const std::string* level(_manager->GetLevel(_activeLevel));
+	if (!_manager->ReadLevel(_activeLevel))
+		Shutdown();
+
+	const std::string* level(_manager->GetLastLevel());
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
 		{
@@ -138,20 +143,24 @@ void Game::Initialize()
 			}
 		}
 
-	// Delete temp level string
-	delete level;
-
 	// Clear render system
 	_renSys->Clear();
 
-	// Render Background if a background is exists and if hardMode is false (
-	const std::string* levelBackground(_manager->GetLevel(_activeLevel, true));
-	if (levelBackground != nullptr)
+	// Render Background
+	// if a background does not exists, just do not render it
+	// if hard mode is false, draw the entire background
+	// if hard mode is true, memorizing a successful background read for rendering during fog dispel
+	if (_manager->ReadLevel(_activeLevel, true))
 		if (_hardMode == false)
+		{
+			const std::string* levelBackground(_manager->GetLastLevel());
 			for (int y = 0; y < _settings->lvlSizeY; ++y)
 				for (int x = 0; x < _settings->lvlSizeX; ++x)
 					_renSys->DrawBackCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
-
+		}
+		else
+			_successfulBkgRead = true;
+	
 	// Remember the inventory state at the level start
 	_inventoryAtLevelStart = _hero->GetInventory();
 
@@ -386,16 +395,19 @@ void Game::MoveHeroTo(int y, int x)
 
 void Game::DispelFogOfWar(int y_pos, int x_pos)
 {
-	if (_hardMode == true)
+	if ((_hardMode == true) && (_successfulBkgRead = true))
+	{
+		const std::string* levelBackground(_manager->GetLastLevel());
 		for (int y = y_pos - 2; y <= y_pos + 2; y++)
 			for (int x = x_pos - 3; x <= x_pos + 3; x++)
-				if (x < _settings->lvlSizeX && y < _settings->lvlSizeY && x >= 0 && y >= 0)
-					if (_fogOfWarB[y][x] == true)
-					{
-						// Dispel the fog of war and redraw background symbol
-						_fogOfWarB[y][x] = false;
-						//_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
-					}
+				if (x < _settings->lvlSizeX && y < _settings->lvlSizeY && x >= 0 && y >= 0
+					&& (_fogOfWarB[y][x] == true))
+				{
+					// Dispel the fog of war and redraw background symbol
+					_fogOfWarB[y][x] = false;
+					_renSys->DrawBackCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
+				}
+	}
 }
 
 void Game::SetDefaultItemsValueOnLvl()
