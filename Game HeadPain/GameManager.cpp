@@ -8,10 +8,12 @@ GameManager::GameManager()
 	_lastLevel = new std::string();
 
 	// Setup start settings
-	_mapSettings["Levels"]   = _settings->levelsCount;
-	_mapSettings["LvlSizeX"] = _settings->lvlSizeX;
-	_mapSettings["LvlSizeY"] = _settings->lvlSizeY;
-	_mapSettings["IndentForHudText"] = _settings->indentX;
+	_mapSettings["Levels"]      = _settings->levelsCount;
+	_mapSettings["LvlSizeX"]    = _settings->lvlSizeX;
+	_mapSettings["LvlSizeY"]    = _settings->lvlSizeY;
+	_mapSettings["HudIndentX"]  = _settings->hudIndentX;
+	_mapSettings["HudMaxSizeX"] = _settings->hudMaxSizeX;
+	_mapSettings["HudMaxSizeY"] = _settings->hudMaxSizeY;
 
 	// Reading settings from a settings file
 	ReadSettings();
@@ -97,7 +99,9 @@ bool GameManager::ReadSettings()
 void GameManager::SetupSettings()
 {
 	_settings->levelsCount = _mapSettings["Levels"];
-	_settings->lvlSizeX = _mapSettings["LvlSizeX"];
-	_settings->lvlSizeY = _mapSettings["LvlSizeY"];
-	_settings->indentX  = _mapSettings["IndentForHudText"];
+	_settings->lvlSizeX    = _mapSettings["LvlSizeX"];
+	_settings->lvlSizeY    = _mapSettings["LvlSizeY"];
+	_settings->hudIndentX  = _mapSettings["HudIndentX"];
+	_settings->hudMaxSizeX = _mapSettings["HudMaxSizeX"];
+	_settings->hudMaxSizeY = _mapSettings["HudMaxSizeY"];
 }

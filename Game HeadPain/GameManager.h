@@ -31,7 +31,9 @@ struct Settings
 	int levelsCount = 7;
 	int lvlSizeY = 21;
 	int lvlSizeX = 40;
-	int indentX = 5;
+	int hudIndentX = 5;
+	int hudMaxSizeX = 25;
+	int hudMaxSizeY = 10;
 };
 
 #endif // !MAPMANAGER
