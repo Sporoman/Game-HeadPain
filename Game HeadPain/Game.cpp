@@ -36,6 +36,16 @@ Game::~Game()
 	delete _empty;
 	delete _wall;
 	delete _fogOfWar;
+
+	ClearObjectMap();
+	for (int y = 0; y < _settings->lvlSizeY; ++y)
+	{
+		delete _objectsMap[y];
+		delete _fogOfWarB[y];
+	}
+	
+	delete[] _objectsMap;
+	delete[] _fogOfWarB;
 }
 
 void Game::Start()
@@ -60,28 +70,46 @@ void Game::Start()
 	Shutdown();
 }
 
+void Game::ClearObjectMap()
+{
+	for (int y = 0; y < _settings->lvlSizeY; y++)
+		for (int x = 0; x < _settings->lvlSizeX; x++)
+			if ((_objectsMap[y][x] != _hero) && (_objectsMap[y][x] != _empty) && (_objectsMap[y][x] != _wall)
+				&& _objectsMap[y][x] != nullptr)
+				delete _objectsMap[y][x];
+}
+
+Object* Game::CreateObject(unsigned char symbol, Coord coord)
+{
+	return new Object(symbol, coord);
+}
+
+void Game::Shutdown()
+{
+	system("cls");
+	printf("\n\tThank you for playing :) Bye-bye!\n");
+	Sleep(3000);
+
+}
+
 void Game::Initialize()
 {
 	// Set default items value on this level
 	SetDefaultItemsValueOnLvl();
 
 	// Clear object map
-	for (int y = 0; y < _settings->lvlSizeY; y++)
-		for (int x = 0; x < _settings->lvlSizeX; x++)
-			if ((_objectsMap[y][x] != _hero) && (_objectsMap[y][x] != _empty) && (_objectsMap[y][x] != _wall)
-				&& _objectsMap[y][x] != nullptr)
-				delete _objectsMap[y][x];
+	ClearObjectMap();
 
 	// Load level and objects
-	const std::string* levelFromFile(_manager->GetLevel(_activeLevel));
-	for (int y = 0; y < _settings->lvlSizeY; y++)
-		for (int x = 0; x < _settings->lvlSizeX; x++)
+	const std::string* level(_manager->GetLevel(_activeLevel));
+	for (int y = 0; y < _settings->lvlSizeY; ++y)
+		for (int x = 0; x < _settings->lvlSizeX; ++x)
 		{
 			if (_hardMode == true)
 				_fogOfWarB[y][x] = true;
 
-			// Take symbol from levels map
-			unsigned char symbol = levelFromFile->at(y * _settings->lvlSizeX + x);
+			// Take symbol from level map
+			unsigned char symbol = level->at(y * _settings->lvlSizeX + x);
 
 			// Create an object
 			if (symbol == _hero->GetMapSymbol())
@@ -111,16 +139,18 @@ void Game::Initialize()
 		}
 
 	// Delete temp level string
-	delete levelFromFile;
+	delete level;
 
 	// Clear render system
 	_renSys->Clear();
 
-	// Render Background if hardMode is false
-	if (_hardMode == false)
-		for (int y = 0; y < _settings->lvlSizeY; ++y)
-			for (int x = 0; x < _settings->lvlSizeX; ++x)
-				//_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
+	// Render Background if a background is exists and if hardMode is false (
+	const std::string* levelBackground(_manager->GetLevel(_activeLevel, true));
+	if (levelBackground != nullptr)
+		if (_hardMode == false)
+			for (int y = 0; y < _settings->lvlSizeY; ++y)
+				for (int x = 0; x < _settings->lvlSizeX; ++x)
+					_renSys->DrawBackCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
 
 	// Remember the inventory state at the level start
 	_inventoryAtLevelStart = _hero->GetInventory();
@@ -354,14 +384,6 @@ void Game::MoveHeroTo(int y, int x)
 	}
 }
 
-void Game::Shutdown()
-{
-	system("cls");
-	printf("\n\tThank you for playing :) Bye-bye!\n");
-	Sleep(3000);
-
-}
-
 void Game::DispelFogOfWar(int y_pos, int x_pos)
 {
 	if (_hardMode == true)
@@ -374,11 +396,6 @@ void Game::DispelFogOfWar(int y_pos, int x_pos)
 						_fogOfWarB[y][x] = false;
 						//_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
 					}
-}
-
-Object* Game::CreateObject(unsigned char symbol, Coord coord)
-{
-	return new Object(symbol, coord);
 }
 
 void Game::SetDefaultItemsValueOnLvl()
