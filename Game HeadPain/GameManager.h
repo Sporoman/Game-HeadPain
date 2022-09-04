@@ -11,12 +11,14 @@ class GameManager
 private:
 	std::map <std::string, int> _mapSettings;
 	Settings* _settings;
+	std::string* _lastLevel;
 
 public:
 	GameManager();
 	~GameManager();
 
-	const std::string* GetLevel(int level, bool background = false);
+	bool ReadLevel(int level, bool background = false);
+	const std::string* GetLastLevel();
 	const Settings* const GetSettings();
 
 private:

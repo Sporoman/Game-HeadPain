@@ -9,7 +9,8 @@
 
 GameManager::GameManager()
 {
-	_settings = new Settings();
+	_settings  = new Settings();
+	_lastLevel = new std::string();
 
 	// Setup start settings
 	_mapSettings["Levels"]   = _settings->levelsCount;
@@ -24,12 +25,13 @@ GameManager::GameManager()
 GameManager::~GameManager()
 {
 	delete _settings;
+	delete _lastLevel; 
 }
 
-const std::string* GameManager::GetLevel(int level, bool background)
+bool GameManager::ReadLevel(int level, bool background)
 {
 	if (level < 0 || level >= _settings->levelsCount)
-		return nullptr;
+		return false;
 
 	// Opening selected level
 	std::string fileName;
@@ -45,17 +47,22 @@ const std::string* GameManager::GetLevel(int level, bool background)
 
 	std::fstream file(fileName, std::ios_base::in);
 	if (!file.is_open())
-		return nullptr;
+		return false;
 
 	// Reading level from a file
-	std::string* levelStr = new std::string;
 	std::string line;
 
+	_lastLevel->clear();
 	while (getline(file, line))
-		levelStr->append(line);
+		_lastLevel->append(line);
 
 	file.close();
-	return levelStr;
+	return true;
+}
+
+const std::string* GameManager::GetLastLevel()
+{
+	return _lastLevel;
 }
 
 const Settings* const GameManager::GetSettings()
