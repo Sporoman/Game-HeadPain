@@ -4,9 +4,12 @@
 Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false),
 	_activeLevel(0), _crystalsOnLvl(0), _keysOnLvl(0)
 {
-	_renSys    = new RenderSystem();
 	_manager   = new GameManager();
 	_settings  = _manager->GetSettings();
+
+	const int renSizeX = _settings->lvlSizeX + _settings->hudMaxSizeX;
+	const int renSizeY = _settings->lvlSizeY + _settings->hudMaxSizeY;
+	_renSys = new RenderSystem(renSizeY, renSizeX);
 
 	_hero      = new Hero();
 	_empty     = new Object(Entity::empty);
@@ -182,7 +185,7 @@ void Game::Initialize()
 			const std::string* levelBackground(_manager->GetLastLevel());
 			for (int y = 0; y < _settings->lvlSizeY; ++y)
 				for (int x = 0; x < _settings->lvlSizeX; ++x)
-					_renSys->DrawBackCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
+					_renSys->DrawBkgCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
 		}
 		else
 			_successfulBkgRead = true;
@@ -213,7 +216,7 @@ void Game::RenderHud()
 	static char textBuffer[25];
 
 	Inventory inventory = _hero->GetInventory();
-	const int _indentX = _settings->lvlSizeX + _settings->indentX;
+	const int _indentX = _settings->lvlSizeX + _settings->hudIndentX;
 
 	// GLHF
 	sprintf_s(textBuffer, "Level %i  ", _activeLevel + 1);
@@ -426,7 +429,7 @@ void Game::DispelFogOfWar(int y_pos, int x_pos)
 				{
 					// Dispel the fog of war and redraw background symbol
 					_fogOfWarB[y][x] = false;
-					_renSys->DrawBackCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
+					_renSys->DrawBkgCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
 				}
 	}
 }
