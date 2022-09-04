@@ -282,14 +282,9 @@ void Game::Move()
 		case 'a': case 228: case 148:	MoveHeroTo(heroCoord.y, heroCoord.x - 1);	break;
 		case 'd': case 162: case 130:	MoveHeroTo(heroCoord.y, heroCoord.x + 1);   break;
 
-		// Restart level
-		case 'r': case 170: case 138:	RestartLevel();   break;
-	
-		// Next level
-		case '2':	_activeLevel++;		Initialize();	  break;
-
-		// Back level
-		case '1':	_activeLevel--;		Initialize();	  break;
+		case 'r': case 170: case 138:	RestartLevel();   break;	// Restart level
+		case '2':	_activeLevel++;		Initialize();	  break;	// Next level
+		case '1':	_activeLevel--;		Initialize();	  break;	// Back level
 	}
 }
 
@@ -413,7 +408,7 @@ void Game::MoveHeroTo(int y, int x)
 		_objectsMap[y][x] = _hero;
 		_hero->SetCoord(x, y);
 
-		// Reveal Fog of war
+		// Dispel Fog of war
 		if (_hardMode == true)
 			DispelFogOfWar(y, x);
 	}
