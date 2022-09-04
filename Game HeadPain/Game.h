@@ -14,7 +14,7 @@ private:
 	bool _successfulBkgRead;
 
 	RenderSystem* _renSys;
-	GameManager* _manager;
+	GameManager*  _manager;
 	const Settings* _settings;
 
 	Hero*   _hero;
