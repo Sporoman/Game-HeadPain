@@ -1,26 +1,51 @@
 #include "Game.h"
 
-#include <iostream>
 #include <conio.h>
 
-Game::Game() : _isGameActive(false), _hardMode(false), _activeLevel(0)
+Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false),
+	_activeLevel(0), _crystalsOnLvl(0), _keysOnLvl(0)
 {
-	_renSys   = new RenderSystem();
+	_renSys    = new RenderSystem();
+	_manager   = new GameManager();
+	_settings  = _manager->GetSettings();
 
-	_hero     = new Hero();
-	_empty    = new Object(Entity::empty);
-	_wall     = new Object(Entity::wall);
-	_fogOfWar = new Object(Entity::fogOfWar);
+	_hero      = new Hero();
+	_empty     = new Object(Entity::empty);
+	_wall      = new Object(Entity::wall);
+	_fogOfWar  = new Object(Entity::fogOfWar);
+
+	_objectsMap = new Object**[_settings->lvlSizeY];
+	_fogOfWarB  = new bool* [_settings->lvlSizeY];
+
+	for (int y = 0; y < _settings->lvlSizeY; ++y)
+	{
+		_objectsMap[y] = new Object * [_settings->lvlSizeX];
+		_fogOfWarB[y] = new bool[_settings->lvlSizeX] { false };
+
+		for (int x = 0; x < _settings->lvlSizeX; ++x)
+			_objectsMap[y][x] = nullptr;
+	}
 }
 
 Game::~Game()
 {
 	delete _renSys;
+	delete _manager;
 
 	delete _hero;
 	delete _empty;
 	delete _wall;
 	delete _fogOfWar;
+
+	ClearObjectMap();
+	for (int y = 0; y < _settings->lvlSizeY; ++y)
+	{
+		delete _objectsMap[y];
+		delete _fogOfWarB[y];
+	}
+	
+	delete[] _objectsMap;
+	delete[] _fogOfWarB;
 }
 
 void Game::Start()
@@ -28,7 +53,7 @@ void Game::Start()
 	ChooseMode();
 	_isGameActive = true;
 
-	while (_activeLevel != _levelsCount)
+	while (_activeLevel != _manager->GetSettings()->levelsCount)
 	{
 		Initialize();
 
@@ -45,27 +70,78 @@ void Game::Start()
 	Shutdown();
 }
 
+void Game::ChooseMode()
+{
+	_renSys->SendText(1, 4, "Choose mode (1 - s1mple, 2 - hard)");
+	_renSys->Render();
+
+	bool check = true;
+	while(check)
+	{
+		
+		unsigned char inputChar = _getch();
+		inputChar = tolower(inputChar);
+
+		switch (inputChar)
+		{
+			case '1': check = false; break;
+			case '2': check = false; _hardMode = true; break;
+
+			default:
+			_renSys->SendText(2, 4, "Just choose mode -_-");
+			_renSys->Render();
+		}
+	}
+}
+
+void Game::ClearObjectMap()
+{
+	for (int y = 0; y < _settings->lvlSizeY; y++)
+		for (int x = 0; x < _settings->lvlSizeX; x++)
+			if ((_objectsMap[y][x] != _hero) && (_objectsMap[y][x] != _empty) && (_objectsMap[y][x] != _wall)
+				&& _objectsMap[y][x] != nullptr)
+				delete _objectsMap[y][x];
+}
+
+Object* Game::CreateObject(unsigned char symbol, Coord coord)
+{
+	return new Object(symbol, coord);
+}
+
+void Game::Shutdown()
+{
+	_renSys->Clear();
+	_renSys->SendText(1, 4, "Thank you for playing :) Bye - bye!");
+	_renSys->Render();
+
+	Sleep(3000);
+}
+
 void Game::Initialize()
 {
 	// Set default items value on this level
 	SetDefaultItemsValueOnLvl();
+	_successfulBkgRead = false;
 
 	// Clear object map
-	for (int y = 0; y < _lvlSizeY; y++)
-		for (int x = 0; x < _lvlSizeX; x++)
-			if ((_objectsMap[y][x] != _hero) && (_objectsMap[y][x] != _empty) && (_objectsMap[y][x] != _wall)
-				&& _objectsMap[y][x] != nullptr)
-				delete _objectsMap[y][x];
+	ClearObjectMap();
 
-	// Load objects
-	for (int y = 0; y < _lvlSizeY; y++)
-		for (int x = 0; x < _lvlSizeX; x++)
+	// Load level and objects
+	if (!_manager->ReadLevel(_activeLevel))
+	{
+		_isGameActive = false;
+		return;
+	}
+
+	const std::string* level(_manager->GetLastLevel());
+	for (int y = 0; y < _settings->lvlSizeY; ++y)
+		for (int x = 0; x < _settings->lvlSizeX; ++x)
 		{
 			if (_hardMode == true)
 				_fogOfWarB[y][x] = true;
 
-			// Take symbol from levels map
-			unsigned char symbol = levelsData[_activeLevel][y][x];
+			// Take symbol from level map
+			unsigned char symbol = level->at(y * _settings->lvlSizeX + x);
 
 			// Create an object
 			if (symbol == _hero->GetMapSymbol())
@@ -97,12 +173,21 @@ void Game::Initialize()
 	// Clear render system
 	_renSys->Clear();
 
-	// Render Background if hardMode is false
-	if (_hardMode == false)
-		for (int y = 0; y < _lvlSizeY; ++y)
-			for (int x = 0; x < _lvlSizeX; ++x)
-				_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
-
+	// Render Background
+	// if a background does not exists, just do not render it
+	// if hard mode is false, draw the entire background
+	// if hard mode is true, memorizing a successful background read for rendering during fog dispel
+	if (_manager->ReadLevel(_activeLevel, true))
+		if (_hardMode == false)
+		{
+			const std::string* levelBackground(_manager->GetLastLevel());
+			for (int y = 0; y < _settings->lvlSizeY; ++y)
+				for (int x = 0; x < _settings->lvlSizeX; ++x)
+					_renSys->DrawBackCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
+		}
+		else
+			_successfulBkgRead = true;
+	
 	// Remember the inventory state at the level start
 	_inventoryAtLevelStart = _hero->GetInventory();
 
@@ -113,8 +198,8 @@ void Game::Initialize()
 
 void Game::Render()
 {
-	for (int y = 0; y < _lvlSizeY; y++)
-		for (int x = 0; x < _lvlSizeX; x++)
+	for (int y = 0; y < _settings->lvlSizeY; y++)
+		for (int x = 0; x < _settings->lvlSizeX; x++)
 			if (_fogOfWarB[y][x] == false)
 				_renSys->DrawChar(y, x, _objectsMap[y][x]->GetRenderObject());
 			else
@@ -129,6 +214,7 @@ void Game::RenderHud()
 	static char textBuffer[25];
 
 	Inventory inventory = _hero->GetInventory();
+	const int _indentX = _settings->lvlSizeX + _settings->indentX;
 
 	// GLHF
 	sprintf_s(textBuffer, "Level %i  ", _activeLevel + 1);
@@ -167,10 +253,10 @@ void Game::RenderHud()
 	sprintf_s(textBuffer, "Objects count: %i  ", Object::GetObjectsCount());
 	_renSys->SendText(13, _indentX, textBuffer);
 
-	_renSys->SendText(_lvlSizeY + 1, 4, "Use WASD to move ");
-	_renSys->SendText(_lvlSizeY + 1, 4 + 17, "Hero", Color::green);
-	_renSys->SendText(_lvlSizeY + 2, 4, "Press R to restart level.");
-	_renSys->SendText(_lvlSizeY + 2, 4 + 6, "R", Color::red);
+	_renSys->SendText(_settings->lvlSizeY + 1, 4, "Use WASD to move ");
+	_renSys->SendText(_settings->lvlSizeY + 1, 4 + 17, "Hero", Color::green);
+	_renSys->SendText(_settings->lvlSizeY + 2, 4, "Press R to restart level.");
+	_renSys->SendText(_settings->lvlSizeY + 2, 4 + 6, "R", Color::red);
 }
 
 void Game::RestartLevel()
@@ -334,61 +420,25 @@ void Game::MoveHeroTo(int y, int x)
 	}
 }
 
-void Game::Shutdown()
-{
-	system("cls");
-	printf("\n\tThank you for playing :) Bye-bye!\n");
-	Sleep(3000);
-
-}
-
 void Game::DispelFogOfWar(int y_pos, int x_pos)
 {
-	if (_hardMode == true)
+	if ((_hardMode == true) && (_successfulBkgRead = true))
+	{
+		const std::string* levelBackground(_manager->GetLastLevel());
 		for (int y = y_pos - 2; y <= y_pos + 2; y++)
 			for (int x = x_pos - 3; x <= x_pos + 3; x++)
-				if (x < _lvlSizeX && y < _lvlSizeY && x >= 0 && y >= 0)
-					if (_fogOfWarB[y][x] == true)
-					{
-						// Dispel the fog of war and redraw background symbol
-						_fogOfWarB[y][x] = false;
-						_renSys->DrawBackground(y, x, Object::GetInitializeColorBackgroundFromMap(levelsBackgroundData[_activeLevel][y][x]));
-					}
-}
-
-Object* Game::CreateObject(unsigned char symbol, Coord coord)
-{
-	return new Object(symbol, coord);
+				if (x < _settings->lvlSizeX && y < _settings->lvlSizeY && x >= 0 && y >= 0
+					&& (_fogOfWarB[y][x] == true))
+				{
+					// Dispel the fog of war and redraw background symbol
+					_fogOfWarB[y][x] = false;
+					_renSys->DrawBackCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
+				}
+	}
 }
 
 void Game::SetDefaultItemsValueOnLvl()
 {
 	_crystalsOnLvl = 0;
 	_keysOnLvl = 0;
-}
-
-void Game::ChooseMode()
-{
-	int i = 0;
-
-	do
-	{
-		std::cout << "\n Choose mode (1 - s1mple, 2 - hard): ";
-		std::cin >> i;
-
-		if (std::cin.fail())
-		{
-			std::cin.clear();
-			std::cin.ignore(32767, '\n');
-		}
-		if (i > 2 || i < 1)
-		{
-			std::cout << " Just choose mode -_- ";
-		}
-	} while (i > 2 || i < 1);
-
-	if (i == 2)
-		_hardMode = true;
-
-	system("cls");
 }

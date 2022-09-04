@@ -14,52 +14,73 @@ const std::string GameManager::s_settingsFileName  = "settings.txt";
 
 GameManager::GameManager()
 {
-	// Filling the settings map with settings
-	_settings["Levels"]   = _levelsCount;
-	_settings["LvlSizeX"] = _lvlSizeX;
-	_settings["LvlSizeY"] = _lvlSizeY;
-	_settings["IndentForHudText"] = _indentX;
+	_settings  = new Settings();
+	_lastLevel = new std::string();
 
-	// Read settings from settings file
+	// Setup start settings
+	_mapSettings["Levels"]   = _settings->levelsCount;
+	_mapSettings["LvlSizeX"] = _settings->lvlSizeX;
+	_mapSettings["LvlSizeY"] = _settings->lvlSizeY;
+	_mapSettings["IndentForHudText"] = _settings->indentX;
+
+	// Reading settings from a settings file
 	ReadSettings();
 }
 
 GameManager::~GameManager()
 {
+	delete _settings;
+	delete _lastLevel; 
 }
 
-const char* GameManager::GetLevel(int level)
+bool GameManager::ReadLevel(int level, bool background)
 {
-	std::string fileName("map1.txt");
-	std::fstream file(s_settingsFileName, std::ios_base::in);
+	if (level < 0 || level >= _settings->levelsCount)
+		return false;
 
-	std::string str;
-	while (getline(file, str))
-	{
-		auto pos = str.find('=');
-		if (pos != std::string::npos)
-		{
-			std::string param = str.substr(0, pos);
-			std::string value = str.substr(pos + 1);
+	// Opening selected level
+	std::string fileName;
 
-			auto it = _settings.find(param);
-			if (it != _settings.end())
-				it->second = stoi(value);
-		}
-	}
+	// Check background
+	if (background)
+		fileName = "levels/b_level_";
+	else
+		fileName = "levels/level_";
+
+	fileName.append(std::to_string(level));
+	fileName.append(".txt");
+
+	std::fstream file(fileName, std::ios_base::in);
+	if (!file.is_open())
+		return false;
+
+	// Reading level from a file
+	std::string line;
+
+	_lastLevel->clear();
+	while (getline(file, line))
+		_lastLevel->append(line);
 
 	file.close();
+	return true;
 }
 
-const std::map<std::string, int>* const GameManager::GetSettings()
+const std::string* GameManager::GetLastLevel()
 {
-	return &_settings;
+	return _lastLevel;
+}
+
+const Settings* const GameManager::GetSettings()
+{
+	return _settings;
 }
 
 bool GameManager::ReadSettings()
 {
 	std::fstream file("settings.txt", std::ios_base::in);
-	
+	if (!file.is_open())
+		return false;
+
 	std::string str;
 	while (getline(file, str))
 	{
@@ -69,13 +90,24 @@ bool GameManager::ReadSettings()
 			std::string param = str.substr(0, pos);
 			std::string value = str.substr(pos + 1);
 
-			auto it = _settings.find(param);
-			if (it != _settings.end())
+			auto it = _mapSettings.find(param);
+			if (it != _mapSettings.end())
 				it->second = stoi(value);
 		}
 	}
 
 	file.close();
 
-	return false;
+	// Loading the read settings
+	SetupSettings();
+
+	return true;
+}
+
+void GameManager::SetupSettings()
+{
+	_settings->levelsCount = _mapSettings["Levels"];
+	_settings->lvlSizeX = _mapSettings["LvlSizeX"];
+	_settings->lvlSizeY = _mapSettings["LvlSizeY"];
+	_settings->indentX  = _mapSettings["IndentForHudText"];
 }

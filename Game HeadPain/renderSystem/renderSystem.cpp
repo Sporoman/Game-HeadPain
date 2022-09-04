@@ -57,7 +57,7 @@ void RenderSystem::DrawFrontChar(int y, int x, const RenderObject& obj)
 	_backBuffer[y][x].symbolColor = obj.symbolColor;
 }
 
-void RenderSystem::DrawBackground(int y, int x, Color backgroundColor)
+void RenderSystem::DrawBackCharColor(int y, int x, Color backgroundColor)
 {
 	if (y < 0 || x < 0 || y >= _screenY || x >= _screenX)
 		return;

@@ -4,31 +4,36 @@
 #include <string>
 #include <map>
 
+struct Settings;
+
 class GameManager
 {
 private:
-	static const std::string s_levelsPath;
-	static const std::string s_mapFileName;
-	static const std::string s_extensionName;
-	static const std::string s_settingsFileName;
-
-	// Game Settings
-	std::map <std::string, int> _settings;
-	static const int _levelsCount = 7;
-	static const int _lvlSizeY    = 21;
-	static const int _lvlSizeX    = 40;
-	static const int _indentX     = 5;
+	std::map <std::string, int> _mapSettings;
+	Settings* _settings;
+	std::string* _lastLevel;
 
 public:
 	GameManager();
 	~GameManager();
 
-	const char* GetLevel(int level);
+	bool ReadLevel(int level, bool background = false);
+	const std::string* GetLastLevel();
+	const Settings* const GetSettings();
 
 	const std::map <std::string, int>* const GetSettings();
 
 private:
 	bool ReadSettings();
+	void SetupSettings();
+};
+
+struct Settings 
+{
+	int levelsCount = 7;
+	int lvlSizeY = 21;
+	int lvlSizeX = 40;
+	int indentX = 5;
 };
 
 #endif // !MAPMANAGER
