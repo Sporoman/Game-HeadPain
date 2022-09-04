@@ -9,11 +9,13 @@
 
 GameManager::GameManager()
 {
+	_settings = new Settings();
+
 	// Setup start settings
-	_mapSettings["Levels"]   = _settings.levelsCount;
-	_mapSettings["LvlSizeX"] = _settings.lvlSizeX;
-	_mapSettings["LvlSizeY"] = _settings.lvlSizeY;
-	_mapSettings["IndentForHudText"] = _settings.indentX;
+	_mapSettings["Levels"]   = _settings->levelsCount;
+	_mapSettings["LvlSizeX"] = _settings->lvlSizeX;
+	_mapSettings["LvlSizeY"] = _settings->lvlSizeY;
+	_mapSettings["IndentForHudText"] = _settings->indentX;
 
 	// Reading settings from a settings file
 	ReadSettings();
@@ -21,11 +23,12 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
+	delete _settings;
 }
 
 const std::string* GameManager::GetLevel(int level, bool background)
 {
-	if (level < 0 || level >= _settings.levelsCount)
+	if (level < 0 || level >= _settings->levelsCount)
 		return nullptr;
 
 	// Opening selected level
@@ -57,7 +60,7 @@ const std::string* GameManager::GetLevel(int level, bool background)
 
 const Settings* const GameManager::GetSettings()
 {
-	return &_settings;
+	return _settings;
 }
 
 bool GameManager::ReadSettings()
@@ -91,8 +94,8 @@ bool GameManager::ReadSettings()
 
 void GameManager::SetupSettings()
 {
-	_settings.levelsCount = _mapSettings["Levels"];
-	_settings.lvlSizeX = _mapSettings["LvlSizeX"];
-	_settings.lvlSizeY = _mapSettings["LvlSizeY"];
-	_settings.indentX  = _mapSettings["IndentForHudText"];
+	_settings->levelsCount = _mapSettings["Levels"];
+	_settings->lvlSizeX = _mapSettings["LvlSizeX"];
+	_settings->lvlSizeY = _mapSettings["LvlSizeY"];
+	_settings->indentX  = _mapSettings["IndentForHudText"];
 }
