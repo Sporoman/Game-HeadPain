@@ -26,7 +26,7 @@ public:
 	void Clear();
 	void DrawChar(int y, int x, const RenderObject& object);
 	void DrawFrontChar(int y, int x, const RenderObject& object);
-	void DrawBackground(int y, int x, Color backgroundColor);
+	void DrawBackCharColor(int y, int x, Color backgroundColor);
 	void SendText(int y, int x, const char* text, Color symbolColor = Color::gray, Color backgroundColor = Color::black);
 
 private:
