@@ -19,7 +19,7 @@ Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false)
 
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 	{
-		_objectsMap[y] = new Object * [_settings->lvlSizeX];
+		_objectsMap[y] = new Object*[_settings->lvlSizeX];
 		_fogOfWarB[y] = new bool[_settings->lvlSizeX] { false };
 
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
@@ -88,7 +88,7 @@ void Game::ChooseMode()
 			case '2': check = false; _hardMode = true; break;
 
 			default:
-			_renSys->SendText(2, 4, "Just choose mode -_-");
+			_renSys->SendText(2, 4, "Just choose mode -_-", static_cast<Color>(rand() % 16));	// 16 Colors
 			_renSys->Render();
 		}
 	}
