@@ -1,6 +1,5 @@
 #include "Game.h"
 
-#include <iostream>
 #include <conio.h>
 
 Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false),
@@ -71,6 +70,30 @@ void Game::Start()
 	Shutdown();
 }
 
+void Game::ChooseMode()
+{
+	_renSys->SendText(1, 4, "Choose mode (1 - s1mple, 2 - hard)");
+	_renSys->Render();
+
+	bool check = true;
+	while(check)
+	{
+		
+		unsigned char inputChar = _getch();
+		inputChar = tolower(inputChar);
+
+		switch (inputChar)
+		{
+			case '1': check = false; break;
+			case '2': check = false; _hardMode = true; break;
+
+			default:
+			_renSys->SendText(2, 4, "Just choose mode -_-");
+			_renSys->Render();
+		}
+	}
+}
+
 void Game::ClearObjectMap()
 {
 	for (int y = 0; y < _settings->lvlSizeY; y++)
@@ -87,10 +110,11 @@ Object* Game::CreateObject(unsigned char symbol, Coord coord)
 
 void Game::Shutdown()
 {
-	system("cls");
-	printf("\n\tThank you for playing :) Bye-bye!\n");
-	Sleep(3000);
+	_renSys->Clear();
+	_renSys->SendText(1, 4, "Thank you for playing :) Bye - bye!");
+	_renSys->Render();
 
+	Sleep(3000);
 }
 
 void Game::Initialize()
@@ -104,7 +128,10 @@ void Game::Initialize()
 
 	// Load level and objects
 	if (!_manager->ReadLevel(_activeLevel))
-		Shutdown();
+	{
+		_isGameActive = false;
+		return;
+	}
 
 	const std::string* level(_manager->GetLastLevel());
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
@@ -414,30 +441,4 @@ void Game::SetDefaultItemsValueOnLvl()
 {
 	_crystalsOnLvl = 0;
 	_keysOnLvl = 0;
-}
-
-void Game::ChooseMode()
-{
-	int i = 0;
-
-	do
-	{
-		std::cout << "\n Choose mode (1 - s1mple, 2 - hard): ";
-		std::cin >> i;
-
-		if (std::cin.fail())
-		{
-			std::cin.clear();
-			std::cin.ignore(32767, '\n');
-		}
-		if (i > 2 || i < 1)
-		{
-			std::cout << " Just choose mode -_- ";
-		}
-	} while (i > 2 || i < 1);
-
-	if (i == 2)
-		_hardMode = true;
-
-	system("cls");
 }
