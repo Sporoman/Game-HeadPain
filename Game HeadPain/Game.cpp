@@ -290,18 +290,28 @@ void Game::Move()
 
 	Coord heroCoord = _hero->GetCoord();
 
-	switch (inputChar)
-	{
-		// Up Down Left Right
-		case 'w': case 230: case 150:	MoveHeroTo(heroCoord.y - 1, heroCoord.x);	break;
-		case 's': case 235: case 155:	MoveHeroTo(heroCoord.y + 1, heroCoord.x);	break;
-		case 'a': case 228: case 148:	MoveHeroTo(heroCoord.y, heroCoord.x - 1);	break;
-		case 'd': case 162: case 130:	MoveHeroTo(heroCoord.y, heroCoord.x + 1);   break;
+	if (inputChar == 0 || inputChar == 224)	// for special keys
+		switch (_getch())
+		{
+			// Up Down Left Right for arrays
+			case 72:	MoveHeroTo(heroCoord.y - 1, heroCoord.x);	break;
+			case 80:	MoveHeroTo(heroCoord.y + 1, heroCoord.x);	break;
+			case 75:	MoveHeroTo(heroCoord.y, heroCoord.x - 1);	break;
+			case 77:	MoveHeroTo(heroCoord.y, heroCoord.x + 1);   break;
+		}
+	else
+		switch (inputChar)
+		{
+			// Up Down Left Right
+			case 'w': case 230: case 150:	MoveHeroTo(heroCoord.y - 1, heroCoord.x);	break;
+			case 's': case 235: case 155:	MoveHeroTo(heroCoord.y + 1, heroCoord.x);	break;
+			case 'a': case 228: case 148:	MoveHeroTo(heroCoord.y, heroCoord.x - 1);	break;
+			case 'd': case 162: case 130:	MoveHeroTo(heroCoord.y, heroCoord.x + 1);   break;
 
-		case 'r': case 170: case 138:	RestartLevel();   break;	// Restart level
-		case '2':	_activeLevel++;		Initialize();	  break;	// Next level
-		case '1':	_activeLevel--;		Initialize();	  break;	// Back level
-	}
+			case 'r': case 170: case 138:	RestartLevel();   break;	// Restart level
+			case '2':	_activeLevel++;		Initialize();	  break;	// Next level
+			case '1':	_activeLevel--;		Initialize();	  break;	// Back level
+		}
 }
 
 void Game::MoveHeroTo(int y, int x)
