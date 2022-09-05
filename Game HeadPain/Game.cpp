@@ -240,23 +240,33 @@ void Game::RenderHud()
 	sprintf_s(textBuffer, ": %i  ", inv.crystals);
 	_renSys->SendText(6, _indentX + 7, textBuffer);
 
-	sprintf_s(textBuffer, "Crystals");
-	_renSys->SendText(7, _indentX, textBuffer, Color::darkMagenta);
-	sprintf_s(textBuffer, " on level: %i  ", _crystalsOnLvl);
+	sprintf_s(textBuffer, "Hearts");
+	_renSys->SendText(7, _indentX, textBuffer, Color::red);
+	sprintf_s(textBuffer, ": %i  ", inv.hearts);
 	_renSys->SendText(7, _indentX + 7, textBuffer);
 
+	sprintf_s(textBuffer, "Crystals");
+	_renSys->SendText(9, _indentX, textBuffer, Color::darkMagenta);
+	sprintf_s(textBuffer, "on level: %i  ", _crystalsOnLvl);
+	_renSys->SendText(9, _indentX + 9, textBuffer);
+
 	sprintf_s(textBuffer, "Keys");
-	_renSys->SendText(8, _indentX, textBuffer, Color::cyan);
-	sprintf_s(textBuffer, " on level: %i  ", _keysOnLvl);
-	_renSys->SendText(8, _indentX + 3, textBuffer);
+	_renSys->SendText(10, _indentX, textBuffer, Color::cyan);
+	sprintf_s(textBuffer, "on level: %i  ", _keysOnLvl);
+	_renSys->SendText(10, _indentX + 5, textBuffer);
+
+	sprintf_s(textBuffer, "Hearts");
+	_renSys->SendText(11, _indentX, textBuffer, Color::red);
+	sprintf_s(textBuffer, "on level: %i  ", _keysOnLvl);
+	_renSys->SendText(11, _indentX + 7, textBuffer);
 
 	sprintf_s(textBuffer, "X coord hero: %i  ", _hero->GetCoord().x);
-	_renSys->SendText(10, _indentX, textBuffer);
+	_renSys->SendText(13, _indentX, textBuffer);
 	sprintf_s(textBuffer, "Y coord hero: %i  ", _hero->GetCoord().y);
-	_renSys->SendText(11, _indentX, textBuffer);
+	_renSys->SendText(14, _indentX, textBuffer);
 
 	sprintf_s(textBuffer, "Objects count: %i  ", Object::GetObjectsCount());
-	_renSys->SendText(13, _indentX, textBuffer);
+	_renSys->SendText(16, _indentX, textBuffer);
 
 	_renSys->SendText(_settings->lvlSizeY + 1, 4, "Use WASD to move ");
 	_renSys->SendText(_settings->lvlSizeY + 1, 4 + 17, "Hero", Color::green);
@@ -317,6 +327,13 @@ void Game::MoveHeroTo(int y, int x)
 			canMove = true;
 			break;
 		}
+		case Entity::heart:
+		{
+			_hero->AddItem(Item::heart);
+
+			canMove = true;
+			break;
+		}
 		case Entity::key:
 		{
 			_hero->AddItem(Item::key);
@@ -362,19 +379,21 @@ void Game::MoveHeroTo(int y, int x)
 			Entity entityBehindBox = _objectsMap[objBehindY][objBehindX]->GetEntity();
 			if ((entityBehindBox == Entity::empty)
 				|| (entityBehindBox == Entity::crystal)
+				|| (entityBehindBox == Entity::heart)
 				|| (entityBehindBox == Entity::key)
 				|| (entityBehindBox == Entity::levelKey))
 			{
 				// Bye bye, Object
 				if (entityBehindBox != Entity::empty)
 					delete _objectsMap[objBehindY][objBehindX];
-
-				switch (entityBehindBox)
-				{
-					case Entity::key:         _keysOnLvl--;        break;
-					case Entity::levelKey:    break;
-					case Entity::crystal:     _crystalsOnLvl--;    break;
-				}
+				else
+					switch (entityBehindBox)
+					{
+						case Entity::crystal:	_crystalsOnLvl--;    break;
+						case Entity::heart:		break;
+						case Entity::key:       _keysOnLvl--;        break;
+						case Entity::levelKey:  break;
+					}
 
 				// Replace box
 				Object* boxObject = collidingObject;

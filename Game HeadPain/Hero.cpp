@@ -25,6 +25,7 @@ void Hero::AddItem(Item item, int count)
 	switch (item)
 	{
 		case Item::crystal:	_inv.crystals += count;		break;
+		case Item::heart:	_inv.hearts += count;		break;
 		case Item::key:		_inv.keys += count;			break;
 		case Item::lvlKey:	_inv.lvlKey = true;			break;
 
@@ -41,11 +42,12 @@ void Hero::TakeItem(Item item, int count)
 {
 	switch (item)
 	{
-	case Item::crystal:	_inv.crystals -= count;		break;
-	case Item::key:		_inv.keys -= count;			break;
-	case Item::lvlKey:	_inv.lvlKey = false;		break;
+		case Item::crystal:	_inv.crystals -= count;		break;
+		case Item::heart:	_inv.hearts -= count;		break;
+		case Item::key:		_inv.keys -= count;			break;
+		case Item::lvlKey:	_inv.lvlKey = false;		break;
 
-	default: break;
+		default: break;
 	}
 }
 
@@ -54,6 +56,7 @@ void Hero::SetItem(Item item, int count)
 	switch (item)
 	{
 		case Item::crystal:	_inv.crystals = count;	break;
+		case Item::heart:	_inv.hearts = count;	break;
 		case Item::key:		_inv.keys = count;		break;
 		case Item::lvlKey:	_inv.lvlKey = (count > 0 ? true : false);	break;
 

@@ -70,7 +70,7 @@ enum class Entity
 	crystal,
 	mine,
 	fogOfWar,
-	hearts
+	heart
 };
 
 enum class DirMove

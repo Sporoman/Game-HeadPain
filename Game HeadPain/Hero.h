@@ -35,6 +35,7 @@ public:
 enum class Item
 {
 	crystal,
+	heart,
 	key,
 	lvlKey
 };
