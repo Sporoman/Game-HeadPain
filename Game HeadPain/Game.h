@@ -5,7 +5,7 @@
 #include "GameManager.h"
 #include "Object.h"
 #include "Hero.h"
-	
+
 class Game
 {
 private:
@@ -25,6 +25,7 @@ private:
 	Inventory _inventoryAtLevelStart;
 	int _activeLevel;
 	int _crystalsOnLvl;
+	int _heartsOnLvl;
 	int _keysOnLvl;
 
 	bool** _fogOfWarB;

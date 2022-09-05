@@ -2,7 +2,7 @@
 #include <conio.h>
 
 Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false),
-	_activeLevel(0), _crystalsOnLvl(0), _keysOnLvl(0)
+	_activeLevel(0), _crystalsOnLvl(0), _heartsOnLvl(0), _keysOnLvl(0)
 {
 	_manager   = new GameManager();
 	_settings  = _manager->GetSettings();
@@ -171,6 +171,7 @@ void Game::Initialize()
 			switch (_objectsMap[y][x]->GetEntity())
 			{
 				case Entity::crystal:    _crystalsOnLvl++;    break;
+				case Entity::heart:      _heartsOnLvl++;      break;
 				case Entity::key:        _keysOnLvl++;        break;
 			}
 		}
@@ -235,30 +236,30 @@ void Game::RenderHud()
 	sprintf_s(textBuffer, ": %i  ", inv.keys);
 	_renSys->SendText(5, _indentX + 4, textBuffer);
 	
-	sprintf_s(textBuffer, "Crystals");
-	_renSys->SendText(6, _indentX, textBuffer, Color::darkMagenta);
-	sprintf_s(textBuffer, ": %i  ", inv.crystals);
-	_renSys->SendText(6, _indentX + 7, textBuffer);
-
 	sprintf_s(textBuffer, "Hearts");
-	_renSys->SendText(7, _indentX, textBuffer, Color::red);
+	_renSys->SendText(6, _indentX, textBuffer, Color::red);
 	sprintf_s(textBuffer, ": %i  ", inv.hearts);
+	_renSys->SendText(6, _indentX + 6, textBuffer);
+
+	sprintf_s(textBuffer, "Crystals");
+	_renSys->SendText(7, _indentX, textBuffer, Color::darkMagenta);
+	sprintf_s(textBuffer, ": %i  ", inv.crystals);
 	_renSys->SendText(7, _indentX + 7, textBuffer);
 
-	sprintf_s(textBuffer, "Crystals");
-	_renSys->SendText(9, _indentX, textBuffer, Color::darkMagenta);
-	sprintf_s(textBuffer, "on level: %i  ", _crystalsOnLvl);
-	_renSys->SendText(9, _indentX + 9, textBuffer);
-
 	sprintf_s(textBuffer, "Keys");
-	_renSys->SendText(10, _indentX, textBuffer, Color::cyan);
+	_renSys->SendText(9, _indentX, textBuffer, Color::cyan);
 	sprintf_s(textBuffer, "on level: %i  ", _keysOnLvl);
-	_renSys->SendText(10, _indentX + 5, textBuffer);
+	_renSys->SendText(9, _indentX + 5, textBuffer);
 
 	sprintf_s(textBuffer, "Hearts");
-	_renSys->SendText(11, _indentX, textBuffer, Color::red);
-	sprintf_s(textBuffer, "on level: %i  ", _keysOnLvl);
-	_renSys->SendText(11, _indentX + 7, textBuffer);
+	_renSys->SendText(10, _indentX, textBuffer, Color::red);
+	sprintf_s(textBuffer, "on level: %i  ", _heartsOnLvl);
+	_renSys->SendText(10, _indentX + 7, textBuffer);
+
+	sprintf_s(textBuffer, "Crystals");
+	_renSys->SendText(11, _indentX, textBuffer, Color::darkMagenta);
+	sprintf_s(textBuffer, "on level: %i  ", _crystalsOnLvl);
+	_renSys->SendText(11, _indentX + 9, textBuffer);
 
 	sprintf_s(textBuffer, "X coord hero: %i  ", _hero->GetCoord().x);
 	_renSys->SendText(13, _indentX, textBuffer);
@@ -278,6 +279,9 @@ void Game::RestartLevel()
 {
 	// Set the inventory at the beginning of the level
 	_hero->SetInventory(_inventoryAtLevelStart);
+
+	// Take one heart
+	_hero->TakeItem(Item::heart);
 
 	// Restart level
 	Initialize();
@@ -340,6 +344,7 @@ void Game::MoveHeroTo(int y, int x)
 		case Entity::heart:
 		{
 			_hero->AddItem(Item::heart);
+			_heartsOnLvl--;
 
 			canMove = true;
 			break;
@@ -400,7 +405,7 @@ void Game::MoveHeroTo(int y, int x)
 					switch (entityBehindBox)
 					{
 						case Entity::crystal:	_crystalsOnLvl--;    break;
-						case Entity::heart:		break;
+						case Entity::heart:		_heartsOnLvl--;		 break;
 						case Entity::key:       _keysOnLvl--;        break;
 						case Entity::levelKey:  break;
 					}
