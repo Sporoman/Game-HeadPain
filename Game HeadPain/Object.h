@@ -21,8 +21,8 @@ private:
 	RenderObject  _renderObj;	// struct: symbol + color symbol + color backgorund
 
 public:
-	Object(unsigned char mapSymbol);
-	Object(unsigned char mapSymbol, Coord coord);
+	Object(unsigned char symbol);
+	Object(unsigned char symbol, Coord coord);
 	Object(Entity entity);
 	Object(Entity entity, Coord coord);
 	~Object();
@@ -41,12 +41,12 @@ public:
 	virtual Color GetColorBackground();
 	virtual const RenderObject& GetRenderObject();
 	
-	static Color GetInitializeColorBackgroundFromMap(unsigned char symbol);    // Test
-	static Entity GetInitializeEntity(unsigned char mapSymbol);
-	static unsigned char GetInitializeMapSymbol(Entity entity);
-	static unsigned char GetInitializeRenderSymbol(Entity entity);
-	static Color GetInitializeColorSymbol(Entity entity);
-	static Color GetInitializeColorBackground(Entity entity);
+	static Entity GetInitEntity(unsigned char symbol);
+	static unsigned char GetInitMapSymbol(Entity entity);
+	static unsigned char GetInitRenderSymbol(Entity entity);
+	static Color GetInitColorSymbol(Entity entity);
+	static Color GetInitColorBkg(Entity entity);
+	static Color GetInitColorFromBkgMap(unsigned char symbol);
 
 private:
 	void MoveOnUp();

@@ -186,10 +186,10 @@ void Game::Initialize()
 	if (_manager->ReadLevel(_activeLevel, true))
 		if (_hardMode == false)
 		{
-			const std::string* levelBackground(_manager->GetLastLevel());
+			const std::string* lvlBkg(_manager->GetLastLevel());
 			for (int y = 0; y < _settings->lvlSizeY; ++y)
 				for (int x = 0; x < _settings->lvlSizeX; ++x)
-					_renSys->DrawBkgCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
+					_renSys->DrawBkgCharColor(y, x, Object::GetInitColorFromBkgMap(lvlBkg->at(y * _settings->lvlSizeX + x)));
 		}
 		else
 			_successfulBkgRead = true;
@@ -425,7 +425,7 @@ void Game::DispelFogOfWar(int y_pos, int x_pos)
 {
 	if ((_hardMode == true) && (_successfulBkgRead = true))
 	{
-		const std::string* levelBackground(_manager->GetLastLevel());
+		const std::string* lvlBkg(_manager->GetLastLevel());
 		for (int y = y_pos - 2; y <= y_pos + 2; y++)
 			for (int x = x_pos - 3; x <= x_pos + 3; x++)
 				if (x < _settings->lvlSizeX && y < _settings->lvlSizeY && x >= 0 && y >= 0
@@ -433,7 +433,7 @@ void Game::DispelFogOfWar(int y_pos, int x_pos)
 				{
 					// Dispel the fog of war and redraw background symbol
 					_fogOfWarB[y][x] = false;
-					_renSys->DrawBkgCharColor(y, x, Object::GetInitializeColorBackgroundFromMap(levelBackground->at(y * _settings->lvlSizeX + x)));
+					_renSys->DrawBkgCharColor(y, x, Object::GetInitColorFromBkgMap(lvlBkg->at(y * _settings->lvlSizeX + x)));
 				}
 	}
 }
