@@ -25,7 +25,7 @@ GameManager::~GameManager()
 	delete _lastLevel; 
 }
 
-bool GameManager::ReadLevel(int level, bool background)
+bool GameManager::ReadLevel(int level, bool bkgFile)
 {
 	if (level < 0 || level >= _settings->levelsCount)
 		return false;
@@ -33,8 +33,8 @@ bool GameManager::ReadLevel(int level, bool background)
 	// Opening selected level
 	std::string fileName;
 
-	// Check background
-	if (background)
+	// Check map type
+	if (bkgFile)
 		fileName = "levels/b_level_";
 	else
 		fileName = "levels/level_";
@@ -70,8 +70,23 @@ const Settings* const GameManager::GetSettings()
 bool GameManager::ReadSettings()
 {
 	std::fstream file("settings.txt", std::ios_base::in);
+	
+	// if the settings file is not found, try creating it
 	if (!file.is_open())
-		return false;
+	{
+		file.open("settings.txt", std::ios_base::out);
+		if (file.is_open())
+		{
+			for (auto i = _mapSettings.begin(); i != _mapSettings.end(); ++i)
+				file << i->first << "=" << i->second << '\n';
+
+			file.close();
+			return true;
+		}
+		else
+			return false;
+	}
+		
 
 	std::string str;
 	while (getline(file, str))

@@ -17,13 +17,14 @@ public:
 	GameManager();
 	~GameManager();
 
-	bool ReadLevel(int level, bool background = false);
+	bool ReadLevel(int level, bool bkgFile = false);
 	const std::string* GetLastLevel();
 	const Settings* const GetSettings();
 
 private:
 	bool ReadSettings();
 	void SetupSettings();
+	void CreateSettingsFile();
 };
 
 struct Settings 
