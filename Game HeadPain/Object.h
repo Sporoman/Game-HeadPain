@@ -69,7 +69,8 @@ enum class Entity
 	exitDoor,
 	crystal,
 	mine,
-	fogOfWar
+	fogOfWar,
+	hearts
 };
 
 enum class DirMove

@@ -150,6 +150,7 @@ Entity Object::GetInitEntity(unsigned char symbol)
 		case 'C':	return Entity::crystal;
 		case 'M':	return Entity::mine;
 		case 176:	return Entity::fogOfWar;
+		case '3':	return Entity::hearts;
 
 		default: return Entity::error;
 	}
@@ -171,6 +172,7 @@ unsigned char Object::GetInitMapSymbol(Entity entity)
 		case Entity::crystal:		return 'C';
 		case Entity::mine:			return 'M';
 		case Entity::fogOfWar:		return 176;
+		case Entity::hearts:		return '3';
 
 		case Entity::error:
 		default: return '?';
@@ -193,6 +195,7 @@ unsigned char Object::GetInitRenderSymbol(Entity entity)
 		case Entity::crystal:		return 4;
 		case Entity::mine:			return 15;
 		case Entity::fogOfWar:		return 176;
+		case Entity::hearts:		return 3;
 
 		case Entity::error:
 		default: return '?';
@@ -215,6 +218,7 @@ Color Object::GetInitColorSymbol(Entity entity)
 		case Entity::crystal:		return Color::magenta;
 		case Entity::mine:			return Color::red;
 		case Entity::fogOfWar:		return Color::gray;
+		case Entity::hearts:		return Color::red;
 
 		case Entity::error:
 		default: return Color::red;
@@ -237,6 +241,7 @@ Color Object::GetInitColorBkg(Entity entity)
 		case Entity::crystal:		return Color::black;
 		case Entity::mine:			return Color::black;
 		case Entity::fogOfWar:		return Color::black;
+		case Entity::hearts:		return Color::black;
 
 		case Entity::error:
 		default: return Color::darkMagenta;
