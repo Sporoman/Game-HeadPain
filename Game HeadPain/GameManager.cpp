@@ -35,7 +35,7 @@ bool GameManager::ReadLevel(int level, bool bkgFile)
 
 	// Check map type
 	if (bkgFile)
-		fileName = "levels/b_level_";
+		fileName = "levels/bkg_level_";
 	else
 		fileName = "levels/level_";
 
