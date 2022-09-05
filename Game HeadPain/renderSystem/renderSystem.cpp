@@ -140,16 +140,16 @@ void RenderSystem::SetColor(Color symbolColor, Color bkgColor)
 	int consoleColor = static_cast<int>(symbolColor) | static_cast<int>(bkgColor) << 4;
 	SetConsoleTextAttribute(_consoleHandle, consoleColor);
 }
+
 void RenderSystem::SetColor(Color symbolColor)
 {
 	int consoleColor = static_cast<int>(symbolColor);
 	SetConsoleTextAttribute(_consoleHandle, consoleColor);
 }
 
-void RenderSystem::SetDefault()
+void RenderSystem::SetDefaultColor()
 {
-	int consoleColor = static_cast<int>(Color::gray) | static_cast<int>(Color::black) << 4;
-	SetConsoleTextAttribute(_consoleHandle, consoleColor);
+	SetColor(Color::gray, Color::black);
 }
 
 void RenderSystem::SetCursor(int y, int x)

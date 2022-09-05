@@ -39,7 +39,7 @@ private:
 	bool CompareBuffers(const RenderObject* buf_1, const RenderObject* buf_2) const;
 	void SetColor(Color symbolColor, Color bkgColor);
 	void SetColor(Color symbolColor);
-	void SetDefault();
+	void SetDefaultColor();
 	void SetCursor(int y, int x);
 	void HideCursor();
 	void ShowCursor();
