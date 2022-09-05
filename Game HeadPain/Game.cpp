@@ -219,7 +219,7 @@ void Game::RenderHud()
 {
 	static char textBuffer[25];
 
-	Inventory inventory = _hero->GetInventory();
+	Inventory inv = _hero->GetInventory();
 	const int _indentX = _settings->lvlSizeX + _settings->hudIndentX;
 
 	// GLHF
@@ -228,17 +228,17 @@ void Game::RenderHud()
 
 	sprintf_s(textBuffer, "Level Key");
 	_renSys->SendText(4, _indentX, textBuffer, Color::blue);
-	inventory.lvl_key == true ? sprintf_s(textBuffer, ": yeap") : sprintf_s(textBuffer, ": nope");
+	inv.lvlKey == true ? sprintf_s(textBuffer, ": yeap") : sprintf_s(textBuffer, ": nope");
 	_renSys->SendText(4, _indentX + 9, textBuffer);
 	
 	sprintf_s(textBuffer, "Keys");
 	_renSys->SendText(5, _indentX, textBuffer, Color::cyan);
-	sprintf_s(textBuffer, ": %i  ", inventory.key_count);
+	sprintf_s(textBuffer, ": %i  ", inv.keys);
 	_renSys->SendText(5, _indentX + 4, textBuffer);
 	
 	sprintf_s(textBuffer, "Crystals");
 	_renSys->SendText(6, _indentX, textBuffer, Color::darkMagenta);
-	sprintf_s(textBuffer, ": %i  ", inventory.crystal_count);
+	sprintf_s(textBuffer, ": %i  ", inv.crystals);
 	_renSys->SendText(6, _indentX + 7, textBuffer);
 
 	sprintf_s(textBuffer, "Crystals");
@@ -309,7 +309,7 @@ void Game::MoveHeroTo(int y, int x)
 		}
 		case Entity::crystal:
 		{
-			_hero->AddCrystal();
+			_hero->AddItem(Item::crystal);
 			_crystalsOnLvl--;
 
 			canMove = true;
@@ -317,7 +317,7 @@ void Game::MoveHeroTo(int y, int x)
 		}
 		case Entity::key:
 		{
-			_hero->AddKey();
+			_hero->AddItem(Item::key);
 			_keysOnLvl--;
 
 			canMove = true;
@@ -325,7 +325,7 @@ void Game::MoveHeroTo(int y, int x)
 		}
 		case Entity::levelKey:
 		{
-			_hero->GiveLvlKey();
+			_hero->AddItem(Item::lvlKey);
 
 			canMove = true;
 			break;
@@ -383,7 +383,7 @@ void Game::MoveHeroTo(int y, int x)
 		{
 			if (_hero->CheckKey())
 			{
-				_hero->TakeKey();
+				_hero->TakeItem(Item::key);
 
 				canMove = true;
 				break;
@@ -393,7 +393,7 @@ void Game::MoveHeroTo(int y, int x)
 		{
 			if (_hero->CheckLvlkey())
 			{
-				_hero->TakeLvlKey();
+				_hero->TakeItem(Item::lvlKey);
 
 				canMove = true;
 				break;

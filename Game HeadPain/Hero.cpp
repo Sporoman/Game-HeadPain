@@ -3,7 +3,7 @@
 unsigned char Hero::__mapSym = 'H';
 
 Hero::Hero(Coord coord)
-	: Object(__mapSym, coord), _inventory{ 0, 0, false }
+	: Object(__mapSym, coord), _inv{ 0, 0, false }
 {
 }
 
@@ -15,88 +15,68 @@ Hero::Hero()
 Hero::~Hero()
 {}
 
-//void Hero::AddItem(Item item)
-//{
-//	switch (item)
-//	{
-//		case Item::crystal:		
-//		case Item::key:
-//
-//		default: break;
-//	}
-//}
-//
-//void Hero::AddItem(Item item, int count)
-//{
-//
-//}
-//
-//void Hero::SetItem(Item item, int count)
-//{
-//
-//}
-
-void Hero::AddCrystal()
+void Hero::AddItem(Item item)
 {
-	++_inventory.crystal_count;
+	AddItem(item, 1);
 }
 
-void Hero::AddCrystal(int count)
+void Hero::AddItem(Item item, int count)
 {
-	_inventory.crystal_count += count;
+	switch (item)
+	{
+		case Item::crystal:	_inv.crystals += count;		break;
+		case Item::key:		_inv.keys += count;			break;
+		case Item::lvlKey:	_inv.lvlKey = true;			break;
+
+		default: break;
+	}
 }
 
-void Hero::SetCrystal(int count)
+void Hero::TakeItem(Item item)
 {
-	_inventory.crystal_count = count;
+	TakeItem(item, 1);
 }
 
-void Hero::AddKey()
+void Hero::TakeItem(Item item, int count)
 {
-	++_inventory.key_count;
+	switch (item)
+	{
+	case Item::crystal:	_inv.crystals -= count;		break;
+	case Item::key:		_inv.keys -= count;			break;
+	case Item::lvlKey:	_inv.lvlKey = false;		break;
+
+	default: break;
+	}
 }
 
-void Hero::AddKey(int count)
+void Hero::SetItem(Item item, int count)
 {
-	_inventory.key_count += count;
-}
+	switch (item)
+	{
+		case Item::crystal:	_inv.crystals = count;	break;
+		case Item::key:		_inv.keys = count;		break;
+		case Item::lvlKey:	_inv.lvlKey = (count > 0 ? true : false);	break;
 
-void Hero::SetKey(int count)
-{
-	_inventory.key_count = count;
+		default: break;
+	}
 }
 
 Inventory Hero::GetInventory()
 {
-	return _inventory;
+	return _inv;
 }
 
-void Hero::SetInventory(const Inventory& inventory)
+void Hero::SetInventory(const Inventory& inv)
 {
-	_inventory = inventory;
+	_inv = inv;
 }
 
 bool Hero::CheckKey()
 {
-	return _inventory.key_count > 0 ? true : false;
-}
-
-void Hero::TakeKey()
-{
-	--_inventory.key_count;
+	return _inv.keys > 0 ? true : false;
 }
 
 bool Hero::CheckLvlkey()
 {
-	return _inventory.lvl_key == true ? true : false;
-}
-
-void Hero::GiveLvlKey()
-{
-	_inventory.lvl_key = true;
-}
-
-void Hero::TakeLvlKey()
-{
-	_inventory.lvl_key = false;
+	return _inv.lvlKey;
 }
