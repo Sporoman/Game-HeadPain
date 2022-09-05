@@ -34,20 +34,19 @@ Game::~Game()
 	delete _renSys;
 	delete _manager;
 
-	delete _hero;
-	delete _empty;
-	delete _wall;
-	delete _fogOfWar;
-
 	ClearObjectMap();
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 	{
 		delete _objectsMap[y];
 		delete _fogOfWarB[y];
 	}
-	
 	delete[] _objectsMap;
 	delete[] _fogOfWarB;
+
+	delete _hero;
+	delete _empty;
+	delete _wall;
+	delete _fogOfWar;
 }
 
 void Game::Start()
@@ -98,11 +97,14 @@ void Game::ChooseMode()
 
 void Game::ClearObjectMap()
 {
-	for (int y = 0; y < _settings->lvlSizeY; y++)
-		for (int x = 0; x < _settings->lvlSizeX; x++)
-			if ((_objectsMap[y][x] != _hero) && (_objectsMap[y][x] != _empty) && (_objectsMap[y][x] != _wall)
-				&& _objectsMap[y][x] != nullptr)
+	for (int y = 0; y < _settings->lvlSizeY; ++y)
+		for (int x = 0; x < _settings->lvlSizeX; ++x)
+			if ((_objectsMap[y][x] != _hero) && (_objectsMap[y][x] != _empty) && (_objectsMap[y][x] != _wall))
+			{
 				delete _objectsMap[y][x];
+				_objectsMap[y][x] = nullptr;
+			}
+				
 }
 
 Object* Game::CreateObject(unsigned char symbol, Coord coord)
@@ -117,6 +119,8 @@ void Game::Shutdown()
 	_renSys->Render();
 
 	Sleep(3000);
+	_renSys->Clear();
+	_renSys->Render();
 }
 
 void Game::Initialize()
@@ -200,8 +204,8 @@ void Game::Initialize()
 
 void Game::Render()
 {
-	for (int y = 0; y < _settings->lvlSizeY; y++)
-		for (int x = 0; x < _settings->lvlSizeX; x++)
+	for (int y = 0; y < _settings->lvlSizeY; ++y)
+		for (int x = 0; x < _settings->lvlSizeX; ++x)
 			if (_fogOfWarB[y][x] == false)
 				_renSys->DrawChar(y, x, _objectsMap[y][x]->GetRenderObject());
 			else

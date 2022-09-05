@@ -16,7 +16,7 @@ RenderSystem::RenderSystem(const int screenY, const int screenX)
 		for (int x = 0; x < _screenX; ++x)
 		{
 			_backBuffer[y][x].symbol      = 0;
-			_backBuffer[y][x].symbolColor = Color::gray;
+			_backBuffer[y][x].symbolColor = Color::black;
 			_backBuffer[y][x].bkgColor    = Color::black;
 
 			_screenBuffer[y][x] = _backBuffer[y][x];
