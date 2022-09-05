@@ -31,9 +31,6 @@ Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false)
 
 Game::~Game()
 {
-	delete _renSys;
-	delete _manager;
-
 	ClearObjectMap();
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 	{
@@ -47,6 +44,9 @@ Game::~Game()
 	delete _empty;
 	delete _wall;
 	delete _fogOfWar;
+
+	delete _renSys;
+	delete _manager;
 }
 
 void Game::Start()
@@ -54,7 +54,7 @@ void Game::Start()
 	ChooseMode();
 	_isGameActive = true;
 
-	while (_activeLevel != _manager->GetSettings()->levelsCount)
+	while (_activeLevel < _manager->GetSettings()->levelsCount)
 	{
 		Initialize();
 
@@ -104,7 +104,6 @@ void Game::ClearObjectMap()
 				delete _objectsMap[y][x];
 				_objectsMap[y][x] = nullptr;
 			}
-				
 }
 
 Object* Game::CreateObject(unsigned char symbol, Coord coord)

@@ -24,7 +24,6 @@ public:
 private:
 	bool ReadSettings();
 	void SetupSettings();
-	void CreateSettingsFile();
 };
 
 struct Settings 
