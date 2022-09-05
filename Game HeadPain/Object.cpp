@@ -3,30 +3,13 @@
 int Object::__idObjects    = 0;
 int Object::__countObjects = 0;
 
-Object::Object(unsigned char mapSymbol, Coord coord)
-	: _mapSymbol(mapSymbol), _coord(coord)
-{
-	// Object id
-	_id = __idObjects;
-	__idObjects++;
-
-	// Plus the count of objects
-	__countObjects++;
-
-	// Initializing the object
-	_entity    = GetInitializeEntity(_mapSymbol);
-
-	// Initializing the render object
-	_renderObj.symbol	       = GetInitializeRenderSymbol(_entity);
-	_renderObj.symbolColor     = GetInitializeColorSymbol(_entity);
-	_renderObj.backgroundColor = GetInitializeColorBackground(_entity);
-}
-
-Object::Object(unsigned char mapSymbol) : Object(mapSymbol, Coord{ 0,0 })
+Object::Object(unsigned char symbol) : Object(symbol, Coord{ 0,0 })
 {}
 
-Object::Object(Entity entity, Coord coord)
-	: _entity(entity), _coord(coord)
+Object::Object(unsigned char symbol, Coord coord) : Object(GetInitEntity(symbol), coord)
+{}
+
+Object::Object(Entity entity, Coord coord) : _entity(entity), _coord(coord)
 {
 	// Object id
 	_id = __idObjects;
@@ -36,12 +19,12 @@ Object::Object(Entity entity, Coord coord)
 	__countObjects++;
 
 	// Initializing the object
-	_mapSymbol = GetInitializeMapSymbol(_entity);
+	_mapSymbol = GetInitMapSymbol(_entity);
 
 	// Initializing the render object
-	_renderObj.symbol = GetInitializeRenderSymbol(_entity);
-	_renderObj.symbolColor = GetInitializeColorSymbol(_entity);
-	_renderObj.backgroundColor = GetInitializeColorBackground(_entity);
+	_renderObj.symbol      = GetInitRenderSymbol(_entity);
+	_renderObj.symbolColor = GetInitColorSymbol(_entity);
+	_renderObj.bkgColor    = GetInitColorBkg(_entity);
 }
 
 Object::Object(Entity entity) : Object(entity, Coord{ 0,0 })
@@ -74,13 +57,11 @@ void Object::SetCoord(int x, int y)
 
 void Object::SetCoord(Coord coord)
 {
-	// For "x"
 	if (coord.x < 0)
 		_coord.x = 0;
 	else
 		_coord.x = coord.x;
 
-	// For "y"
 	if (coord.y < 0)
 		_coord.y = 0;
 	else
@@ -104,7 +85,7 @@ Color Object::GetColorSymbol()
 
 Color Object::GetColorBackground()
 {
-	return _renderObj.backgroundColor;
+	return _renderObj.bkgColor;
 }
 
 const RenderObject& Object::GetRenderObject()
@@ -153,9 +134,9 @@ void Object::MoveOnDown()
 	_coord.y++;
 }
 
-Entity Object::GetInitializeEntity(unsigned char mapSymbol)
+Entity Object::GetInitEntity(unsigned char symbol)
 {
-	switch (mapSymbol)
+	switch (symbol)
 	{
 		case ' ':	return Entity::empty;
 		case 'H':	return Entity::hero;
@@ -174,7 +155,7 @@ Entity Object::GetInitializeEntity(unsigned char mapSymbol)
 	}
 }
 
-unsigned char Object::GetInitializeMapSymbol(Entity entity)
+unsigned char Object::GetInitMapSymbol(Entity entity)
 {
 	switch (entity)
 	{
@@ -196,7 +177,7 @@ unsigned char Object::GetInitializeMapSymbol(Entity entity)
 	}
 }
 
-unsigned char Object::GetInitializeRenderSymbol(Entity entity)
+unsigned char Object::GetInitRenderSymbol(Entity entity)
 {
 	switch (entity)
 	{
@@ -218,7 +199,7 @@ unsigned char Object::GetInitializeRenderSymbol(Entity entity)
 	}
 }
 
-Color Object::GetInitializeColorSymbol(Entity entity)
+Color Object::GetInitColorSymbol(Entity entity)
 {
 	switch (entity)
 	{
@@ -240,17 +221,29 @@ Color Object::GetInitializeColorSymbol(Entity entity)
 	}
 }
 
-Color Object::GetInitializeColorBackground(Entity entity)
+Color Object::GetInitColorBkg(Entity entity)
 {
-	return Color::black;
+	switch (entity)
+	{
+		case Entity::empty:			return Color::black;
+		case Entity::hero:			return Color::black;
+		case Entity::wall:			return Color::black;
+		case Entity::door:			return Color::black;
+		case Entity::levelDoor:		return Color::black;
+		case Entity::key:			return Color::black;
+		case Entity::levelKey:		return Color::black;
+		case Entity::box:			return Color::black;
+		case Entity::exitDoor:		return Color::black;
+		case Entity::crystal:		return Color::black;
+		case Entity::mine:			return Color::black;
+		case Entity::fogOfWar:		return Color::black;
 
-	//switch (entity)
-	//{
-	//	default: return Color::black;
-	//}
+		case Entity::error:
+		default: return Color::darkMagenta;
+	}
 }
 
-Color Object::GetInitializeColorBackgroundFromMap(unsigned char symbol)
+Color Object::GetInitColorFromBkgMap(unsigned char symbol)
 {
 	switch (symbol)
 	{

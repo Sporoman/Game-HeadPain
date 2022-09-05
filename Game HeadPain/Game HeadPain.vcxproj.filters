@@ -30,15 +30,15 @@
     <ClCompile Include="Game.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="colors.h">
+    <ClInclude Include="renderSystem\colors.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Hero.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Coord.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Object.h">
@@ -50,11 +50,30 @@
     <ClInclude Include="renderSystem\renderSystem.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="RenderObject.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="Coord.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="renderSystem\RenderObject.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="settings.txt" />
+    <Text Include="levels\level_0.txt" />
+    <Text Include="levels\level_1.txt" />
+    <Text Include="levels\level_2.txt" />
+    <Text Include="levels\level_3.txt" />
+    <Text Include="levels\level_4.txt" />
+    <Text Include="levels\level_5.txt" />
+    <Text Include="levels\readme_ru.txt" />
+    <Text Include="levels\b_level_0.txt" />
+    <Text Include="levels\b_level_1.txt" />
+    <Text Include="levels\b_level_2.txt" />
   </ItemGroup>
 </Project>

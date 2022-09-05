@@ -1,0 +1,6 @@
+Levels=7
+LvlSizeX=40
+LvlSizeY=21
+HudIndentX=5
+HudMaxSizeX=25
+HudMaxSizeY=10

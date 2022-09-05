@@ -3,9 +3,9 @@
 
 struct Inventory
 {
-	int crystal_count = 0;
-	int key_count     = 0;
-	bool lvl_key      = false;
+	int crystals = 0;
+	int keys     = 0;
+	bool lvlKey  = false;
 };
 
 #endif // INVENTORY_H

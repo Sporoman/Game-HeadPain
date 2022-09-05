@@ -4,45 +4,39 @@
 #include "Object.h"
 #include "Inventory.h"
 
-//enum class Item
-//{
-//	crystal = 0,
-//	key = 1,
-//};
+enum class Item;
 
 class Hero : public Object
 {
 private:
 	static unsigned char __mapSym;
 
-	Inventory _inventory;
+	Inventory _inv;
 
 public:
 	Hero(Coord coord);
 	Hero();
 	~Hero();
 
-	void AddCrystal();
-	void AddCrystal(int count);
-	void SetCrystal(int count);
-
-	void AddKey();
-	void AddKey(int count);
-	void SetKey(int count);
-
 	Inventory GetInventory();
-	void SetInventory(const Inventory& inventory);
+	void SetInventory(const Inventory& inv);
 
-	//void AddItem(Item item);
-	//void AddItem(Item item, int count);
-	//void SetItem(Item item, int count);
+	void AddItem(Item item);
+	void AddItem(Item item, int count);
+	void TakeItem(Item item);
+	void TakeItem(Item item, int count);
+	void SetItem(Item item, int count);
+	
 
 	bool CheckKey();
-	void TakeKey();
-
 	bool CheckLvlkey();
-	void GiveLvlKey();
-	void TakeLvlKey();
+};
+
+enum class Item
+{
+	crystal,
+	key,
+	lvlKey
 };
 
 #endif // HERO_H

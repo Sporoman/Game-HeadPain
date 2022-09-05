@@ -7,7 +7,7 @@ struct RenderObject
 {
 	unsigned char symbol;	// Symbol on the visual map (after render)
 	Color symbolColor;		// Symbol color
-	Color backgroundColor;	// Background color
+	Color bkgColor;			// Background color
 };
 
 #endif // RENDEROBJECT
