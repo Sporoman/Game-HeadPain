@@ -297,6 +297,9 @@ void Game::Move()
 
 void Game::MoveHeroTo(int y, int x)
 {
+	if (x < 0 || y < 0 || x >= _settings->lvlSizeX || y >= _settings->lvlSizeY)
+		return;
+
 	Object* collidingObject = _objectsMap[y][x];
 	bool canMove = false;
 
@@ -344,19 +347,28 @@ void Game::MoveHeroTo(int y, int x)
 		{
 			// Hero move direction
 			Coord heroCoord = _hero->GetCoord();
-			int heroDirectoinY = y - heroCoord.y;
+			int heroDirectionY = y - heroCoord.y;
 			int heroDirectionX = x - heroCoord.x;
+
+			int objBehindY = y + heroDirectionY;
+			int objBehindX = x + heroDirectionX;
+
+			// Check map border
+			if (objBehindX < 0 || objBehindX >= _settings->lvlSizeX 
+				|| objBehindY < 0 || objBehindY >= _settings->lvlSizeY)
+				return;
 
 			// Check space behind the box
 			// and handling collisions with objects
-			Entity entityBehindBox = _objectsMap[y + heroDirectoinY][x + heroDirectionX]->GetEntity();
+			Entity entityBehindBox = _objectsMap[objBehindY][objBehindX]->GetEntity();
 			if ((entityBehindBox == Entity::empty)
 				|| (entityBehindBox == Entity::crystal)
-				|| (entityBehindBox == Entity::key))
+				|| (entityBehindBox == Entity::key)
+				|| (entityBehindBox == Entity::levelKey))
 			{
 				// Bye bye, Object
 				if (entityBehindBox != Entity::empty)
-					delete _objectsMap[y + heroDirectoinY][x + heroDirectionX];
+					delete _objectsMap[objBehindY][objBehindX];
 
 				switch (entityBehindBox)
 				{
@@ -368,7 +380,7 @@ void Game::MoveHeroTo(int y, int x)
 				// Replace box
 				Object* boxObject = collidingObject;
 				_objectsMap[y][x] = _empty;
-				_objectsMap[y + heroDirectoinY][x + heroDirectionX] = boxObject;
+				_objectsMap[objBehindY][objBehindX] = boxObject;
 
 				canMove = true;
 			}
