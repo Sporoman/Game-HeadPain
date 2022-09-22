@@ -52,6 +52,7 @@ Game::~Game()
 void Game::Start()
 {
 	ChooseMode();
+	SetupSettings();
 	_isGameActive = true;
 
 	while (_activeLevel < _manager->GetSettings()->levelsCount)
@@ -93,6 +94,12 @@ void Game::ChooseMode()
 			_renSys->Render();
 		}
 	}
+}
+
+void Game::SetupSettings()
+{
+	// Setting up the inventory
+	_hero->SetItem(Item::heart, _hardMode == true ? _settings->hardStartHearts : _settings->startHearts);
 }
 
 void Game::ClearObjectMap()

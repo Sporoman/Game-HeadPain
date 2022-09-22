@@ -39,6 +39,7 @@ public:
 
 private:
 	void ChooseMode();
+	void SetupSettings();
 	void ClearObjectMap();
 	Object* CreateObject(unsigned char symbol, Coord coord);
 	void Shutdown();

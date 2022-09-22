@@ -34,6 +34,8 @@ struct Settings
 	int hudIndentX = 5;
 	int hudMaxSizeX = 25;
 	int hudMaxSizeY = 10;
+	int startHearts = 10;
+	int hardStartHearts = 3;
 };
 
 #endif // !MAPMANAGER
