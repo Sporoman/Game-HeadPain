@@ -196,7 +196,8 @@ void Game::Initialize()
 			const std::string* lvlBkg(_manager->GetLastLevel());
 			for (int y = 0; y < _settings->lvlSizeY; ++y)
 				for (int x = 0; x < _settings->lvlSizeX; ++x)
-					_renSys->DrawBkgCharColor(y, x, Object::GetInitColorFromBkgMap(lvlBkg->at(y * _settings->lvlSizeX + x)));
+					if ((y * _settings->lvlSizeX + x) < lvlBkg->size())
+						_renSys->DrawBkgCharColor(y, x, Object::GetInitColorFromBkgMap(lvlBkg->at(y * _settings->lvlSizeX + x)));
 		}
 		else
 			_successfulBkgRead = true;
