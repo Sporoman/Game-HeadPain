@@ -141,16 +141,17 @@ Entity Object::GetInitEntity(unsigned char symbol)
 		case ' ':	return Entity::empty;
 		case 'H':	return Entity::hero;
 		case '#':	return Entity::wall;
-		case 'D':	return Entity::door;
-		case '[':	return Entity::levelDoor;
-		case 'K':	return Entity::key;
-		case ']':	return Entity::levelKey;
-		case 'B':	return Entity::box;
+		case 'd':	return Entity::door;
+		case 'D':	return Entity::levelDoor;
+		case 'k':	return Entity::key;
+		case 'K':	return Entity::levelKey;
+		case 'b':	return Entity::box;
 		case 'E':	return Entity::exitDoor;
-		case 'C':	return Entity::crystal;
-		case 'M':	return Entity::mine;
-		case 176:	return Entity::fogOfWar;
+		case 'c':	return Entity::crystal;
+		case 'm':	return Entity::mine;
+		case 'F':	return Entity::fogOfWar;
 		case '3':	return Entity::heart;
+		case 's':	return Entity::skeleton;
 
 		default: return Entity::error;
 	}
@@ -163,16 +164,17 @@ unsigned char Object::GetInitMapSymbol(Entity entity)
 		case Entity::empty:			return ' ';
 		case Entity::hero:			return 'H';
 		case Entity::wall:			return '#';
-		case Entity::door:			return 'D';
-		case Entity::levelDoor:		return '[';
-		case Entity::key:			return 'K';
-		case Entity::levelKey:		return ']';
-		case Entity::box:			return 'B';
+		case Entity::door:			return 'd';
+		case Entity::levelDoor:		return 'D';
+		case Entity::key:			return 'k';
+		case Entity::levelKey:		return 'K';
+		case Entity::box:			return 'b';
 		case Entity::exitDoor:		return 'E';
-		case Entity::crystal:		return 'C';
-		case Entity::mine:			return 'M';
-		case Entity::fogOfWar:		return 176;
-		case Entity::heart:		return '3';
+		case Entity::crystal:		return 'c';
+		case Entity::mine:			return 'm';
+		case Entity::fogOfWar:		return 'F';
+		case Entity::heart:			return '3';
+		case Entity::skeleton:		return 's';
 
 		case Entity::error:
 		default: return '?';
@@ -195,7 +197,8 @@ unsigned char Object::GetInitRenderSymbol(Entity entity)
 		case Entity::crystal:		return 4;
 		case Entity::mine:			return 15;
 		case Entity::fogOfWar:		return 176;
-		case Entity::heart:		return 3;
+		case Entity::heart:			return 3;
+		case Entity::skeleton:		return 2;
 
 		case Entity::error:
 		default: return '?';
@@ -208,7 +211,7 @@ Color Object::GetInitColorSymbol(Entity entity)
 	{
 		case Entity::empty:			return Color::black;
 		case Entity::hero:			return Color::green;
-		case Entity::wall:			return Color::white;
+		case Entity::wall:			return Color::gray;
 		case Entity::door:			return Color::yellow;
 		case Entity::levelDoor:		return Color::blue;
 		case Entity::key:			return Color::yellow;
@@ -218,7 +221,8 @@ Color Object::GetInitColorSymbol(Entity entity)
 		case Entity::crystal:		return Color::magenta;
 		case Entity::mine:			return Color::red;
 		case Entity::fogOfWar:		return Color::gray;
-		case Entity::heart:		return Color::red;
+		case Entity::heart:			return Color::red;
+		case Entity::skeleton:		return Color::white;
 
 		case Entity::error:
 		default: return Color::red;
@@ -241,7 +245,8 @@ Color Object::GetInitColorBkg(Entity entity)
 		case Entity::crystal:		return Color::black;
 		case Entity::mine:			return Color::black;
 		case Entity::fogOfWar:		return Color::black;
-		case Entity::heart:		return Color::black;
+		case Entity::heart:			return Color::black;
+		case Entity::skeleton:		return Color::black;
 
 		case Entity::error:
 		default: return Color::darkMagenta;
@@ -253,16 +258,22 @@ Color Object::GetInitColorFromBkgMap(unsigned char symbol)
 	switch (symbol)
 	{
 		case '#': 
-		case '0':    return Color::black;
-		case 'B':    return Color::darkBlue;
-		case 'G':    return Color::darkGreen;
-		case 'C':    return Color::darkCyan;
-		case 'R':    return Color::darkRed;
-		case 'M':    return Color::darkMagenta;
-		case 'Y':    return Color::brown;
+		case ' ':	 return Color::black;
+		case 'b':    return Color::darkBlue;
+		case 'g':    return Color::darkGreen;
+		case 'c':    return Color::darkCyan;
+		case 'r':    return Color::darkRed;
+		case 'm':    return Color::darkMagenta;
+		case 'y':    return Color::brown;
+		case '-':    return Color::gray;
+		case '_':    return Color::darkGray;
+		case 'B':    return Color::blue;
+		case 'G':    return Color::green;
+		case 'C':    return Color::cyan;
+		case 'R':    return Color::red;
+		case 'M':    return Color::magenta;
+		case 'Y':    return Color::yellow;
 		case 'W':    return Color::white;
-		case 'S':    return Color::gray;
-		case '-':    return Color::darkGray;
 
 		default: return Color::black;
 	}
