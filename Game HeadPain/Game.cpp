@@ -484,9 +484,12 @@ void Game::DispelFogOfWar(int y_pos, int x_pos)
 				if (x < _settings->lvlSizeX && y < _settings->lvlSizeY && x >= 0 && y >= 0
 					&& (_fogOfWarB[y][x] == true))
 				{
-					// Dispel the fog of war and redraw background symbol
-					_fogOfWarB[y][x] = false;
-					_renSys->DrawBkgCharColor(y, x, Object::GetInitColorFromBkgMap(lvlBkg->at(y * _settings->lvlSizeX + x)));
+					if ((y * _settings->lvlSizeX + x) < lvlBkg->size())
+					{
+						// Dispel the fog of war and redraw background symbol
+						_fogOfWarB[y][x] = false;
+						_renSys->DrawBkgCharColor(y, x, Object::GetInitColorFromBkgMap(lvlBkg->at(y * _settings->lvlSizeX + x)));
+					}
 				}
 	}
 }
