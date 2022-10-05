@@ -75,5 +75,8 @@
     <Text Include="levels\b_level_0.txt" />
     <Text Include="levels\b_level_1.txt" />
     <Text Include="levels\b_level_2.txt" />
+    <Text Include="levels\bkg_level_0.txt" />
+    <Text Include="levels\bkg_level_1.txt" />
+    <Text Include="levels\bkg_level_2.txt" />
   </ItemGroup>
 </Project>
