@@ -173,6 +173,9 @@
     <Text Include="levels\readme_ru.txt" />
     <Text Include="settings.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="ASCII.jpg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

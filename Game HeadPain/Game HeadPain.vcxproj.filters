@@ -79,4 +79,9 @@
     <Text Include="levels\bkg_level_1.txt" />
     <Text Include="levels\bkg_level_2.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="ASCII.jpg">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
