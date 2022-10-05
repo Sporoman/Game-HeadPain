@@ -411,8 +411,9 @@ void Game::MoveHeroTo(int y, int x)
 			{
 				// Bye bye, Object
 				if (entityBehindBox != Entity::empty)
+				{
 					delete _objectsMap[objBehindY][objBehindX];
-				else
+
 					switch (entityBehindBox)
 					{
 						case Entity::crystal:	_crystalsOnLvl--;    break;
@@ -420,6 +421,7 @@ void Game::MoveHeroTo(int y, int x)
 						case Entity::key:       _keysOnLvl--;        break;
 						case Entity::levelKey:  break;
 					}
+				}
 
 				// Replace box
 				Object* boxObject = collidingObject;
@@ -500,5 +502,6 @@ void Game::DispelFogOfWar(int y_pos, int x_pos)
 void Game::SetDefaultItemsValueOnLvl()
 {
 	_crystalsOnLvl = 0;
-	_keysOnLvl = 0;
+	_keysOnLvl     = 0;
+	_heartsOnLvl   = 0;
 }
