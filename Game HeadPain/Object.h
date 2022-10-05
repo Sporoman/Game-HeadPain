@@ -71,7 +71,8 @@ enum class Entity
 	mine,
 	fogOfWar,
 	heart,
-	skeleton
+	skeleton,
+	rock
 };
 
 enum class DirMove

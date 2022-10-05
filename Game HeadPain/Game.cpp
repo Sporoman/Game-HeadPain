@@ -297,6 +297,9 @@ void Game::RestartLevel()
 
 void Game::Move()
 {
+	//if (!_kbhit())
+		//return;
+
 	unsigned char inputChar = _getch();
 	inputChar = tolower(inputChar);
 
