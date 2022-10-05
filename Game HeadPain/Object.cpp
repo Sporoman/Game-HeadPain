@@ -152,7 +152,6 @@ Entity Object::GetInitEntity(unsigned char symbol)
 		case 'F':	return Entity::fogOfWar;
 		case '3':	return Entity::heart;
 		case 's':	return Entity::skeleton;
-		case 'r':	return Entity::rock;
 
 		default: return Entity::error;
 	}
@@ -176,7 +175,6 @@ unsigned char Object::GetInitMapSymbol(Entity entity)
 		case Entity::fogOfWar:		return 'F';
 		case Entity::heart:			return '3';
 		case Entity::skeleton:		return 's';
-		case Entity::rock:			return 'r';
 
 		case Entity::error:
 		default: return '?';
@@ -195,13 +193,12 @@ unsigned char Object::GetInitRenderSymbol(Entity entity)
 		case Entity::key:			return 21;
 		case Entity::levelKey:		return 21;
 		case Entity::box:			return 254;
-		case Entity::exitDoor:		return 178;
+		case Entity::exitDoor:		return 176;
 		case Entity::crystal:		return 4;
 		case Entity::mine:			return 15;
 		case Entity::fogOfWar:		return 176;
 		case Entity::heart:			return 3;
 		case Entity::skeleton:		return 2;
-		case Entity::rock:			return 254;
 
 		case Entity::error:
 		default: return '?';
@@ -226,7 +223,6 @@ Color Object::GetInitColorSymbol(Entity entity)
 		case Entity::fogOfWar:		return Color::gray;
 		case Entity::heart:			return Color::red;
 		case Entity::skeleton:		return Color::white;
-		case Entity::rock:			return Color::darkGray;
 
 		case Entity::error:
 		default: return Color::red;
@@ -251,7 +247,6 @@ Color Object::GetInitColorBkg(Entity entity)
 		case Entity::fogOfWar:		return Color::black;
 		case Entity::heart:			return Color::black;
 		case Entity::skeleton:		return Color::black;
-		case Entity::rock:			return Color::black;
 
 		case Entity::error:
 		default: return Color::darkMagenta;
