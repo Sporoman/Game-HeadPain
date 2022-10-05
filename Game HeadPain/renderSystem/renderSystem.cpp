@@ -26,6 +26,9 @@ RenderSystem::RenderSystem(const int screenY, const int screenX)
 	// Get console handle
 	_consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
+	// Set console font
+	SetConsoleFont();
+
 	// Hide console cursor
 	HideCursor();
 }
@@ -174,4 +177,17 @@ void RenderSystem::ShowCursor()
 	cursorInfo.bVisible = true;
 	cursorInfo.dwSize = 25;
 	SetConsoleCursorInfo(_consoleHandle, &cursorInfo);
+}
+
+void RenderSystem::SetConsoleFont()
+{
+	CONSOLE_FONT_INFOEX font;
+	font.cbSize = sizeof(font);
+	font.nFont  = 0;
+	font.dwFontSize.X = 16;
+	font.dwFontSize.Y = 16;
+	font.FontFamily   = FF_DONTCARE;
+	font.FontWeight   = FW_NORMAL;
+	wcscpy_s(font.FaceName, L"Lucida Console");
+//	SetCurrentConsoleFontEx(_consoleHandle, FALSE, &font);
 }

@@ -43,6 +43,7 @@ private:
 	void SetCursor(int y, int x);
 	void HideCursor();
 	void ShowCursor();
+	void SetConsoleFont();
 };
 
 #endif // !RENDERSYSTEM_H
