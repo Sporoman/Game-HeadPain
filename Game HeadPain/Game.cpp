@@ -99,7 +99,7 @@ void Game::ChooseMode()
 void Game::SetupSettings()
 {
 	// Setting up the inventory
-	_hero->SetItem(Item::heart, _hardMode == true ? _settings->hardStartHearts : _settings->startHearts);
+	_hero->SetItem(Item::heart, _hardMode ? _settings->hardStartHearts : _settings->startHearts);
 }
 
 void Game::ClearObjectMap()
