@@ -11,10 +11,10 @@ Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false)
 	const int renSizeY = _settings->lvlSizeY + _settings->hudMaxSizeY;
 	_renSys = new RenderSystem(renSizeY, renSizeX);
 
-	_hero      = new Hero();
-	_empty     = new Object(Entity::empty);
-	_wall      = new Object(Entity::wall);
-	_fogOfWar  = new Object(Entity::fogOfWar);
+	_hero	= new Hero();
+	_empty	= new Object(Entity::empty);
+	_wall   = new Object(Entity::wall);
+	_fog    = new Object(Entity::fogOfWar);
 
 	_objectsMap = new Object** [_settings->lvlSizeY];
 	_fogOfWarB  = new bool* [_settings->lvlSizeY];
@@ -43,7 +43,7 @@ Game::~Game()
 	delete _hero;
 	delete _empty;
 	delete _wall;
-	delete _fogOfWar;
+	delete _fog;
 
 	delete _renSys;
 	delete _manager;
@@ -106,7 +106,8 @@ void Game::ClearObjectMap()
 {
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
-			if ((_objectsMap[y][x] != _hero) && (_objectsMap[y][x] != _empty) && (_objectsMap[y][x] != _wall))
+			if ((_objectsMap[y][x] != _hero) && (_objectsMap[y][x] != _empty) 
+				&& (_objectsMap[y][x] != _wall) && (_objectsMap[y][x] != _fog))
 			{
 				delete _objectsMap[y][x];
 				_objectsMap[y][x] = nullptr;
@@ -167,6 +168,8 @@ void Game::Initialize()
 				_objectsMap[y][x] = _empty;
 			else if (symbol == _wall->GetMapSymbol())
 				_objectsMap[y][x] = _wall;
+			else if (symbol == _fog->GetMapSymbol())
+				_objectsMap[y][x] = _fog;
 			else
 			{
 				Object* object = CreateObject(symbol, Coord{ x,y });
@@ -217,7 +220,7 @@ void Game::Render()
 			if (_fogOfWarB[y][x] == false)
 				_renSys->DrawChar(y, x, _objectsMap[y][x]->GetRenderObject());
 			else
-				_renSys->DrawChar(y, x, _fogOfWar->GetRenderObject());
+				_renSys->DrawChar(y, x, _fog->GetRenderObject());
 
 	RenderHud();
 	_renSys->Render();
@@ -466,7 +469,7 @@ void Game::MoveHeroTo(int y, int x)
 
 		// Remove Hero and set Empty
 		_objectsMap[heroCoord.y][heroCoord.x] = _empty;
-		if ((actualObject != _hero) && (actualObject != _empty) && (actualObject != _fogOfWar))
+		if ((actualObject != _hero) && (actualObject != _empty) && (actualObject != _fog))
 			delete actualObject;
 
 		// Set Hero on objects map and set his position
