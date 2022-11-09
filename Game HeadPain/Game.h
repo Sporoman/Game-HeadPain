@@ -20,7 +20,7 @@ private:
 	Hero*   _hero;
 	Object* _empty;
 	Object* _wall;
-	Object* _fogOfWar;
+	Object* _fog;
 
 	Inventory _inventoryAtLevelStart;
 	int _activeLevel;
