@@ -7,7 +7,7 @@
 
 // Feature of the system: 
 // If the object has a black background, it is not rendered(= transparent).
-// To remove this feature, delete the check for a black background in the "DrawChar" method (68-69 lines in .cpp)
+// To remove this feature, delete the check for a black background in the "DrawChar" method (71-72 lines in .cpp)
 
 class RenderSystem
 {
