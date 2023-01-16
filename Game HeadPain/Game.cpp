@@ -172,9 +172,8 @@ void Game::Initialize()
 				_objectsMap[y][x] = _fog;
 			else
 			{
+				// Create and set the object on objects map
 				Object* object = CreateObject(symbol, Coord{ x,y });
-
-				// Set the object on objects map
 				_objectsMap[y][x] = object;
 			}
 
