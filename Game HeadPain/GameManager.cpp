@@ -14,8 +14,8 @@ GameManager::GameManager()
 	_mapSettings["HudIndentX"]  = _settings->hudIndentX;
 	_mapSettings["HudMaxSizeX"] = _settings->hudMaxSizeX;
 	_mapSettings["HudMaxSizeY"] = _settings->hudMaxSizeY;
-	_mapSettings["StartHearts"] = _settings->startHearts;
-	_mapSettings["HardStartHearts"] = _settings->hardStartHearts;
+	_mapSettings["EazyStartHearts"] = _settings->eazyStartHearts;
+	_mapSettings["NormalStartHearts"] = _settings->normalStartHearts;
 
 	// Reading settings from a settings file
 	ReadSettings();
@@ -121,6 +121,6 @@ void GameManager::SetupSettings()
 	_settings->hudIndentX  = _mapSettings["HudIndentX"];
 	_settings->hudMaxSizeX = _mapSettings["HudMaxSizeX"];
 	_settings->hudMaxSizeY = _mapSettings["HudMaxSizeY"];
-	_settings->startHearts = _mapSettings["StartHearts"];
-	_settings->hardStartHearts = _mapSettings["HardStartHearts"];
+	_settings->eazyStartHearts = _mapSettings["EazyStartHearts"];
+	_settings->normalStartHearts = _mapSettings["NormalStartHearts"];
 }

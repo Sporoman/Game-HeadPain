@@ -4,5 +4,5 @@ LvlSizeY=20
 HudIndentX=5
 HudMaxSizeX=25
 HudMaxSizeY=10
-StartHearts=10
-HardStartHearts=3
+EazyStartHearts=10
+NormalStartHearts=3

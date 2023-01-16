@@ -51,7 +51,7 @@ void Object::MoveOn(DirMove dir)
 
 void Object::SetCoord(int x, int y)
 {
-	Coord coord{ x,y };
+	Coord coord{ x, y };
 	SetCoord(coord);
 }
 
@@ -245,7 +245,7 @@ Color Object::GetInitColorBkg(Entity entity)
 		case Entity::key:			return Color::black;
 		case Entity::levelKey:		return Color::black;
 		case Entity::box:			return Color::black;
-		case Entity::exitDoor:		return Color::black;
+		case Entity::exitDoor:		return Color::darkGreen;
 		case Entity::crystal:		return Color::black;
 		case Entity::mine:			return Color::black;
 		case Entity::fogOfWar:		return Color::black;

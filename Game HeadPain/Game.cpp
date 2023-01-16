@@ -22,7 +22,7 @@ Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false)
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 	{
 		_objectsMap[y] = new Object* [_settings->lvlSizeX];
-		_fogOfWarB[y] = new bool[_settings->lvlSizeX] { false };
+		_fogOfWarB[y]  = new bool[_settings->lvlSizeX] { false };
 
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
 			_objectsMap[y][x] = nullptr;
@@ -86,8 +86,8 @@ void Game::ChooseMode()
 
 		switch (inputChar)
 		{
-			case '1': check = false; break;
-			case '2': check = false; _hardMode = true; break;
+			case '1':	check = false;	break;
+			case '2':	check = false;	_hardMode = true;	break;
 
 			default:
 			_renSys->SendText(2, 4, "Just choose mode -_-", static_cast<Color>(rand() % 15 + 1));	// 15 Colors (without black)
@@ -99,7 +99,7 @@ void Game::ChooseMode()
 void Game::SetupSettings()
 {
 	// Setting up the inventory
-	_hero->SetItem(Item::heart, _hardMode ? _settings->hardStartHearts : _settings->startHearts);
+	_hero->SetItem(Item::heart, _hardMode ? _settings->normalStartHearts : _settings->eazyStartHearts);
 }
 
 void Game::ClearObjectMap()
@@ -150,7 +150,7 @@ void Game::Initialize()
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
 		{
-			if (_hardMode == true)
+			if (_hardMode)
 				_fogOfWarB[y][x] = true;
 
 			// Take symbol from level map
@@ -165,7 +165,7 @@ void Game::Initialize()
 				_objectsMap[y][x] = _hero;
 			}
 			else if (symbol == _empty->GetMapSymbol())
-				_objectsMap[y][x] = _empty;
+				_objectsMap[y][x] = _empty;	
 			else if (symbol == _wall->GetMapSymbol())
 				_objectsMap[y][x] = _wall;
 			else if (symbol == _fog->GetMapSymbol())
@@ -194,7 +194,7 @@ void Game::Initialize()
 	// if hard mode is false, draw the entire background
 	// if hard mode is true, memorizing a successful background read for rendering during fog dispel
 	if (_manager->ReadLevel(_activeLevel, true))
-		if (_hardMode == false)
+		if (!_hardMode)
 		{
 			const std::string* lvlBkg(_manager->GetLastLevel());
 			for (int y = 0; y < _settings->lvlSizeY; ++y)
@@ -217,7 +217,7 @@ void Game::Render()
 {
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
-			if (_fogOfWarB[y][x] == false)
+			if (!_fogOfWarB[y][x])
 				_renSys->DrawChar(y, x, _objectsMap[y][x]->GetRenderObject());
 			else
 				_renSys->DrawChar(y, x, _fog->GetRenderObject());
@@ -243,7 +243,7 @@ void Game::RenderHud()
 	_renSys->SendText(4, _indentX + 9, textBuffer);
 	
 	sprintf_s(textBuffer, "Keys");
-	_renSys->SendText(5, _indentX, textBuffer, Color::cyan);
+	_renSys->SendText(5, _indentX, textBuffer, Color::yellow);
 	sprintf_s(textBuffer, ": %i  ", inv.keys);
 	_renSys->SendText(5, _indentX + 4, textBuffer);
 	
@@ -258,7 +258,7 @@ void Game::RenderHud()
 	_renSys->SendText(7, _indentX + 7, textBuffer);
 
 	sprintf_s(textBuffer, "Keys");
-	_renSys->SendText(9, _indentX, textBuffer, Color::cyan);
+	_renSys->SendText(9, _indentX, textBuffer, Color::yellow);
 	sprintf_s(textBuffer, "on level: %i  ", _keysOnLvl);
 	_renSys->SendText(9, _indentX + 5, textBuffer);
 
@@ -477,18 +477,18 @@ void Game::MoveHeroTo(int y, int x)
 		_hero->SetCoord(x, y);
 
 		// Dispel Fog of war
-		if (_hardMode == true)
+		if (_hardMode)
 			DispelFogOfWar(y, x);
 	}
 }
 
 void Game::DispelFogOfWar(int y_pos, int x_pos)
 {
-	if ((_hardMode == true) && (_successfulBkgRead = true))
+	if (_hardMode && _successfulBkgRead)
 	{
 		const std::string* lvlBkg(_manager->GetLastLevel());
-		for (int y = y_pos - 2; y <= y_pos + 2; y++)
-			for (int x = x_pos - 3; x <= x_pos + 3; x++)
+		for (int y = y_pos - 2; y <= y_pos + 2; ++y)
+			for (int x = x_pos - 3; x <= x_pos + 3; ++x)
 				if (x < _settings->lvlSizeX && y < _settings->lvlSizeY && x >= 0 && y >= 0
 					&& (_fogOfWarB[y][x] == true))
 				{
