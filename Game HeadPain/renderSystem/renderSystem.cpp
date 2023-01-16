@@ -185,9 +185,9 @@ void RenderSystem::SetConsoleFont()
 	font.cbSize = sizeof(font);
 	font.nFont  = 0;
 	font.dwFontSize.X = 8;
-	font.dwFontSize.Y = 14;
+	font.dwFontSize.Y = 16;
 	font.FontFamily   = FF_DONTCARE;
 	font.FontWeight   = FW_NORMAL;
-	wcscpy_s(font.FaceName, L"Lucida Console");
+	wcscpy_s(font.FaceName, L"Consolas");
 	SetCurrentConsoleFontEx(_consoleHandle, FALSE, &font);
 }
