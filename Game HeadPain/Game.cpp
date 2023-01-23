@@ -209,7 +209,7 @@ void Game::Initialize()
 
 	// Dispelling the fog of war around the player
 	Coord hero_coord = _hero->GetCoord();
-	DispelFogOfWar(hero_coord.y, hero_coord.x);
+	DispelFog(hero_coord.y, hero_coord.x);
 }
 
 void Game::Render()
@@ -477,11 +477,11 @@ void Game::MoveHeroTo(int y, int x)
 
 		// Dispel Fog of war
 		if (_hardMode)
-			DispelFogOfWar(y, x);
+			DispelFog(y, x);
 	}
 }
 
-void Game::DispelFogOfWar(int y_pos, int x_pos)
+void Game::DispelFog(int y_pos, int x_pos)
 {
 	if (_hardMode && _successfulBkgRead)
 	{

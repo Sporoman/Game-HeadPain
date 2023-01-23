@@ -46,11 +46,13 @@ private:
 
 	void Initialize();
 	void Render();
-	void RenderHud();
-	void RestartLevel();
 	void Move();
+
+	void RenderMap();
+	void RenderHud();
 	void MoveHeroTo(int y, int x);
-	void DispelFogOfWar(int y, int x);
+	void DispelFog(int y, int x);
+	void RestartLevel();
 	void SetDefaultItemsValueOnLvl();
 };
 
