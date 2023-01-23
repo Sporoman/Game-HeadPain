@@ -1,5 +1,5 @@
 #include "Game.h"
-#include <conio.h>
+#include "KeyDown.h"
 
 Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false),
 	_activeLevel(0), _crystalsOnLvl(0), _heartsOnLvl(0), _keysOnLvl(0)
@@ -80,14 +80,10 @@ void Game::ChooseMode()
 	bool check = true;
 	while(check)
 	{
-		
-		unsigned char inputChar = _getch();
-		inputChar = tolower(inputChar);
-
-		switch (inputChar)
+		switch (KeyDown::getWaitKey())
 		{
-			case '1':	check = false;	break;
-			case '2':	check = false;	_hardMode = true;	break;
+			case Key::NUM_1:   check = false;	break;
+			case Key::NUM_2:   check = false;	_hardMode = true;	break;
 
 			default:
 			_renSys->SendText(2, 4, "Just choose mode -_-", static_cast<Color>(rand() % 15 + 1));	// 15 Colors (without black)
@@ -299,36 +295,20 @@ void Game::RestartLevel()
 
 void Game::Move()
 {
-	//if (!_kbhit())
-		//return;
+	Coord c = _hero->GetCoord();
 
-	unsigned char inputChar = _getch();
-	inputChar = tolower(inputChar);
+	switch (KeyDown::getWaitKey())
+	{
+		case Key::W: case Key::KEY_UP:      MoveHeroTo(c.y - 1, c.x);   break;
+		case Key::S: case Key::KEY_DOWN:    MoveHeroTo(c.y + 1, c.x);   break;
+		case Key::A: case Key::KEY_LEFT:    MoveHeroTo(c.y, c.x - 1);   break;
+		case Key::D: case Key::KEY_RIGHT:   MoveHeroTo(c.y, c.x + 1);   break;
 
-	Coord heroCoord = _hero->GetCoord();
+		case Key::R:   RestartLevel();   break;
 
-	if (inputChar == 0 || inputChar == 224)	// for special keys
-		switch (_getch())
-		{
-			// Up Down Left Right for arrays
-			case 72:	MoveHeroTo(heroCoord.y - 1, heroCoord.x);	break;
-			case 80:	MoveHeroTo(heroCoord.y + 1, heroCoord.x);	break;
-			case 75:	MoveHeroTo(heroCoord.y, heroCoord.x - 1);	break;
-			case 77:	MoveHeroTo(heroCoord.y, heroCoord.x + 1);   break;
-		}
-	else
-		switch (inputChar)
-		{
-			// Up Down Left Right
-			case 'w': case 230: case 150:	MoveHeroTo(heroCoord.y - 1, heroCoord.x);	break;
-			case 's': case 235: case 155:	MoveHeroTo(heroCoord.y + 1, heroCoord.x);	break;
-			case 'a': case 228: case 148:	MoveHeroTo(heroCoord.y, heroCoord.x - 1);	break;
-			case 'd': case 162: case 130:	MoveHeroTo(heroCoord.y, heroCoord.x + 1);   break;
-
-			case 'r': case 170: case 138:	RestartLevel();   break;	// Restart level
-			case '2':	_activeLevel++;		Initialize();	  break;	// Next level
-			case '1':	_activeLevel--;		Initialize();	  break;	// Back level
-		}
+		case Key::NUM_1:   _activeLevel--;   Initialize();   break;
+		case Key::NUM_2:   _activeLevel++;   Initialize();   break;	
+	}
 }
 
 void Game::MoveHeroTo(int y, int x)
