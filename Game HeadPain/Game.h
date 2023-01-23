@@ -50,6 +50,8 @@ private:
 
 	void RenderMap();
 	void RenderHud();
+	void SendHudText(int y, int x, const char* text, Color symbolColor = Color::gray, Color bkgColor = Color::black);
+	void SendHudText(int y, int x, const char* text, int count, Color symbolColor = Color::gray, Color bkgColor = Color::black);
 	void MoveHeroTo(int y, int x);
 	void DispelFog(int y, int x);
 	void RestartLevel();

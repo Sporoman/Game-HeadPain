@@ -210,87 +210,70 @@ void Game::Initialize()
 
 void Game::Render()
 {
+	RenderMap();
+	RenderHud();
+	_renSys->Render();
+}
+
+void Game::RenderMap()
+{
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
 			if (!_fogOfWarB[y][x])
 				_renSys->DrawChar(y, x, _objectsMap[y][x]->GetRenderObject());
 			else
 				_renSys->DrawChar(y, x, _fog->GetRenderObject());
-
-	RenderHud();
-	_renSys->Render();
 }
 
 void Game::RenderHud()
 {
-	static char textBuffer[25];
-
 	Inventory inv = _hero->GetInventory();
-	const int _indentX = _settings->lvlSizeX + _settings->hudIndentX;
+	static const int x = _settings->lvlSizeX + _settings->hudIndentX; // X indent
+	static const int y = _settings->lvlSizeY + 1;                     // Y indent
 
-	// GLHF
-	sprintf_s(textBuffer, "Level %i  ", _activeLevel + 1);
-	_renSys->SendText(2, _indentX, textBuffer);
-
-	sprintf_s(textBuffer, "Level Key");
-	_renSys->SendText(4, _indentX, textBuffer, Color::blue);
-	inv.lvlKey == true ? sprintf_s(textBuffer, ": yeap") : sprintf_s(textBuffer, ": nope");
-	_renSys->SendText(4, _indentX + 9, textBuffer);
+	SendHudText(2, x, "Level %i  ", _activeLevel + 1);
+	SendHudText(4, x, "Level Key", Color::blue);
+	inv.lvlKey ? SendHudText(4, x+9, ": yeap", Color::blue) : SendHudText(4, x+9, ": nope");
 	
-	sprintf_s(textBuffer, "Keys");
-	_renSys->SendText(5, _indentX, textBuffer, Color::yellow);
-	sprintf_s(textBuffer, ": %i  ", inv.keys);
-	_renSys->SendText(5, _indentX + 4, textBuffer);
+	SendHudText(5, x, "Keys", Color::yellow);
+	SendHudText(5, x+4, ": %i  ", inv.keys);
+	SendHudText(6, x, "Hearts", Color::red);
+	SendHudText(6, x+6, ": %i  ", inv.hearts);
+	SendHudText(7, x, "Crystals", Color::darkMagenta);
+	SendHudText(7, x+8, ": %i  ", inv.crystals);
+
+	SendHudText(9, x, "Keys", Color::yellow);
+	SendHudText(9, x+4, " on level: %i  ", _keysOnLvl);
+	SendHudText(10, x, "Hearts", Color::red);
+	SendHudText(10, x+6, " on level: %i  ", _heartsOnLvl);
+	SendHudText(11, x, "Crystals", Color::darkMagenta);
+	SendHudText(11, x+8, " on level: %i  ", _crystalsOnLvl);
+
+	SendHudText(13, x, "Hero X coord: %i  ", _hero->GetCoord().x);
+	SendHudText(14, x, "Hero Y coord: %i  ", _hero->GetCoord().y);
 	
-	sprintf_s(textBuffer, "Hearts");
-	_renSys->SendText(6, _indentX, textBuffer, Color::red);
-	sprintf_s(textBuffer, ": %i  ", inv.hearts);
-	_renSys->SendText(6, _indentX + 6, textBuffer);
-
-	sprintf_s(textBuffer, "Crystals");
-	_renSys->SendText(7, _indentX, textBuffer, Color::darkMagenta);
-	sprintf_s(textBuffer, ": %i  ", inv.crystals);
-	_renSys->SendText(7, _indentX + 7, textBuffer);
-
-	sprintf_s(textBuffer, "Keys");
-	_renSys->SendText(9, _indentX, textBuffer, Color::yellow);
-	sprintf_s(textBuffer, "on level: %i  ", _keysOnLvl);
-	_renSys->SendText(9, _indentX + 5, textBuffer);
-
-	sprintf_s(textBuffer, "Hearts");
-	_renSys->SendText(10, _indentX, textBuffer, Color::red);
-	sprintf_s(textBuffer, "on level: %i  ", _heartsOnLvl);
-	_renSys->SendText(10, _indentX + 7, textBuffer);
-
-	sprintf_s(textBuffer, "Crystals");
-	_renSys->SendText(11, _indentX, textBuffer, Color::darkMagenta);
-	sprintf_s(textBuffer, "on level: %i  ", _crystalsOnLvl);
-	_renSys->SendText(11, _indentX + 9, textBuffer);
-
-	sprintf_s(textBuffer, "X coord hero: %i  ", _hero->GetCoord().x);
-	_renSys->SendText(13, _indentX, textBuffer);
-	sprintf_s(textBuffer, "Y coord hero: %i  ", _hero->GetCoord().y);
-	_renSys->SendText(14, _indentX, textBuffer);
-
-	sprintf_s(textBuffer, "Objects count: %i  ", Object::GetObjectsCount());
-	_renSys->SendText(16, _indentX, textBuffer);
-
-	_renSys->SendText(_settings->lvlSizeY + 1, 4, "Use WASD to move ");
-	_renSys->SendText(_settings->lvlSizeY + 1, 4 + 17, "Hero", Color::green);
-	_renSys->SendText(_settings->lvlSizeY + 2, 4, "Press R to restart level.");
-	_renSys->SendText(_settings->lvlSizeY + 2, 4 + 6, "R", Color::red);
+	SendHudText(16, x, "Objects count: %i  ", Object::GetObjectsCount());
+	
+	SendHudText(y,   4, "Use WASD to move ");
+	SendHudText(y,   4+17, "Hero", Color::green);
+	SendHudText(y+1, 4, "Press ? to restart level.");
+	SendHudText(y+1, 4+6,  "R", Color::red);
 }
 
-void Game::RestartLevel()
+void Game::SendHudText(int y, int x, const char* text, Color symbolColor, Color bkgColor)
 {
-	// Set the inventory at the beginning of the level
-	_hero->SetInventory(_inventoryAtLevelStart);
+	static char textBuffer[50];
 
-	// Take one heart
-	_hero->TakeItem(Item::heart);
+	sprintf_s(textBuffer, text, 50);
+	_renSys->SendText(y, x, textBuffer, symbolColor, bkgColor);
+}
 
-	// Restart level
-	Initialize();
+void Game::SendHudText(int y, int x, const char* text, int count, Color symbolColor, Color bkgColor)
+{
+	static char textBuffer[50];
+
+	sprintf_s(textBuffer, text, count, 50);
+	_renSys->SendText(y, x, textBuffer, symbolColor, bkgColor);
 }
 
 void Game::Move()
@@ -479,6 +462,18 @@ void Game::DispelFog(int y_pos, int x_pos)
 					}
 				}
 	}
+}
+
+void Game::RestartLevel()
+{
+	// Set the inventory at the beginning of the level
+	_hero->SetInventory(_inventoryAtLevelStart);
+
+	// Take one heart
+	_hero->TakeItem(Item::heart);
+
+	// Restart level
+	Initialize();
 }
 
 void Game::SetDefaultItemsValueOnLvl()
