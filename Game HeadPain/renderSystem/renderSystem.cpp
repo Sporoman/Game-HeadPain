@@ -127,6 +127,16 @@ void RenderSystem::Render()
 			}
 }
 
+int RenderSystem::GetMaxSizeY()
+{
+	return _screenY-1;
+}
+
+int RenderSystem::GetMaxSizeX()
+{
+	return _screenX-1;
+}
+
 bool RenderSystem::CompareBuffers(const RenderObject* buf_1, const RenderObject* buf_2) const
 {
 	if (  (buf_1->symbol      != buf_2->symbol)

@@ -35,6 +35,9 @@ public:
 	void DrawBkgCharColor(int y, int x, Color bkgColor);
 	void SendText(int y, int x, const char* text, Color symbolColor = Color::gray, Color bkgColor = Color::black);
 
+	int GetMaxSizeY();
+	int GetMaxSizeX();
+
 private:
 	bool CompareBuffers(const RenderObject* buf_1, const RenderObject* buf_2) const;
 	void SetColor(Color symbolColor, Color bkgColor);
