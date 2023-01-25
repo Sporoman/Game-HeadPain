@@ -3,14 +3,11 @@
 int Object::__idObjects    = 0;
 int Object::__countObjects = 0;
 
-Object::Object(unsigned char symbol) : Object(symbol, Coord{ 0,0 })
+Object::Object(unsigned char symbol) : Object(GetInitEntity(symbol))
 {}
 
-Object::Object(unsigned char symbol, Coord coord) : Object(GetInitEntity(symbol), coord)
-{}
-
-Object::Object(Entity entity, Coord coord) 
-	: _entity(entity), _coord(coord)
+Object::Object(Entity entity) 
+	: _entity(entity)
 {
 	// Object id
 	_id = __idObjects;
@@ -28,45 +25,10 @@ Object::Object(Entity entity, Coord coord)
 	_renderObj.bkgColor    = GetInitColorBkg(_entity);
 }
 
-Object::Object(Entity entity) : Object(entity, Coord{ 0,0 })
-{}
-
 Object::~Object()
 {
 	// Minus the count of objects
 	__countObjects--;
-}
-
-void Object::MoveOn(DirMove dir)
-{
-	switch (dir)
-	{
-		case DirMove::up:       MoveOnUp();       break;
-		case DirMove::left:     MoveOnLeft();     break;
-		case DirMove::down:     MoveOnDown();     break;
-		case DirMove::right:    MoveOnRight();    break;
-
-		default: break;
-	}
-}
-
-void Object::SetCoord(int x, int y)
-{
-	Coord coord{ x, y };
-	SetCoord(coord);
-}
-
-void Object::SetCoord(Coord coord)
-{
-	if (coord.x < 0)
-		_coord.x = 0;
-	else
-		_coord.x = coord.x;
-
-	if (coord.y < 0)
-		_coord.y = 0;
-	else
-		_coord.y = coord.y;
 }
 
 unsigned char Object::GetMapSymbol()
@@ -94,11 +56,6 @@ const RenderObject& Object::GetRenderObject()
 	return _renderObj;
 }
 
-Coord Object::GetCoord()
-{
-	return _coord;
-}
-
 Entity Object::GetEntity()
 {
 	return _entity;
@@ -107,32 +64,6 @@ Entity Object::GetEntity()
 int Object::GetObjectsCount()
 {
 	return __countObjects;
-}
-
-void Object::MoveOnUp()
-{
-	if (_coord.y <= 0)
-		_coord.y = 0;
-	else
-		_coord.y--;
-}
-
-void Object::MoveOnLeft()
-{
-	if (_coord.x <= 0)
-		_coord.x = 0;
-	else
-		_coord.x--;
-}
-
-void Object::MoveOnRight()
-{
-	_coord.x++;
-}
-
-void Object::MoveOnDown()
-{
-	_coord.y++;
 }
 
 Entity Object::GetInitEntity(unsigned char symbol)
