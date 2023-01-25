@@ -4,6 +4,7 @@
 Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false),
 	_activeLevel(0), _crystalsOnLvl(0), _heartsOnLvl(0), _keysOnLvl(0)
 {
+	// Initialize support systems
 	_manager   = new GameManager();
 	_settings  = _manager->GetSettings();
 
@@ -11,11 +12,16 @@ Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false)
 	const int renSizeY = _settings->lvlSizeY + _settings->hudMaxSizeY;
 	_renSys = new RenderSystem(renSizeY, renSizeX);
 
+	// Initialize hero object
 	_hero	= new Hero();
-	_empty	= new Object(Entity::empty);
-	_wall   = new Object(Entity::wall);
-	_fog    = new Object(Entity::fogOfWar);
 
+	// Initialize clone objects
+	_cloneObjects = new Object* [I_SIZE];
+	_cloneObjects[I_EMPTY] = new Object(Entity::empty);
+	_cloneObjects[I_WALL]  = new Object(Entity::wall);
+	_cloneObjects[I_FOG]   = new Object(Entity::fog);
+
+	// Initialize maps of objects and fog
 	_objectsMap = new Object** [_settings->lvlSizeY];
 	_fogOfWarB  = new bool* [_settings->lvlSizeY];
 
@@ -31,6 +37,7 @@ Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false)
 
 Game::~Game()
 {
+	// Delete maps of objects and fog
 	ClearObjectMap();
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 	{
@@ -40,11 +47,14 @@ Game::~Game()
 	delete[] _objectsMap;
 	delete[] _fogOfWarB;
 
+	// Delete user
 	delete _hero;
-	delete _empty;
-	delete _wall;
-	delete _fog;
+	
+	// Delete clone objects
+	for (int i = 0; i < I_SIZE; ++i)
+		delete _cloneObjects[i];
 
+	// Delete support systems
 	delete _renSys;
 	delete _manager;
 }
@@ -102,12 +112,7 @@ void Game::ClearObjectMap()
 {
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
-			if ((_objectsMap[y][x] != _hero) && (_objectsMap[y][x] != _empty) 
-				&& (_objectsMap[y][x] != _wall) && (_objectsMap[y][x] != _fog))
-			{
-				delete _objectsMap[y][x];
-				_objectsMap[y][x] = nullptr;
-			}
+			DeleteNormalObject(Coord{ x, y });
 }
 
 Object* Game::CreateObject(unsigned char symbol, Coord coord)
@@ -149,29 +154,9 @@ void Game::Initialize()
 			if (_hardMode)
 				_fogOfWarB[y][x] = true;
 
-			// Take symbol from level map
 			unsigned char symbol = level->at(y * _settings->lvlSizeX + x);
-
-			// Create an object
-			if (symbol == _hero->GetMapSymbol())
-			{
-				_hero->SetCoord(x, y);
-
-				// Set hero on objects map
-				_objectsMap[y][x] = _hero;
-			}
-			else if (symbol == _empty->GetMapSymbol())
-				_objectsMap[y][x] = _empty;	
-			else if (symbol == _wall->GetMapSymbol())
-				_objectsMap[y][x] = _wall;
-			else if (symbol == _fog->GetMapSymbol())
-				_objectsMap[y][x] = _fog;
-			else
-			{
-				// Create and set the object on objects map
-				Object* object = CreateObject(symbol, Coord{ x,y });
-				_objectsMap[y][x] = object;
-			}
+			_objectsMap[y][x] = GetGameObject(Object::GetInitEntity(symbol));
+			_objectsMap[y][x]->SetCoord(x, y);
 
 			switch (_objectsMap[y][x]->GetEntity())
 			{
@@ -203,7 +188,7 @@ void Game::Initialize()
 	// Remember the inventory state at the level start
 	_inventoryAtLevelStart = _hero->GetInventory();
 
-	// Dispelling the fog of war around the player
+	// Dispelling the fog around the player
 	Coord hero_coord = _hero->GetCoord();
 	DispelFog(hero_coord.y, hero_coord.x);
 }
@@ -222,7 +207,7 @@ void Game::RenderMap()
 			if (!_fogOfWarB[y][x])
 				_renSys->DrawChar(y, x, _objectsMap[y][x]->GetRenderObject());
 			else
-				_renSys->DrawChar(y, x, _fog->GetRenderObject());
+				_renSys->DrawChar(y, x, _cloneObjects[I_FOG]->GetRenderObject());
 }
 
 void Game::RenderHud()
@@ -390,7 +375,7 @@ void Game::MoveHeroTo(int y, int x)
 
 				// Replace box
 				Object* boxObject = collidingObject;
-				_objectsMap[y][x] = _empty;
+				_objectsMap[y][x] = _cloneObjects[I_EMPTY];
 				_objectsMap[objBehindY][objBehindX] = boxObject;
 
 				canMove = true;
@@ -430,15 +415,15 @@ void Game::MoveHeroTo(int y, int x)
 		Object* actualObject = _objectsMap[y][x];
 
 		// Remove Hero and set Empty
-		_objectsMap[heroCoord.y][heroCoord.x] = _empty;
-		if ((actualObject != _hero) && (actualObject != _empty) && (actualObject != _fog))
+		_objectsMap[heroCoord.y][heroCoord.x] = _cloneObjects[I_EMPTY];
+		if ((actualObject != _hero) && (actualObject != _cloneObjects[I_EMPTY]) && (actualObject != _cloneObjects[I_FOG]))
 			delete actualObject;
 
 		// Set Hero on objects map and set his position
 		_objectsMap[y][x] = _hero;
 		_hero->SetCoord(x, y);
 
-		// Dispel Fog of war
+		// Dispel fog
 		if (_hardMode)
 			DispelFog(y, x);
 	}
@@ -456,7 +441,7 @@ void Game::DispelFog(int y_pos, int x_pos)
 				{
 					if ((y * _settings->lvlSizeX + x) < lvlBkg->size())
 					{
-						// Dispel the fog of war and redraw background symbol
+						// Dispel the fog and redraw background symbol
 						_fogOfWarB[y][x] = false;
 						_renSys->DrawBkgCharColor(y, x, Object::GetInitColorFromBkgMap(lvlBkg->at(y * _settings->lvlSizeX + x)));
 					}
@@ -476,9 +461,52 @@ void Game::RestartLevel()
 	Initialize();
 }
 
+void Game::DeleteNormalObject(Coord coord)
+{
+	Object* obj = _objectsMap[coord.y][coord.x];
+
+	if (_objectsMap[coord.y][coord.x] == nullptr)
+		return;
+
+	if (!isCloneObject(obj))
+		delete obj;
+
+	_objectsMap[coord.y][coord.x] = nullptr;
+}
+
+Object* Game::GetGameObject(Entity entity)
+{
+	switch (entity)
+	{
+		case Entity::hero:    return _hero;
+
+		case Entity::empty:   return _cloneObjects[I_EMPTY];
+		case Entity::wall:    return _cloneObjects[I_WALL];
+		case Entity::fog:     return _cloneObjects[I_FOG];
+
+		case Entity::_error:  return nullptr;
+
+		default:   return new Object(entity);
+	}
+}
+
+
 void Game::SetDefaultItemsValueOnLvl()
 {
 	_crystalsOnLvl = 0;
 	_keysOnLvl     = 0;
 	_heartsOnLvl   = 0;
+}
+
+bool Game::isCloneObject(Object* obj)
+{
+	return isCloneObject(obj->GetEntity());
+}
+
+bool Game::isCloneObject(Entity entity)
+{
+	if (entity == Entity::empty || entity == Entity::wall || entity == Entity::fog)
+		return true;
+
+	return false;
 }

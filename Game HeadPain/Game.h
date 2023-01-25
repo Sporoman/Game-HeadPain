@@ -17,17 +17,19 @@ private:
 	GameManager* _manager;
 	const Settings* _settings;
 
-	Hero*   _hero;
-	Object* _empty;
-	Object* _wall;
-	Object* _fog;
-
 	Inventory _inventoryAtLevelStart;
 	int _activeLevel;
 	int _crystalsOnLvl;
 	int _heartsOnLvl;
 	int _keysOnLvl;
 
+	static const int I_EMPTY = 0;
+	static const int I_WALL  = 1;
+	static const int I_FOG   = 2;
+	static const int I_SIZE  = 3;
+
+	Hero* _hero;
+	Object** _cloneObjects;
 	bool** _fogOfWarB;
 	Object*** _objectsMap;
 
@@ -55,7 +57,13 @@ private:
 	void MoveHeroTo(int y, int x);
 	void DispelFog(int y, int x);
 	void RestartLevel();
+
+	Object* GetGameObject(Entity entity);
+	void DeleteNormalObject(Coord coord);
 	void SetDefaultItemsValueOnLvl();
+
+	bool isCloneObject(Object* obj);
+	bool isCloneObject(Entity entity);
 };
 
 #endif // GAME_H
