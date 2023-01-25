@@ -32,8 +32,7 @@ enum class Item
 	crystal,
 	heart,
 	key,
-	levelKey,
-	_size
+	levelKey
 };
 
 #endif // INVENTORY_H
