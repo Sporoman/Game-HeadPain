@@ -7,13 +7,13 @@ Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false)
 	// Initialize support systems
 	_manager   = new GameManager();
 	_settings  = _manager->GetSettings();
-
+	
 	const int renSizeX = _settings->lvlSizeX + _settings->hudMaxSizeX;
 	const int renSizeY = _settings->lvlSizeY + _settings->hudMaxSizeY;
 	_renSys = new RenderSystem(renSizeY, renSizeX);
 
 	// Initialize hero object
-	_hero	= new Hero();
+	_hero = new Hero();
 
 	// Initialize clone objects
 	_cloneObjects = new Object* [I_SIZE];
@@ -23,12 +23,12 @@ Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false)
 
 	// Initialize maps of objects and fog
 	_objectsMap = new Object** [_settings->lvlSizeY];
-	_fogOfWarB  = new bool* [_settings->lvlSizeY];
+	_fogMap = new bool* [_settings->lvlSizeY];
 
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 	{
 		_objectsMap[y] = new Object* [_settings->lvlSizeX];
-		_fogOfWarB[y]  = new bool[_settings->lvlSizeX] { false };
+		_fogMap[y] = new bool[_settings->lvlSizeX] { false };
 
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
 			_objectsMap[y][x] = nullptr;
@@ -42,10 +42,10 @@ Game::~Game()
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 	{
 		delete _objectsMap[y];
-		delete _fogOfWarB[y];
+		delete _fogMap[y];
 	}
 	delete[] _objectsMap;
-	delete[] _fogOfWarB;
+	delete[] _fogMap;
 
 	// Delete user
 	delete _hero;
@@ -115,11 +115,6 @@ void Game::ClearObjectMap()
 			DeleteNormalObject(Coord{ x, y });
 }
 
-Object* Game::CreateObject(unsigned char symbol, Coord coord)
-{
-	return new Object(symbol, coord);
-}
-
 void Game::Shutdown()
 {
 	_renSys->Clear();
@@ -137,7 +132,6 @@ void Game::Initialize()
 	SetDefaultItemsValueOnLvl();
 	_successfulBkgRead = false;
 
-	// Clear object map
 	ClearObjectMap();
 
 	// Load level and objects
@@ -152,21 +146,22 @@ void Game::Initialize()
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
 		{
 			if (_hardMode)
-				_fogOfWarB[y][x] = true;
+				_fogMap[y][x] = true;
 
 			unsigned char symbol = level->at(y * _settings->lvlSizeX + x);
 			_objectsMap[y][x] = GetGameObject(Object::GetInitEntity(symbol));
 			_objectsMap[y][x]->SetCoord(x, y);
-
+			
 			switch (_objectsMap[y][x]->GetEntity())
 			{
-				case Entity::crystal:    _crystalsOnLvl++;    break;
-				case Entity::heart:      _heartsOnLvl++;      break;
-				case Entity::key:        _keysOnLvl++;        break;
+				case Entity::crystal:   _crystalsOnLvl++;   break;
+				case Entity::heart:     _heartsOnLvl++;     break;
+				case Entity::key:       _keysOnLvl++;       break;
+
+				case Entity::hero:   _objectsMap[y][x] = GetGameObject(Entity::empty);   break;
 			}
 		}
 
-	// Clear render system
 	_renSys->Clear();
 
 	// Render Background
@@ -189,14 +184,15 @@ void Game::Initialize()
 	_inventoryAtLevelStart = _hero->GetInventory();
 
 	// Dispelling the fog around the player
-	Coord hero_coord = _hero->GetCoord();
-	DispelFog(hero_coord.y, hero_coord.x);
+	Coord coord = _hero->GetCoord();
+	DispelFog(coord.y, coord.x);
 }
 
 void Game::Render()
 {
 	RenderMap();
 	RenderHud();
+	RenderHero();
 	_renSys->Render();
 }
 
@@ -204,7 +200,7 @@ void Game::RenderMap()
 {
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
-			if (!_fogOfWarB[y][x])
+			if (!_fogMap[y][x])
 				_renSys->DrawChar(y, x, _objectsMap[y][x]->GetRenderObject());
 			else
 				_renSys->DrawChar(y, x, _cloneObjects[I_FOG]->GetRenderObject());
@@ -220,18 +216,18 @@ void Game::RenderHud()
 	SendHudText(4, x, "Level Key", Color::blue);
 	inv.lvlKey ? SendHudText(4, x+9, ": yeap", Color::blue) : SendHudText(4, x+9, ": nope");
 	
-	SendHudText(5, x, "Keys", Color::yellow);
+	SendHudText(5, x,   "Keys", Color::yellow);
 	SendHudText(5, x+4, ": %i  ", inv.keys);
-	SendHudText(6, x, "Hearts", Color::red);
+	SendHudText(6, x,   "Hearts", Color::red);
 	SendHudText(6, x+6, ": %i  ", inv.hearts);
-	SendHudText(7, x, "Crystals", Color::darkMagenta);
+	SendHudText(7, x,   "Crystals", Color::darkMagenta);
 	SendHudText(7, x+8, ": %i  ", inv.crystals);
 
-	SendHudText(9, x, "Keys", Color::yellow);
-	SendHudText(9, x+4, " on level: %i  ", _keysOnLvl);
-	SendHudText(10, x, "Hearts", Color::red);
+	SendHudText(9, x,    "Keys", Color::yellow);
+	SendHudText(9, x+4,  " on level: %i  ", _keysOnLvl);
+	SendHudText(10, x,   "Hearts", Color::red);
 	SendHudText(10, x+6, " on level: %i  ", _heartsOnLvl);
-	SendHudText(11, x, "Crystals", Color::darkMagenta);
+	SendHudText(11, x,   "Crystals", Color::darkMagenta);
 	SendHudText(11, x+8, " on level: %i  ", _crystalsOnLvl);
 
 	SendHudText(13, x, "Hero X coord: %i  ", _hero->GetCoord().x);
@@ -239,9 +235,9 @@ void Game::RenderHud()
 	
 	SendHudText(16, x, "Objects count: %i  ", Object::GetObjectsCount());
 	
-	SendHudText(y,   4, "Use WASD to move ");
+	SendHudText(y,   4,    "Use WASD to move ");
 	SendHudText(y,   4+17, "Hero", Color::green);
-	SendHudText(y+1, 4, "Press ? to restart level.");
+	SendHudText(y+1, 4,    "Press ? to restart level.");
 	SendHudText(y+1, 4+6,  "R", Color::red);
 }
 
@@ -251,6 +247,12 @@ void Game::SendHudText(int y, int x, const char* text, Color symbolColor, Color 
 
 	sprintf_s(textBuffer, text, 50);
 	_renSys->SendText(y, x, textBuffer, symbolColor, bkgColor);
+}
+
+void Game::RenderHero()
+{
+	Coord coord = _hero->GetCoord();
+	_renSys->DrawChar(coord.y, coord.x, _hero->GetRenderObject());
 }
 
 void Game::SendHudText(int y, int x, const char* text, int count, Color symbolColor, Color bkgColor)
@@ -328,7 +330,7 @@ void Game::MoveHeroTo(int y, int x)
 		case Entity::mine:
 		{
 			RestartLevel();
-			break;
+			return;
 		}
 		case Entity::exitDoor:
 		{
@@ -350,8 +352,7 @@ void Game::MoveHeroTo(int y, int x)
 				|| objBehindY < 0 || objBehindY >= _settings->lvlSizeY)
 				return;
 
-			// Check space behind the box
-			// and handling collisions with objects
+			// Check space behind the box and handling collisions with objects
 			Entity entityBehindBox = _objectsMap[objBehindY][objBehindX]->GetEntity();
 			if ((entityBehindBox == Entity::empty)
 				|| (entityBehindBox == Entity::crystal)
@@ -362,8 +363,6 @@ void Game::MoveHeroTo(int y, int x)
 				// Bye bye, Object
 				if (entityBehindBox != Entity::empty)
 				{
-					delete _objectsMap[objBehindY][objBehindX];
-
 					switch (entityBehindBox)
 					{
 						case Entity::crystal:	_crystalsOnLvl--;    break;
@@ -371,6 +370,7 @@ void Game::MoveHeroTo(int y, int x)
 						case Entity::key:       _keysOnLvl--;        break;
 						case Entity::levelKey:  break;
 					}
+					DeleteNormalObject(Coord{ objBehindX, objBehindY });
 				}
 
 				// Replace box
@@ -383,7 +383,10 @@ void Game::MoveHeroTo(int y, int x)
 
 			// Logic box for Mines
 			if (entityBehindBox == Entity::mine)
+			{
 				RestartLevel();
+				return;
+			}
 
 			break;
 		}
@@ -394,8 +397,8 @@ void Game::MoveHeroTo(int y, int x)
 				_hero->TakeItem(Item::key);
 
 				canMove = true;
-				break;
 			}
+			break;
 		}
 		case Entity::levelDoor:
 		{
@@ -404,23 +407,16 @@ void Game::MoveHeroTo(int y, int x)
 				_hero->TakeItem(Item::lvlKey);
 
 				canMove = true;
-				break;
 			}
+			break;
 		}
 	}
 
 	if (canMove)
 	{
-		Coord heroCoord = _hero->GetCoord();
-		Object* actualObject = _objectsMap[y][x];
-
-		// Remove Hero and set Empty
-		_objectsMap[heroCoord.y][heroCoord.x] = _cloneObjects[I_EMPTY];
-		if ((actualObject != _hero) && (actualObject != _cloneObjects[I_EMPTY]) && (actualObject != _cloneObjects[I_FOG]))
-			delete actualObject;
-
-		// Set Hero on objects map and set his position
-		_objectsMap[y][x] = _hero;
+		// Delete the colliding object, insert the empty and set Hero position
+		DeleteNormalObject(Coord{ x, y });
+		_objectsMap[y][x] = _cloneObjects[I_EMPTY];
 		_hero->SetCoord(x, y);
 
 		// Dispel fog
@@ -437,12 +433,12 @@ void Game::DispelFog(int y_pos, int x_pos)
 		for (int y = y_pos - 2; y <= y_pos + 2; ++y)
 			for (int x = x_pos - 3; x <= x_pos + 3; ++x)
 				if (x < _settings->lvlSizeX && y < _settings->lvlSizeY && x >= 0 && y >= 0
-					&& (_fogOfWarB[y][x] == true))
+					&& (_fogMap[y][x] == true))
 				{
 					if ((y * _settings->lvlSizeX + x) < lvlBkg->size())
 					{
 						// Dispel the fog and redraw background symbol
-						_fogOfWarB[y][x] = false;
+						_fogMap[y][x] = false;
 						_renSys->DrawBkgCharColor(y, x, Object::GetInitColorFromBkgMap(lvlBkg->at(y * _settings->lvlSizeX + x)));
 					}
 				}

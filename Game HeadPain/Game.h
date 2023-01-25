@@ -30,7 +30,7 @@ private:
 
 	Hero* _hero;
 	Object** _cloneObjects;
-	bool** _fogOfWarB;
+	bool** _fogMap;
 	Object*** _objectsMap;
 
 public:
@@ -42,8 +42,6 @@ public:
 private:
 	void ChooseMode();
 	void SetupSettings();
-	void ClearObjectMap();
-	Object* CreateObject(unsigned char symbol, Coord coord);
 	void Shutdown();
 
 	void Initialize();
@@ -52,6 +50,7 @@ private:
 
 	void RenderMap();
 	void RenderHud();
+	void RenderHero();
 	void SendHudText(int y, int x, const char* text, Color symbolColor = Color::gray, Color bkgColor = Color::black);
 	void SendHudText(int y, int x, const char* text, int count, Color symbolColor = Color::gray, Color bkgColor = Color::black);
 	void MoveHeroTo(int y, int x);
@@ -60,6 +59,7 @@ private:
 
 	Object* GetGameObject(Entity entity);
 	void DeleteNormalObject(Coord coord);
+	void ClearObjectMap();
 	void SetDefaultItemsValueOnLvl();
 
 	bool isCloneObject(Object* obj);
