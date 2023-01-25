@@ -9,7 +9,8 @@ Object::Object(unsigned char symbol) : Object(symbol, Coord{ 0,0 })
 Object::Object(unsigned char symbol, Coord coord) : Object(GetInitEntity(symbol), coord)
 {}
 
-Object::Object(Entity entity, Coord coord) : _entity(entity), _coord(coord)
+Object::Object(Entity entity, Coord coord) 
+	: _entity(entity), _coord(coord)
 {
 	// Object id
 	_id = __idObjects;
