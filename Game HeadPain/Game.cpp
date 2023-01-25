@@ -1,8 +1,8 @@
 #include "Game.h"
 #include "KeyDown.h"
 
-Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false),
-	_activeLevel(0), _crystalsOnLvl(0), _heartsOnLvl(0), _keysOnLvl(0)
+Game::Game() 
+	: _isGameActive(false), _hardMode(false), _successfulBkgRead(false), _activeLevel(0)
 {
 	// Initialize support systems
 	_manager   = new GameManager();
@@ -14,6 +14,10 @@ Game::Game() : _isGameActive(false), _hardMode(false), _successfulBkgRead(false)
 
 	// Initialize hero object
 	_hero = new Hero();
+
+	// Initialize inventories
+	_levelInv      = new Inventory();
+	_heroBackupInv = new Inventory();
 
 	// Initialize clone objects
 	_cloneObjects = new Object* [I_SIZE];
@@ -49,6 +53,10 @@ Game::~Game()
 
 	// Delete user
 	delete _hero;
+	
+	// Delete inventories
+	delete _levelInv;
+	delete _heroBackupInv;
 	
 	// Delete clone objects
 	for (int i = 0; i < I_SIZE; ++i)
@@ -105,14 +113,14 @@ void Game::ChooseMode()
 void Game::SetupSettings()
 {
 	// Setting up the inventory
-	_hero->SetItem(Item::heart, _hardMode ? _settings->normalStartHearts : _settings->eazyStartHearts);
+	_hero->GetInventory()->SetItemCount(Item::heart, _hardMode ? _settings->normalStartHearts : _settings->eazyStartHearts);
 }
 
 void Game::ClearObjectMap()
 {
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
-			DeleteNormalObject(Coord{ x, y });
+			DeleteNormalObject(y, x);
 }
 
 void Game::Shutdown()
@@ -129,7 +137,7 @@ void Game::Shutdown()
 void Game::Initialize()
 {
 	// Set default items value on this level
-	SetDefaultItemsValueOnLvl();
+	ResetLevelInventory();
 	_successfulBkgRead = false;
 
 	ClearObjectMap();
@@ -150,15 +158,12 @@ void Game::Initialize()
 
 			unsigned char symbol = level->at(y * _settings->lvlSizeX + x);
 			_objectsMap[y][x] = GetGameObject(Object::GetInitEntity(symbol));
-			_objectsMap[y][x]->SetCoord(x, y);
-			
-			switch (_objectsMap[y][x]->GetEntity())
-			{
-				case Entity::crystal:   _crystalsOnLvl++;   break;
-				case Entity::heart:     _heartsOnLvl++;     break;
-				case Entity::key:       _keysOnLvl++;       break;
+			PlusItemCount(_objectsMap[y][x]->GetEntity(), _levelInv);
 
-				case Entity::hero:   _objectsMap[y][x] = GetGameObject(Entity::empty);   break;
+			if(_objectsMap[y][x]->GetEntity() == Entity::hero)
+			{
+				_objectsMap[y][x] = GetGameObject(Entity::empty);
+				_hero->SetCoord(x, y);
 			}
 		}
 
@@ -181,7 +186,7 @@ void Game::Initialize()
 			_successfulBkgRead = true;
 	
 	// Remember the inventory state at the level start
-	_inventoryAtLevelStart = _hero->GetInventory();
+	_heroBackupInv->SetInventory(_hero->GetInventory());
 
 	// Dispelling the fog around the player
 	Coord coord = _hero->GetCoord();
@@ -208,27 +213,27 @@ void Game::RenderMap()
 
 void Game::RenderHud()
 {
-	Inventory inv = _hero->GetInventory();
+	Inventory* inv = _hero->GetInventory();
 	static const int x = _settings->lvlSizeX + _settings->hudIndentX; // X indent
 	static const int y = _settings->lvlSizeY + 1;                     // Y indent
 
 	SendHudText(2, x, "Level %i  ", _activeLevel + 1);
 	SendHudText(4, x, "Level Key", Color::blue);
-	inv.lvlKey ? SendHudText(4, x+9, ": yeap", Color::blue) : SendHudText(4, x+9, ": nope");
+	inv->CheckLevelkey() ? SendHudText(4, x+9, ": yeap", Color::blue) : SendHudText(4, x+9, ": nope");
 	
 	SendHudText(5, x,   "Keys", Color::yellow);
-	SendHudText(5, x+4, ": %i  ", inv.keys);
+	SendHudText(5, x + 4, ": %i  ", inv->GetItemCount(Item::key));
 	SendHudText(6, x,   "Hearts", Color::red);
-	SendHudText(6, x+6, ": %i  ", inv.hearts);
+	SendHudText(6, x+6, ": %i  ", inv->GetItemCount(Item::heart));
 	SendHudText(7, x,   "Crystals", Color::darkMagenta);
-	SendHudText(7, x+8, ": %i  ", inv.crystals);
+	SendHudText(7, x+8, ": %i  ", inv->GetItemCount(Item::crystal));
 
 	SendHudText(9, x,    "Keys", Color::yellow);
-	SendHudText(9, x+4,  " on level: %i  ", _keysOnLvl);
+	SendHudText(9, x+4,  " on level: %i  ", _levelInv->GetItemCount(Item::key));
 	SendHudText(10, x,   "Hearts", Color::red);
-	SendHudText(10, x+6, " on level: %i  ", _heartsOnLvl);
+	SendHudText(10, x+6, " on level: %i  ", _levelInv->GetItemCount(Item::heart));
 	SendHudText(11, x,   "Crystals", Color::darkMagenta);
-	SendHudText(11, x+8, " on level: %i  ", _crystalsOnLvl);
+	SendHudText(11, x+8, " on level: %i  ", _levelInv->GetItemCount(Item::crystal));
 
 	SendHudText(13, x, "Hero X coord: %i  ", _hero->GetCoord().x);
 	SendHudText(14, x, "Hero Y coord: %i  ", _hero->GetCoord().y);
@@ -287,56 +292,26 @@ void Game::MoveHeroTo(int y, int x)
 		return;
 
 	Object* collidingObject = _objectsMap[y][x];
-	bool canMove = false;
+	bool canMove = true;
 
 	switch (collidingObject->GetEntity())
 	{
-		case Entity::empty:
-		{
-			canMove = true;
-			break;
-		}
+		case Entity::empty:   break;
+
 		case Entity::crystal:
-		{
-			_hero->AddItem(Item::crystal);
-			_crystalsOnLvl--;
-
-			canMove = true;
-			break;
-		}
 		case Entity::heart:
-		{
-			_hero->AddItem(Item::heart);
-			_heartsOnLvl--;
-
-			canMove = true;
-			break;
-		}
 		case Entity::key:
-		{
-			_hero->AddItem(Item::key);
-			_keysOnLvl--;
-
-			canMove = true;
-			break;
-		}
 		case Entity::levelKey:
 		{
-			_hero->AddItem(Item::lvlKey);
+			MinusItemCount(collidingObject->GetEntity(), _levelInv);
+			PlusItemCount(collidingObject->GetEntity(), _hero->GetInventory());
 
-			canMove = true;
 			break;
 		}
-		case Entity::mine:
-		{
-			RestartLevel();
-			return;
-		}
-		case Entity::exitDoor:
-		{
-			_isGameActive = false;
-			break;
-		}
+
+		case Entity::mine:		 RestartLevel();          return;
+		case Entity::exitDoor:   _isGameActive = false;   return;
+
 		case Entity::box:
 		{
 			// Hero move direction
@@ -354,68 +329,54 @@ void Game::MoveHeroTo(int y, int x)
 
 			// Check space behind the box and handling collisions with objects
 			Entity entityBehindBox = _objectsMap[objBehindY][objBehindX]->GetEntity();
-			if ((entityBehindBox == Entity::empty)
-				|| (entityBehindBox == Entity::crystal)
-				|| (entityBehindBox == Entity::heart)
-				|| (entityBehindBox == Entity::key)
-				|| (entityBehindBox == Entity::levelKey))
+			switch (entityBehindBox)
 			{
-				// Bye bye, Object
-				if (entityBehindBox != Entity::empty)
+				case Entity::crystal:
+				case Entity::heart:
+				case Entity::key:
+				case Entity::levelKey:
 				{
-					switch (entityBehindBox)
-					{
-						case Entity::crystal:	_crystalsOnLvl--;    break;
-						case Entity::heart:		_heartsOnLvl--;		 break;
-						case Entity::key:       _keysOnLvl--;        break;
-						case Entity::levelKey:  break;
-					}
-					DeleteNormalObject(Coord{ objBehindX, objBehindY });
+					// Bye bye, Jewel
+					MinusItemCount(entityBehindBox, _levelInv);
+					DeleteNormalObject(objBehindY, objBehindX);
 				}
 
-				// Replace box
-				Object* boxObject = collidingObject;
-				_objectsMap[y][x] = _cloneObjects[I_EMPTY];
-				_objectsMap[objBehindY][objBehindX] = boxObject;
+				case Entity::empty:
+				{
+					// Replace box
+					Object* boxObject = collidingObject;
+					_objectsMap[y][x] = _cloneObjects[I_EMPTY];
+					_objectsMap[objBehindY][objBehindX] = boxObject;
+				}
+				break;
 
-				canMove = true;
+				case Entity::mine:   RestartLevel();   return;
+
+				default:   canMove = false;
 			}
-
-			// Logic box for Mines
-			if (entityBehindBox == Entity::mine)
-			{
-				RestartLevel();
-				return;
-			}
-
 			break;
 		}
+
 		case Entity::door:
 		{
-			if (_hero->CheckKey())
-			{
-				_hero->TakeItem(Item::key);
-
-				canMove = true;
-			}
+			if (_hero->GetInventory()->CheckKey())
+				_hero->GetInventory()->TakeItem(Item::key);
 			break;
 		}
 		case Entity::levelDoor:
 		{
-			if (_hero->CheckLvlkey())
-			{
-				_hero->TakeItem(Item::lvlKey);
-
-				canMove = true;
-			}
+			if (_hero->GetInventory()->CheckLevelkey())
+				_hero->GetInventory()->TakeItem(Item::levelKey);
 			break;
 		}
+
+		default:   canMove = false;
 	}
 
 	if (canMove)
 	{
 		// Delete the colliding object, insert the empty and set Hero position
-		DeleteNormalObject(Coord{ x, y });
+		DeleteNormalObject(y, x);
 		_objectsMap[y][x] = _cloneObjects[I_EMPTY];
 		_hero->SetCoord(x, y);
 
@@ -448,26 +409,26 @@ void Game::DispelFog(int y_pos, int x_pos)
 void Game::RestartLevel()
 {
 	// Set the inventory at the beginning of the level
-	_hero->SetInventory(_inventoryAtLevelStart);
+	_hero->SetInventory(_heroBackupInv);
 
 	// Take one heart
-	_hero->TakeItem(Item::heart);
+	_hero->GetInventory()->TakeItem(Item::heart);
 
 	// Restart level
 	Initialize();
 }
 
-void Game::DeleteNormalObject(Coord coord)
+void Game::DeleteNormalObject(int y, int x)
 {
-	Object* obj = _objectsMap[coord.y][coord.x];
+	Object* obj = _objectsMap[y][x];
 
-	if (_objectsMap[coord.y][coord.x] == nullptr)
+	if (_objectsMap[y][x] == nullptr)
 		return;
 
 	if (!isCloneObject(obj))
 		delete obj;
 
-	_objectsMap[coord.y][coord.x] = nullptr;
+	_objectsMap[y][x] = nullptr;
 }
 
 Object* Game::GetGameObject(Entity entity)
@@ -486,12 +447,42 @@ Object* Game::GetGameObject(Entity entity)
 	}
 }
 
-
-void Game::SetDefaultItemsValueOnLvl()
+void Game::ResetLevelInventory()
 {
-	_crystalsOnLvl = 0;
-	_keysOnLvl     = 0;
-	_heartsOnLvl   = 0;
+	_levelInv->Reset();
+}
+
+void Game::SetItemCount(Entity entity, Inventory* inv, int count)
+{
+	switch (entity)
+	{
+		case Entity::crystal:   inv->SetItemCount(Item::crystal, count);    break;
+		case Entity::heart:     inv->SetItemCount(Item::heart, count);      break;
+		case Entity::key:       inv->SetItemCount(Item::key, count);        break;
+		case Entity::levelKey:  inv->SetItemCount(Item::levelKey, count);   break;
+	}
+}
+
+void Game::PlusItemCount(Entity entity, Inventory* inv)
+{
+	switch (entity)
+	{
+		case Entity::crystal:   inv->AddItem(Item::crystal);    break;
+		case Entity::heart:     inv->AddItem(Item::heart);      break;
+		case Entity::key:       inv->AddItem(Item::key);        break;
+		case Entity::levelKey:  inv->AddItem(Item::levelKey);   break;
+	}
+}
+
+void Game::MinusItemCount(Entity entity, Inventory* inv)
+{
+	switch (entity)
+	{
+		case Entity::crystal:   inv->TakeItem(Item::crystal);    break;
+		case Entity::heart:     inv->TakeItem(Item::heart);      break;
+		case Entity::key:       inv->TakeItem(Item::key);        break;
+		case Entity::levelKey:  inv->TakeItem(Item::levelKey);   break;
+	}
 }
 
 bool Game::isCloneObject(Object* obj)

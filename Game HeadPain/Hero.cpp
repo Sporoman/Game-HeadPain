@@ -1,85 +1,42 @@
 #include "Hero.h"
 
-unsigned char Hero::__mapSym = 'H';
-
-Hero::Hero(Coord coord)
-	: Object(__mapSym, coord), _inv{ 0, 0, false }
+Hero::Hero(Coord coord) : Object(Entity::hero),
+	_coord(coord)
 {
+	_inv = new Inventory();
 }
 
-Hero::Hero()
-	: Hero(Coord{0,0})
+Hero::Hero() : Hero(Coord{0,0})
 {
 }
 
 Hero::~Hero()
-{}
-
-void Hero::AddItem(Item item)
 {
-	AddItem(item, 1);
+	delete _inv;
 }
 
-void Hero::AddItem(Item item, int count)
-{
-	switch (item)
-	{
-		case Item::crystal:	_inv.crystals += count;		break;
-		case Item::heart:	_inv.hearts += count;		break;
-		case Item::key:		_inv.keys += count;			break;
-		case Item::lvlKey:	_inv.lvlKey = true;			break;
-
-		default: break;
-	}
-}
-
-void Hero::TakeItem(Item item)
-{
-	TakeItem(item, 1);
-}
-
-void Hero::TakeItem(Item item, int count)
-{
-	switch (item)
-	{
-		case Item::crystal:	_inv.crystals -= count;		break;
-		case Item::heart:	_inv.hearts -= count;		break;
-		case Item::key:		_inv.keys -= count;			break;
-		case Item::lvlKey:	_inv.lvlKey = false;		break;
-
-		default: break;
-	}
-}
-
-void Hero::SetItem(Item item, int count)
-{
-	switch (item)
-	{
-		case Item::crystal:	_inv.crystals = count;	break;
-		case Item::heart:	_inv.hearts = count;	break;
-		case Item::key:		_inv.keys = count;		break;
-		case Item::lvlKey:	_inv.lvlKey = (count > 0 ? true : false);	break;
-
-		default: break;
-	}
-}
-
-Inventory Hero::GetInventory()
+Inventory* Hero::GetInventory()
 {
 	return _inv;
 }
 
-void Hero::SetInventory(const Inventory& inv)
+void Hero::SetInventory(const Inventory* inv)
 {
-	_inv = inv;
+	_inv->SetInventory(inv);
 }
 
-bool Hero::CheckKey()
+Coord Hero::GetCoord()
 {
-	return _inv.keys > 0 ? true : false;
+	return _coord;
 }
 
-bool Hero::CheckLvlkey()
+void Hero::SetCoord(int x, int y)
 {
-	return _inv.lvlKey;
+	SetCoord(Coord{x, y});
+}
+
+void Hero::SetCoord(Coord coord)
+{
+	_coord.x = coord.x;
+	_coord.y = coord.y;
 }
