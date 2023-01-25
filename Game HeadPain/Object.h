@@ -57,7 +57,7 @@ private:
 
 enum class Entity
 {
-	error,
+	_error,
 	empty,
 	hero,
 	wall,
@@ -69,10 +69,11 @@ enum class Entity
 	exitDoor,
 	crystal,
 	mine,
-	fogOfWar,
+	fog,
 	heart,
 	skeleton,
-	rock
+	rock,
+	_size
 };
 
 enum class DirMove
