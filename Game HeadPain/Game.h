@@ -8,7 +8,6 @@
 
 class Game
 {
-private:
 	bool _isGameActive;
 	bool _hardMode;
 	bool _successfulBkgRead;
@@ -17,19 +16,17 @@ private:
 	GameManager* _manager;
 	const Settings* _settings;
 
-	Inventory _inventoryAtLevelStart;
-	int _activeLevel;
-	int _crystalsOnLvl;
-	int _heartsOnLvl;
-	int _keysOnLvl;
+	Inventory* _levelInv;
+	Inventory* _heroBackupInv;
 
 	static const int I_EMPTY = 0;
 	static const int I_WALL  = 1;
 	static const int I_FOG   = 2;
 	static const int I_SIZE  = 3;
-
-	Hero* _hero;
 	Object** _cloneObjects;
+
+	int _activeLevel;
+	Hero* _hero;
 	bool** _fogMap;
 	Object*** _objectsMap;
 
@@ -58,9 +55,12 @@ private:
 	void RestartLevel();
 
 	Object* GetGameObject(Entity entity);
-	void DeleteNormalObject(Coord coord);
+	void DeleteNormalObject(int y, int x);
 	void ClearObjectMap();
-	void SetDefaultItemsValueOnLvl();
+	void ResetLevelInventory();
+	void SetItemCount(Entity entity, Inventory* inv, int count);
+	void PlusItemCount(Entity entity, Inventory* inv);
+	void MinusItemCount(Entity entity, Inventory* inv);
 
 	bool isCloneObject(Object* obj);
 	bool isCloneObject(Entity entity);

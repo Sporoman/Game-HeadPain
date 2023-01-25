@@ -1,12 +1,39 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
-struct Inventory
+enum class Item;
+
+class Inventory
 {
-	int crystals = 0;
-	int hearts = 0;
-	int keys     = 0;
-	bool lvlKey  = false;
+	int _crystals;
+	int _hearts;
+	int _keys;
+	bool _levelKey;
+
+public:
+	Inventory();
+	~Inventory();
+
+	void SetInventory(const Inventory* inv);
+	
+	void AddItem(Item item,  int count = 1);
+	void TakeItem(Item item, int count = 1);
+	void SetItemCount(Item item,  int count);
+	int  GetItemCount(Item item) const;
+
+	bool CheckKey();
+	bool CheckLevelkey();
+
+	void Reset();
+};
+
+enum class Item
+{
+	crystal,
+	heart,
+	key,
+	levelKey,
+	_size
 };
 
 #endif // INVENTORY_H
