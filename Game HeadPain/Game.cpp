@@ -219,7 +219,7 @@ void Game::RenderHud()
 
 	SendHudText(2, x, "Level %i  ", _activeLevel + 1);
 	SendHudText(4, x, "Level Key", Color::blue);
-	inv->CheckLevelkey() ? SendHudText(4, x+9, ": yeap", Color::blue) : SendHudText(4, x+9, ": nope");
+	inv->CheckItem(Item::levelKey) ? SendHudText(4, x+9, ": yeap", Color::blue) : SendHudText(4, x+9, ": nope");
 	
 	SendHudText(5, x,   "Keys", Color::yellow);
 	SendHudText(5, x + 4, ": %i  ", inv->GetItemCount(Item::key));
@@ -293,16 +293,13 @@ void Game::MoveHeroTo(int y, int x)
 		return;
 
 	Object* collidingObject = _objectsMap[y][x];
-	bool canMove = true;
 
+	bool canMove = true;
 	switch (collidingObject->GetEntity())
 	{
 		case Entity::empty:   break;
 
-		case Entity::crystal:
-		case Entity::heart:
-		case Entity::key:
-		case Entity::levelKey:
+		case Entity::crystal: case Entity::heart: case Entity::key: case Entity::levelKey:
 		{
 			MinusItemCount(collidingObject->GetEntity(), _levelInv);
 			PlusItemCount(collidingObject->GetEntity(), _hero->GetInventory());
@@ -310,66 +307,11 @@ void Game::MoveHeroTo(int y, int x)
 			break;
 		}
 
-		case Entity::mine:		 RestartLevel();          return;
-		case Entity::exitDoor:   _isGameActive = false;   return;
-
-		case Entity::box:
-		{
-			// Hero move direction
-			Coord heroCoord = _hero->GetCoord();
-			int heroDirectionY = y - heroCoord.y;
-			int heroDirectionX = x - heroCoord.x;
-
-			int objBehindY = y + heroDirectionY;
-			int objBehindX = x + heroDirectionX;
-
-			// Check map border
-			if (objBehindX < 0 || objBehindX >= _settings->lvlSizeX 
-				|| objBehindY < 0 || objBehindY >= _settings->lvlSizeY)
-				return;
-
-			// Check space behind the box and handling collisions with objects
-			Entity entityBehindBox = _objectsMap[objBehindY][objBehindX]->GetEntity();
-			switch (entityBehindBox)
-			{
-				case Entity::crystal:
-				case Entity::heart:
-				case Entity::key:
-				case Entity::levelKey:
-				{
-					// Bye bye, Jewel
-					MinusItemCount(entityBehindBox, _levelInv);
-					DeleteObject(objBehindY, objBehindX);
-				}
-
-				case Entity::empty:
-				{
-					// Replace box
-					Object* boxObject = collidingObject;
-					_objectsMap[y][x] = _cloneObjects[I_EMPTY];
-					_objectsMap[objBehindY][objBehindX] = boxObject;
-				}
-				break;
-
-				case Entity::mine:   RestartLevel();   return;
-
-				default:   canMove = false;
-			}
-			break;
-		}
-
-		case Entity::door:
-		{
-			if (_hero->GetInventory()->CheckKey())
-				_hero->GetInventory()->TakeItem(Item::key);
-			break;
-		}
-		case Entity::levelDoor:
-		{
-			if (_hero->GetInventory()->CheckLevelkey())
-				_hero->GetInventory()->TakeItem(Item::levelKey);
-			break;
-		}
+		case Entity::mine:		 RestartLevel();                           return;
+		case Entity::exitDoor:   _isGameActive = false;                    return;
+		case Entity::box:        canMove = MoveHeroToBox(y, x);            break;
+		case Entity::door:       canMove = TakeHeroItem(Item::key);        break;
+		case Entity::levelDoor:  canMove = TakeHeroItem(Item::levelKey);   break;
 
 		default:   canMove = false;
 	}
@@ -384,6 +326,46 @@ void Game::MoveHeroTo(int y, int x)
 		// Dispel fog
 		if (_hardMode)
 			DispelFog(y, x);
+	}
+}
+
+bool Game::MoveHeroToBox(int y, int x)
+{
+	// Hero move direction
+	Coord heroCoord = _hero->GetCoord();
+	int heroDirectionY = y - heroCoord.y;
+	int heroDirectionX = x - heroCoord.x;
+
+	int objBehindY = y + heroDirectionY;
+	int objBehindX = x + heroDirectionX;
+
+	// Check map border
+	if (objBehindX < 0 || objBehindX >= _settings->lvlSizeX
+		|| objBehindY < 0 || objBehindY >= _settings->lvlSizeY)
+		return false;
+
+	// Check space behind the box and handling collisions with objects
+	Entity entityBehindBox = _objectsMap[objBehindY][objBehindX]->GetEntity();
+	switch (entityBehindBox)
+	{
+		case Entity::crystal: case Entity::heart: case Entity::key: case Entity::levelKey:
+		{
+			// Bye bye, Jewel
+			MinusItemCount(entityBehindBox, _levelInv);
+			DeleteObject(objBehindY, objBehindX);
+		}
+
+		case Entity::empty:
+		{
+			// Replace box
+			Object* boxObject = _objectsMap[y][x];
+			_objectsMap[y][x] = _cloneObjects[I_EMPTY];
+			_objectsMap[objBehindY][objBehindX] = boxObject;
+		}
+		return true;
+
+		case Entity::mine:   RestartLevel();
+		default:   return false;
 	}
 }
 
@@ -451,6 +433,17 @@ Object* Game::GetGameObject(Entity entity)
 void Game::ResetLevelInventory()
 {
 	_levelInv->Reset();
+}
+
+bool Game::TakeHeroItem(Item item)
+{
+	if (_hero->GetInventory()->CheckItem(item))
+	{
+		_hero->GetInventory()->TakeItem(item);
+		return true;
+	}
+	
+	return false;
 }
 
 void Game::SetItemCount(Entity entity, Inventory* inv, int count)

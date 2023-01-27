@@ -64,14 +64,18 @@ void Inventory::SetInventory(const Inventory* inv)
 	_levelKey = inv->GetItemCount(Item::levelKey);
 }
 
-bool Inventory::CheckKey()
+bool Inventory::CheckItem(Item item)
 {
-	return _keys > 0 ? true : false;
-}
+	switch (item)
+	{
+		case Item::crystal:    return _crystals > 0 ? true : false;
+		case Item::heart:      return _hearts > 0 ? true : false;
+		case Item::key:        return _keys > 0 ? true : false;
+		case Item::levelKey:   return _levelKey;
 
-bool Inventory::CheckLevelkey()
-{
-	return _levelKey;
+		default:    return false;
+	}
+	return _keys > 0 ? true : false;
 }
 
 void Inventory::Reset()

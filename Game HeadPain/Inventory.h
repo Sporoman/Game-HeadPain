@@ -20,9 +20,7 @@ public:
 	void TakeItem(Item item, int count = 1);
 	void SetItemCount(Item item,  int count);
 	int  GetItemCount(Item item) const;
-
-	bool CheckKey();
-	bool CheckLevelkey();
+	bool CheckItem(Item item);
 
 	void Reset();
 };

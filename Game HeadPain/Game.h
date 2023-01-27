@@ -54,10 +54,12 @@ private:
 	void DispelFog(int y, int x);
 	void RestartLevel();
 
+	bool MoveHeroToBox(int y, int x);
 	Object* GetGameObject(Entity entity);
 	void DeleteObject(int y, int x);
 	void ClearObjectMap();
 	void ResetLevelInventory();
+	bool TakeHeroItem(Item item);
 	void SetItemCount(Entity entity, Inventory* inv, int count);
 	void PlusItemCount(Entity entity, Inventory* inv);
 	void MinusItemCount(Entity entity, Inventory* inv);
