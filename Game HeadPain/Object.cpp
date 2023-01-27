@@ -55,17 +55,18 @@ Entity Object::GetInitEntity(unsigned char symbol)
 		case '#':	return Entity::wall;
 		case 'd':	return Entity::door;
 		case 'D':	return Entity::levelDoor;
+		case 'b':	return Entity::box;
+		case 'r':	return Entity::rock;
+		case '*':	return Entity::mine;
 		case 'k':	return Entity::key;
 		case 'K':	return Entity::levelKey;
-		case 'b':	return Entity::box;
-		case 'E':	return Entity::exitDoor;
 		case 'c':	return Entity::crystal;
-		case 'm':	return Entity::mine;
-		case 'F':	return Entity::fog;
 		case '3':	return Entity::heart;
 		case 's':	return Entity::skeleton;
-		case 'r':	return Entity::rock;
-
+		case '&':	return Entity::fakeWall;
+		case 'E':	return Entity::exitDoor;
+		case 'F':	return Entity::fog;
+		
 		default:    return Entity::_error;
 	}
 }
