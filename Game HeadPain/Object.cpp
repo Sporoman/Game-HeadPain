@@ -31,26 +31,6 @@ Object::~Object()
 	__countObjects--;
 }
 
-unsigned char Object::GetMapSymbol()
-{
-	return _mapSymbol;
-}
-
-unsigned char Object::GetRenderSymbol()
-{
-	return _renderObj.symbol;
-}
-
-Color Object::GetColorSymbol()
-{
-	return _renderObj.symbolColor;
-}
-
-Color Object::GetColorBackground()
-{
-	return _renderObj.bkgColor;
-}
-
 const RenderObject& Object::GetRenderObject()
 {
 	return _renderObj;

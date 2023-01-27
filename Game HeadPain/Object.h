@@ -24,10 +24,6 @@ public:
 	static int GetObjectsCount();	
 
 	virtual Entity GetEntity();
-	virtual unsigned char GetMapSymbol();
-	virtual unsigned char GetRenderSymbol();
-	virtual Color GetColorSymbol();
-	virtual Color GetColorBackground();
 	virtual const RenderObject& GetRenderObject();
 	
 	static Entity GetInitEntity(unsigned char symbol);
