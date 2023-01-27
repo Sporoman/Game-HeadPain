@@ -54,6 +54,8 @@ private:
 	void DispelFog(int y, int x);
 	void RestartLevel();
 
+	void MoveHero(int y, int x);
+	void MoveHeroWithDelete(int y, int x);
 	bool MoveHeroToBox(int y, int x);
 	Object* GetGameObject(Entity entity);
 	void DeleteObject(int y, int x);

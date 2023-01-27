@@ -312,21 +312,33 @@ void Game::MoveHeroTo(int y, int x)
 		case Entity::box:        canMove = MoveHeroToBox(y, x);            break;
 		case Entity::door:       canMove = TakeHeroItem(Item::key);        break;
 		case Entity::levelDoor:  canMove = TakeHeroItem(Item::levelKey);   break;
+		case Entity::fakeWall:   MoveHero(y, x);                           return;
 
 		default:   canMove = false;
 	}
 
 	if (canMove)
-	{
-		// Delete the colliding object, insert the empty and set Hero position
-		DeleteObject(y, x);
-		_objectsMap[y][x] = _cloneObjects[I_EMPTY];
-		_hero->SetCoord(x, y);
+		MoveHeroWithDelete(y, x);
+}
 
-		// Dispel fog
-		if (_hardMode)
-			DispelFog(y, x);
-	}
+void Game::MoveHero(int y, int x)
+{
+	_hero->SetCoord(x, y);
+
+	if (_hardMode)
+		DispelFog(y, x);
+}
+
+void Game::MoveHeroWithDelete(int y, int x)
+{
+	// Delete the colliding object, insert an empty and set the hero position
+	DeleteObject(y, x);
+	_objectsMap[y][x] = _cloneObjects[I_EMPTY];
+	_hero->SetCoord(x, y);
+
+	// Dispel fog
+	if (_hardMode)
+		DispelFog(y, x);
 }
 
 bool Game::MoveHeroToBox(int y, int x)
