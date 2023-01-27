@@ -120,7 +120,7 @@ void Game::ClearObjectMap()
 {
 	for (int y = 0; y < _settings->lvlSizeY; ++y)
 		for (int x = 0; x < _settings->lvlSizeX; ++x)
-			DeleteNormalObject(y, x);
+			DeleteObject(y, x);
 }
 
 void Game::Shutdown()
@@ -270,14 +270,15 @@ void Game::SendHudText(int y, int x, const char* text, int count, Color symbolCo
 
 void Game::Move()
 {
-	Coord c = _hero->GetCoord();
+	int x = _hero->GetCoord().x;
+	int y = _hero->GetCoord().y;
 
 	switch (KeyDown::getWaitKey())
 	{
-		case Key::W: case Key::KEY_UP:      MoveHeroTo(c.y - 1, c.x);   break;
-		case Key::S: case Key::KEY_DOWN:    MoveHeroTo(c.y + 1, c.x);   break;
-		case Key::A: case Key::KEY_LEFT:    MoveHeroTo(c.y, c.x - 1);   break;
-		case Key::D: case Key::KEY_RIGHT:   MoveHeroTo(c.y, c.x + 1);   break;
+		case Key::W: case Key::KEY_UP:      MoveHeroTo(y-1, x);   break;
+		case Key::S: case Key::KEY_DOWN:    MoveHeroTo(y+1, x);   break;
+		case Key::A: case Key::KEY_LEFT:    MoveHeroTo(y, x-1);   break;
+		case Key::D: case Key::KEY_RIGHT:   MoveHeroTo(y, x+1);   break;
 
 		case Key::R:   RestartLevel();   break;
 
@@ -338,7 +339,7 @@ void Game::MoveHeroTo(int y, int x)
 				{
 					// Bye bye, Jewel
 					MinusItemCount(entityBehindBox, _levelInv);
-					DeleteNormalObject(objBehindY, objBehindX);
+					DeleteObject(objBehindY, objBehindX);
 				}
 
 				case Entity::empty:
@@ -376,7 +377,7 @@ void Game::MoveHeroTo(int y, int x)
 	if (canMove)
 	{
 		// Delete the colliding object, insert the empty and set Hero position
-		DeleteNormalObject(y, x);
+		DeleteObject(y, x);
 		_objectsMap[y][x] = _cloneObjects[I_EMPTY];
 		_hero->SetCoord(x, y);
 
@@ -418,14 +419,14 @@ void Game::RestartLevel()
 	Initialize();
 }
 
-void Game::DeleteNormalObject(int y, int x)
+void Game::DeleteObject(int y, int x)
 {
 	Object* obj = _objectsMap[y][x];
 
 	if (_objectsMap[y][x] == nullptr)
 		return;
 
-	if (!isCloneObject(obj))
+	if (!isCloneObject(obj->GetEntity()))
 		delete obj;
 
 	_objectsMap[y][x] = nullptr;
@@ -435,13 +436,13 @@ Object* Game::GetGameObject(Entity entity)
 {
 	switch (entity)
 	{
-		case Entity::hero:    return _hero;
+		case Entity::hero:     return _hero;
 
-		case Entity::empty:   return _cloneObjects[I_EMPTY];
-		case Entity::wall:    return _cloneObjects[I_WALL];
-		case Entity::fog:     return _cloneObjects[I_FOG];
+		case Entity::empty:    return _cloneObjects[I_EMPTY];
+		case Entity::wall:     return _cloneObjects[I_WALL];
+		case Entity::fog:      return _cloneObjects[I_FOG];
 
-		case Entity::_error:  return nullptr;
+		case Entity::_error:   return nullptr;
 
 		default:   return new Object(entity);
 	}
@@ -483,11 +484,6 @@ void Game::MinusItemCount(Entity entity, Inventory* inv)
 		case Entity::key:       inv->TakeItem(Item::key);        break;
 		case Entity::levelKey:  inv->TakeItem(Item::levelKey);   break;
 	}
-}
-
-bool Game::isCloneObject(Object* obj)
-{
-	return isCloneObject(obj->GetEntity());
 }
 
 bool Game::isCloneObject(Entity entity)

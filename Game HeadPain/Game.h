@@ -55,14 +55,12 @@ private:
 	void RestartLevel();
 
 	Object* GetGameObject(Entity entity);
-	void DeleteNormalObject(int y, int x);
+	void DeleteObject(int y, int x);
 	void ClearObjectMap();
 	void ResetLevelInventory();
 	void SetItemCount(Entity entity, Inventory* inv, int count);
 	void PlusItemCount(Entity entity, Inventory* inv);
 	void MinusItemCount(Entity entity, Inventory* inv);
-
-	bool isCloneObject(Object* obj);
 	bool isCloneObject(Entity entity);
 };
 
