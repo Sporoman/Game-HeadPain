@@ -46,8 +46,8 @@ private:
 	void Move();
 
 	void RenderMap();
-	void RenderHud();
 	void RenderHero();
+	void RenderHud();
 	void SendHudText(int y, int x, const char* text, Color symbolColor = Color::gray, Color bkgColor = Color::black);
 	void SendHudText(int y, int x, const char* text, int count, Color symbolColor = Color::gray, Color bkgColor = Color::black);
 	void MoveHeroTo(int y, int x);
@@ -60,7 +60,6 @@ private:
 	Object* GetGameObject(Entity entity);
 	void DeleteObject(int y, int x);
 	void ClearObjectMap();
-	void ResetLevelInventory();
 	bool TakeHeroItem(Item item);
 	void SetItemCount(Entity entity, Inventory* inv, int count);
 	void PlusItemCount(Entity entity, Inventory* inv);

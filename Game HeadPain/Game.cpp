@@ -137,7 +137,7 @@ void Game::Shutdown()
 void Game::Initialize()
 {
 	// Set default items value on this level
-	ResetLevelInventory();
+	_levelInv->Reset();
 	_successfulBkgRead = false;
 
 	ClearObjectMap();
@@ -211,6 +211,12 @@ void Game::RenderMap()
 				_renSys->DrawChar(y, x, _cloneObjects[I_FOG]->GetRenderObject());
 }
 
+void Game::RenderHero()
+{
+	Coord coord = _hero->GetCoord();
+	_renSys->DrawChar(coord.y, coord.x, _hero->GetRenderObject());
+}
+
 void Game::RenderHud()
 {
 	Inventory* inv = _hero->GetInventory();
@@ -252,12 +258,6 @@ void Game::SendHudText(int y, int x, const char* text, Color symbolColor, Color 
 
 	sprintf_s(textBuffer, text, 50);
 	_renSys->SendText(y, x, textBuffer, symbolColor, bkgColor);
-}
-
-void Game::RenderHero()
-{
-	Coord coord = _hero->GetCoord();
-	_renSys->DrawChar(coord.y, coord.x, _hero->GetRenderObject());
 }
 
 void Game::SendHudText(int y, int x, const char* text, int count, Color symbolColor, Color bkgColor)
@@ -417,7 +417,7 @@ void Game::DeleteObject(int y, int x)
 {
 	Object* obj = _objectsMap[y][x];
 
-	if (_objectsMap[y][x] == nullptr)
+	if (obj == nullptr)
 		return;
 
 	if (!isCloneObject(obj->GetEntity()))
@@ -436,15 +436,10 @@ Object* Game::GetGameObject(Entity entity)
 		case Entity::wall:     return _cloneObjects[I_WALL];
 		case Entity::fog:      return _cloneObjects[I_FOG];
 
-		case Entity::_error:   return nullptr;
+		case Entity::_error: case Entity::_size:   return nullptr;
 
 		default:   return new Object(entity);
 	}
-}
-
-void Game::ResetLevelInventory()
-{
-	_levelInv->Reset();
 }
 
 bool Game::TakeHeroItem(Item item)
